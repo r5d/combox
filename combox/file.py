@@ -20,13 +20,55 @@ from os import path
 from sys import exit
 
 
-def split_file(filename, n):
-    """Split the file into `n' parts and return them as an array.
+def split_data(data, n):
+    """Split data into `n' parts and return them as an array.
 
-    filename: Absolute pathname of the file.
+    data: Stream of bytes or string
     n: Number of parts the file has to be split.
     """
 
+    d_parts = []
+    # File size in bytes.
+    data_size = len(data)
+    # No. of bytes for each data part.
+    part_size =  data_size / n
+    # Take note of remaining bytes; this is non-zero when data_size is
+    # not divisible by `n'.
+    rem_bytes = data_size % n
+
+    start = 0
+    end = part_size
+    while end <= data_size:
+        d_parts.append(data[start:end])
+        start = end
+        end = end + part_size
+
+    # read the remaining bytes into the last data part.
+    end += start + rem_bytes
+    d_parts[n-1] += data[start:end]
+
+    return d_parts
+
+
+def glue_data(d_parts):
+    """Glue different parts of the data to one.
+
+    f_parts: Array containing different parts of the data. Each part
+    is a sequence of bytes.
+    """
+
+    data = ''
+    for part in d_parts:
+        data += part
+
+    return data
+
+
+def read_file(filename):
+    """Read file and return it as a string.
+
+    filename: Absolute pathname of the file.
+    """
     file_ = None
     try:
       file_   = open(filename, 'rb')
@@ -34,38 +76,7 @@ def split_file(filename, n):
         print "ERROR: opening %s" % (filename)
         exit(1)
 
-    f_parts = []
-    # File size in bytes.
-    file_size = path.getsize(filename)
-    # No. of bytes for each file part.
-    part_size =  file_size / n
-    # Take note of remaining bytes; this is non-zero when file_size is
-    # not divisible by `n'.
-    rem_bytes = file_size % n
-
-    i = 0
-    while i < n:
-        f_parts.append(file_.read(part_size))
-        i += 1
-
-    # read the remaining bytes into the last file part.
-    f_parts[n-1] += file_.read(rem_bytes)
-
-    return f_parts
-
-
-def glue_file(f_parts):
-    """Glue different parts of the file to one.
-
-    f_parts: Array containing different parts of the file. Each part
-    is a sequence of bytes.
-    """
-
-    file_content = ''
-    for part in f_parts:
-        file_content += part
-
-    return file_content
+    return file_.read()
 
 
 def write_file(filename, filecontent):
@@ -74,7 +85,6 @@ def write_file(filename, filecontent):
     filename: Absolute pathname of the file.
     filecontent: String/bytstream to write to filename.
     """
-
     file_ = None
     try:
       file_   = open(filename, 'wb')

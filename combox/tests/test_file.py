@@ -18,12 +18,13 @@
 
 from os import path
 
-from file import split_file, glue_file, write_file
+from file import split_data, glue_data, write_file, read_file
 
 ### Test to split, glue and create a copy of the image file from the
 ### glued image file.
 f = path.abspath('tests/files/the-red-star.jpg')
+f_content = read_file(f)
+f_parts = split_data(f_content, 5)
+f_content = glue_data(f_parts)
 f_copy = path.abspath('tests/files/the-red-star-copy.jpg')
-f_parts = split_file(f, 3)
-filecontent = glue_file(f_parts)
-write_file(f_copy, filecontent)
+write_file(f_copy, f_content)
