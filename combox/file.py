@@ -53,7 +53,7 @@ def split_data(data, n):
 def glue_data(d_parts):
     """Glue different parts of the data to one.
 
-    f_parts: Array containing different parts of the data. Each part
+    d_parts: Array containing different parts of the data. Each part
     is a sequence of bytes.
     """
 
