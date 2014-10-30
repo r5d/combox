@@ -18,7 +18,7 @@
 
 from os import path
 
-from utils.file import split_file, glue_file, write_file
+from file import split_file, glue_file, write_file
 
 ### Test to split, glue and create a copy of the image file from the
 ### glued image file.
