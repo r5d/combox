@@ -9,11 +9,16 @@ The ideas for this program is based on [`combobox`][1].
 
 [1]: https://bitbucket.org/bgsucodeloverslab/combobox
 
+# etymology
+
+`combox` is a lazy contraction of the word "combo box". `combox` is
+pronounced as "combo box".
+
 # status
 
-Core functionility is being written at the moment.
+Core functionality is being written at the moment.
 
-# requirments
+# requirements
 
 * Python v2.7
 * PyYAML v3.x
@@ -45,4 +50,4 @@ later. See COPYING.
 
 # contact
 
-Siddharth Ravikumar <sravik@bgsu.edu> (`gpg id: 0x00B252AF`)
+siddharth ravikumar <sravik@bgsu.edu> (`gpg id: 0x00B252AF`)
