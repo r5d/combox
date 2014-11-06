@@ -2,8 +2,9 @@
 
 # combox
 
-Splits and encrypts files and scatters them to directories which slurp
-files into surveillance nodes like Google Docs, Dropbox, etc.
+Splits and encrypts files and scatters them to directories from which
+files are slurped into surveillance nodes like Google Docs, Dropbox,
+etc.
 
 The ideas for this program is based on [`combobox`][1].
 
