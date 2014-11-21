@@ -43,34 +43,39 @@
 import os
 import yaml
 import getpass
-import md5
+import hashlib
 import sys
 import stat
 
-# First whether combox is already configured.
-config_dir = os.path.join(os.getenv('HOME'),'.combox/')
-if not os.path.exists(config_dir):
-    # Create combox dir and configure.
-    os.mkdir(config_dir, 0700)
-    config_file_path = os.path.join(config_dir, 'config.yaml')
-    config_info = {}
 
-    config_info['combox_dir'] = raw_input('path to combox directory: ')
-    config_info['topsecret'] = md5.new(getpass.getpass('passphrase: ')).hexdigest()
+def config_cb():
+    """
+    Configure combox, if not already configured.
+    """
+    # First whether combox is already configured.
+    config_dir = os.path.join(os.getenv('HOME'),'.combox/')
+    if not os.path.exists(config_dir):
+        # Create combox dir and configure.
+        os.mkdir(config_dir, 0700)
+        config_file_path = os.path.join(config_dir, 'config.yaml')
+        config_info = {}
 
-    no_nodes = int(raw_input('number of nodes: '))
+        config_info['combox_dir'] = raw_input('path to combox directory: ')
+        config_info['topsecret'] = hashlib.sha224(getpass.getpass('passphrase: ')).hexdigest()
 
-    nodes = {}
-    for i in range(no_nodes):
-        node_name = raw_input('node %d name: ' % i)
-        nodes[node_name] = {}
-        nodes[node_name]['path'] = raw_input('node %d path: ' % i)
-        nodes[node_name]['size'] = raw_input('node %d size (in mega bytes): ' % i)
-        nodes[node_name]['available'] = nodes[node_name]['size']
+        no_nodes = int(raw_input('number of nodes: '))
 
-    config_info['nodes_info'] = nodes
-    config_file = open(config_file_path, 'w')
-    yaml.dump(config_info, config_file, default_flow_style=False)
-    os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
-else:
-    print "You've already configured combox!"
+        nodes = {}
+        for i in range(no_nodes):
+            node_name = raw_input('node %d name: ' % i)
+            nodes[node_name] = {}
+            nodes[node_name]['path'] = raw_input('node %d path: ' % i)
+            nodes[node_name]['size'] = raw_input('node %d size (in mega bytes): ' % i)
+            nodes[node_name]['available'] = nodes[node_name]['size']
+
+        config_info['nodes_info'] = nodes
+        config_file = open(config_file_path, 'w')
+        yaml.dump(config_info, config_file, default_flow_style=False)
+        os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
+    else:
+        print "You've already configured combox!"
