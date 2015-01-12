@@ -25,10 +25,10 @@ except ImportError:
 config = {
     'description': 'Splits encrypted files between online file storage providers',
     'author': 'Siddharth Ravikumar',
-    'url': '',
-    'download_url': 'Where to download it.',
+    'url': 'http://rsiddharth.ninth.su/git/cb.git/',
+    'download_url': 'http://rsiddharth.ninth.su/git/cb.git/',
     'author_email': 'sravik@bgsu.edu',
-    'version': '0.0.0',
+    'version': '0.0.1',
     'install_requires': ['nose', 'watchdog', 'PyYAML'],
     'packages': ['combox'],
     'scripts': [],
