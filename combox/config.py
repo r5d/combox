@@ -78,4 +78,5 @@ def config_cb():
         yaml.dump(config_info, config_file, default_flow_style=False)
         os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
     else:
-        print "You've already configured combox!"
+        # should put something here later
+        pass
