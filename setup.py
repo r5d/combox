@@ -29,7 +29,7 @@ config = {
     'download_url': 'http://rsiddharth.ninth.su/git/cb.git/',
     'author_email': 'sravik@bgsu.edu',
     'version': '0.0.1',
-    'install_requires': ['nose', 'watchdog', 'PyYAML'],
+    'install_requires': ['nose', 'watchdog', 'PyYAML', 'pycrypto'],
     'packages': ['combox'],
     'scripts': [],
     'name': 'combox'
