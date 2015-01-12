@@ -1,0 +1,82 @@
+#    Copyright (C) 2014 Combox author(s). See AUTHORS.
+#
+#    This file is part of Combox.
+#
+#   Combox is free software: you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   Combox is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with Combox (see COPYING).  If not, see
+#   <http://www.gnu.org/licenses/>.
+
+##################################################
+## YAML Config format
+##################################################
+##
+## combox_dir: path/to/combox/
+##
+## topsecret: dba0079f1cb3a3b56e102dd5e04fa2af
+##
+## nodes_info:
+##  node_name:
+##      path: path/to/shard1/dir/
+##      size: 1000 # in MB
+##      available: 500 # in MB
+##  node name:
+##      path: path/to/shard2/dir/
+##      size: 2000
+##      available: 1500
+##  node name:
+##      path: path/to/shard3/dir
+##      size: 3000
+##      available: 1500
+##
+##################################################
+
+import os
+import yaml
+import getpass
+import hashlib
+import sys
+import stat
+
+
+def config_cb():
+    """
+    Configure combox, if not already configured.
+    """
+    # First whether combox is already configured.
+    config_dir = os.path.join(os.getenv('HOME'),'.combox/')
+    if not os.path.exists(config_dir):
+        # Create combox dir and configure.
+        os.mkdir(config_dir, 0700)
+        config_file_path = os.path.join(config_dir, 'config.yaml')
+        config_info = {}
+
+        config_info['combox_dir'] = raw_input('path to combox directory: ')
+        config_info['topsecret'] = hashlib.sha224(getpass.getpass('passphrase: ')).hexdigest()
+
+        no_nodes = int(raw_input('number of nodes: '))
+
+        nodes = {}
+        for i in range(no_nodes):
+            node_name = raw_input('node %d name: ' % i)
+            nodes[node_name] = {}
+            nodes[node_name]['path'] = raw_input('node %d path: ' % i)
+            nodes[node_name]['size'] = raw_input('node %d size (in mega bytes): ' % i)
+            nodes[node_name]['available'] = nodes[node_name]['size']
+
+        config_info['nodes_info'] = nodes
+        config_file = open(config_file_path, 'w')
+        yaml.dump(config_info, config_file, default_flow_style=False)
+        os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
+    else:
+        # should put something here later
+        pass
