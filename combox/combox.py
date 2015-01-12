@@ -16,10 +16,122 @@
 #   along with Combox (see COPYING).  If not, see
 #   <http://www.gnu.org/licenses/>.
 
+import base64
+import os
+import yaml
+import getpass
+import hashlib
+import sys
+import stat
+
+from Crypto.Cipher import AES
 from os import path
 from sys import exit
 from glob import glob
 
+
+#### Start of combox config function
+
+def config_cb():
+    """
+    Configure combox, if not already configured.
+    """
+    # First whether combox is already configured.
+    config_dir = os.path.join(os.getenv('HOME'),'.combox/')
+    if not os.path.exists(config_dir):
+        # Create combox dir and configure.
+        os.mkdir(config_dir, 0700)
+        config_file_path = os.path.join(config_dir, 'config.yaml')
+        config_info = {}
+
+        config_info['combox_dir'] = raw_input('path to combox directory: ')
+        config_info['topsecret'] = hashlib.sha224(getpass.getpass('passphrase: ')).hexdigest()
+
+        no_nodes = int(raw_input('number of nodes: '))
+
+        nodes = {}
+        for i in range(no_nodes):
+            node_name = raw_input('node %d name: ' % i)
+            nodes[node_name] = {}
+            nodes[node_name]['path'] = raw_input('node %d path: ' % i)
+            nodes[node_name]['size'] = raw_input('node %d size (in mega bytes): ' % i)
+            nodes[node_name]['available'] = nodes[node_name]['size']
+
+        config_info['nodes_info'] = nodes
+        config_file = open(config_file_path, 'w')
+        yaml.dump(config_info, config_file, default_flow_style=False)
+        os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
+    else:
+        # should put something here later
+        pass
+
+#### End of combox config function
+
+
+
+
+#### Start of crypto functions.
+def pad(data):
+    """Pad data such that its length is a multiple of BLOCK_SIZE.
+    """
+
+    padding = (BLOCK_SIZE - (len(data) % BLOCK_SIZE)) * PAD_CHAR
+    data += padding
+
+    return data
+
+
+def encrypt(data, secret):
+    """Encrypt byestream and return cipher.
+    """
+    aes = AES.new(pad(secret))
+    cipher = base64.b64encode(aes.encrypt(pad(data)))
+    
+    return cipher
+
+
+def decrypt(cipher, secret):
+    """Decrypt cipher and return data.
+    """
+    aes = AES.new(pad(secret))
+    data = aes.decrypt(base64.b64decode(cipher)).rstrip(PAD_CHAR)
+
+    return data
+
+def encrypt_shards(shards, secret):
+    """Encrypt the shards of data and return a list of ciphers.
+
+    shards: list of shards (string, bytes).
+    secret: top secret passphrase
+    """
+
+    ciphers = []
+    for shard in shards:
+        cipher = encrypt(shard, secret)
+        ciphers.append(cipher)
+
+    return ciphers
+
+
+def decrypt_shards(ciphers, secret):
+    """Decrypt the ciphered shards and return a list of shards.
+
+    shards: list of ciphered shards.
+    secret: top secret passphrase
+    """
+
+    shards = []
+    for cipher in ciphers:
+        shard = decrypt(cipher, secret)
+        shards.append(shard)
+
+    return shards
+
+#### End of crypto functions.
+
+
+
+#### Start of File related functions
 
 def split_data(data, n):
     """Split data into `n' parts and return them as an array.
@@ -125,3 +237,7 @@ def read_shards(directory, shard_basename):
         shards.append(shard_content)
 
     return shards
+
+
+    
+#### End of File related functions.

@@ -16,7 +16,15 @@
 #   along with Combox (see COPYING).  If not, see
 #   <http://www.gnu.org/licenses/>.
 
-from config import config_cb
+from nose.tools import *
+import combox
 
-# test this function.
-config_cb()
+def setup():
+    print "SETUP!"
+
+def teardown():
+    print "TEAR DOWN!"
+
+def test_basic():
+    print "I RAN!"
+
