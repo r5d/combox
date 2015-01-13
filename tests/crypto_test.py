@@ -22,9 +22,8 @@ from glob import glob
 from nose.tools import *
 from os import path, remove
 
-from combox.file import (split_data, glue_data, write_file,
-                  read_file, write_shards, read_shards)
-from combox.crypto import encrypt, decrypt, encrypt_shards, decrypt_shards
+from combox.file import *
+from combox.crypto import *
 
 
 CONFIG_DIR = path.join('tests', 'test-config')
@@ -37,7 +36,6 @@ except yaml.YAMLError, exc:
 
 FILES_DIR = config['combox_dir']
 TEST_FILE = path.join(FILES_DIR,'the-red-star.jpg')
-PASS = 'topsecret'
 
 
 def test_encryption():
@@ -49,9 +47,9 @@ def test_encryption():
     f_content = read_file(f)
 
     # encrypt
-    f_cipher = encrypt(f_content, PASS)
+    f_cipher = encrypt(f_content, config['topsecret'])
     # decrypt
-    f_content_decrypted = decrypt(f_cipher, PASS)
+    f_content_decrypted = decrypt(f_cipher, config['topsecret'])
 
     assert f_content == f_content_decrypted
 
@@ -70,19 +68,18 @@ def test_split_encryption():
     f_shards = split_data(f_content, SHARDS)
 
     # encrypt shards
-    ciphered_shards = encrypt_shards(f_shards, PASS)
+    ciphered_shards = encrypt_shards(f_shards, config['topsecret'])
 
     # write ciphered shards to disk
     f_basename = "%s.ciphered" % path.basename(f)
     nodes = [path.abspath(node['path']) for node in config['nodes_info'].itervalues()]
-
     write_shards(ciphered_shards, nodes, f_basename)
 
     # read ciphered shards from disk
     ciphered_shards = read_shards(nodes, f_basename)
 
     # decrypt shards
-    f_parts = decrypt_shards(ciphered_shards, PASS)
+    f_parts = decrypt_shards(ciphered_shards, config['topsecret'])
     # glue them shards together
     f_content_glued = glue_data(f_parts)
 
