@@ -1,6 +1,7 @@
 *~
 *.pyc
 *-copy*
+*shard*
 build/
 dist/
 *egg-info/
