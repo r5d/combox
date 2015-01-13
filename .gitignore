@@ -1,6 +1,9 @@
 *~
 *.pyc
 *-copy*
+build/
+dist/
+*egg-info/
 tests/files/
 lib/
 local/
