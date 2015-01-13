@@ -94,34 +94,39 @@ def write_file(filename, filecontent):
         print "ERROR: creating and writing content to %s" % (filename)
         exit(1)
 
-def write_shards(shards, directory, shard_basename):
+def write_shards(shards, directories, shard_basename):
     """Write shards to respective files respective files.
 
     shard: list of strings (ciphers or data).
-    directory: absolute path of directory to which it shards must be written to.
+    directories: absolute path of directories to which it shards must be written to.
     shard_basename: base name of the shard.
     """
 
-    # partial filename of the shard
-    p_filename =  path.join(directory, shard_basename)
     shard_no = 0
-    for shard in shards:
+    for directory in directories:
+        # partial filename of the shard
+        p_filename =  path.join(directory, shard_basename)
         shard_name =  "%s.shard%s" % (p_filename, shard_no)
-        write_file(shard_name, shard)
+        write_file(shard_name, shards[shard_no])
         shard_no += 1
 
-def read_shards(directory, shard_basename):
+def read_shards(directories, shard_basename):
     """Read the shards from directory and return it as a list.
 
-    directory: absolute path of directory from which to read the shards.
+    directories: absolute path of directories from which to read the shards.
     shard_basename: base name of the shard.
     """
 
+    # get the names of the file shards
+    file_shards = []
+    for directory in directories:
+        filename_glob = "%s.shard*" % path.join(directory, shard_basename)
+        file_shard = glob(filename_glob)[0]
+        file_shards.append(file_shard)
+
     shards = []
-    # partial filename of the shard
-    p_filename = "%s.shard*" % path.join(directory, shard_basename)
-    for shard_file in sorted(glob(p_filename)):
-        shard_content = read_file(shard_file)
+    for file_shard in sorted(file_shards):
+        shard_content = read_file(file_shard)
         shards.append(shard_content)
 
     return shards
