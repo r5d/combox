@@ -1,0 +1,11 @@
+combox_dir: tests/files/
+nodes_info:
+  dbox:
+    available: '1024'
+    path: tests/shard-dir-0
+    size: '1024'
+  gdrive:
+    available: '1024'
+    path: tests/shard-dir-1
+    size: '1024'
+topsecret: 381c704796b53cb7cfb530cfff5d8d3d0cfaaf00ee0e1484beffe321
