@@ -47,30 +47,43 @@ import hashlib
 import sys
 import stat
 
+def get_secret():
+    "Gets the pass phrase from std. input."
+    return getpass.getpass('passphrase: ')
 
-def config_cb():
+
+def get_stdin(prompt):
+    "Gets a string from std. input."
+
+    prompt = "%s: "  % (prompt)
+
+    return raw_input(prompt)
+
+
+def config_cb(config_dir = os.path.join(os.getenv('HOME'),'.combox/'),
+              pass_func = get_secret,
+              input_func = get_stdin):
     """
     Configure combox, if not already configured.
     """
-    # First whether combox is already configured.
-    config_dir = os.path.join(os.getenv('HOME'),'.combox/')
+
     if not os.path.exists(config_dir):
         # Create combox dir and configure.
         os.mkdir(config_dir, 0700)
         config_file_path = os.path.join(config_dir, 'config.yaml')
         config_info = {}
 
-        config_info['combox_dir'] = raw_input('path to combox directory: ')
-        config_info['topsecret'] = hashlib.sha224(getpass.getpass('passphrase: ')).hexdigest()
+        config_info['combox_dir'] = input_func('path to combox directory')
+        config_info['topsecret'] = hashlib.sha224(pass_func()).hexdigest()
 
-        no_nodes = int(raw_input('number of nodes: '))
+        no_nodes = int(input_func('number of nodes'))
 
         nodes = {}
         for i in range(no_nodes):
-            node_name = raw_input('node %d name: ' % i)
+            node_name = input_func('node %d name' % i)
             nodes[node_name] = {}
-            nodes[node_name]['path'] = raw_input('node %d path: ' % i)
-            nodes[node_name]['size'] = raw_input('node %d size (in mega bytes): ' % i)
+            nodes[node_name]['path'] = input_func('node %d path' % i)
+            nodes[node_name]['size'] = input_func('node %d size (in mega bytes)' % i)
             nodes[node_name]['available'] = nodes[node_name]['size']
 
         config_info['nodes_info'] = nodes
