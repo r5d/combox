@@ -21,28 +21,35 @@ Core functionality is being written at the moment.
 
 # requirements
 
-* Python v2.7
+* virtualenv v1.9.x or later
+* python v2.7.x
 * PyYAML v3.x
+* nose v1.3.x
+* watchdog v0.8.2
+* pycrypto v2.6.1
 
 # platform
 
 At the moment `combox` is written and tested on a GNU/Linux based
 operating system.
 
+# setting up the environment
+
+From the same directory as this README file, do:
+
+    $ virtualenv .
+
+Activate the virtual environment:
+
+    $ source bin/activate
+
+Install dependencies by simply installing combox:
+
+    $ python setup.py install
+
 # running tests
 
-All the tests are at `combox/tests`. To run a test file, do:
-
-    $ cd combox
-	$ python -m tests.test_name
-
-For instance, to run `combox/tests/test_crypto.py`, do:
-
-    $ cd combox
-	$ python -m tests.test_crypto
-
-The success of the tests must be manually verified, so please read the
-test file before you run them.
+    $ nosetests
 
 # license
 
