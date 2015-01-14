@@ -24,12 +24,16 @@ from os import path, remove, rmdir
 from combox.config import (config_cb, get_secret, get_stdin)
 
 
-CONFIG_DIR = path.join('tests', 'files', 'config')
+
+CONFIG_DIR = path.join('tests', 'test-config')
+combox_dir = path.join('tests', 'files')
+node_dir_0 = path.join('tests', 'shard-dir-0')
+node_dir_1 = path.join('tests', 'shard-dir-1')
 
 # sample config info.
-CONFIG_INFO = [CONFIG_DIR, '2',
-               'gdrive', 'gdrive/path', '1024',
-               'dbox', 'dbox/path', '1024']
+CONFIG_INFO = [combox_dir, '2',
+               'node-0', node_dir_0, '1024',
+               'node-1', node_dir_1, '1024']
 
 CONFIG_INFO_ITER = iter(CONFIG_INFO)
 
@@ -52,7 +56,3 @@ def test_config():
         config = yaml.load(file(config_file, 'r'))
     except yaml.YAMLError, exc:
         raise AssertionError("Error in configuration file:", exc)
-
-    # remove config dir
-    remove(config_file)
-    rmdir(CONFIG_DIR)
