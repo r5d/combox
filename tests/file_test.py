@@ -22,6 +22,7 @@ from glob import glob
 from nose.tools import *
 from os import path, remove
 
+from combox.config import get_nodedirs
 from combox.file import (split_data, glue_data, write_file,
                   read_file, write_shards, read_shards)
 
@@ -66,7 +67,7 @@ and check if they're the same as the orginal file.
     f_shards = split_data(f_content, SHARDS)
 
     f_basename = path.basename(f)
-    nodes = [path.abspath(node['path']) for node in config['nodes_info'].itervalues()]
+    nodes = get_nodedirs(config)
     write_shards(f_shards, nodes, f_basename)
 
     # check if the shards have been created.
