@@ -18,9 +18,11 @@
 
 import yaml
 
+from filecmp import cmp
 from glob import glob
 from nose.tools import *
 from os import path, remove
+from shutil import copyfile
 
 from combox.config import get_nodedirs
 from combox.crypto import *
@@ -86,3 +88,22 @@ def test_split_encryption():
     f_content_glued = glue_data(f_parts)
 
     assert f_content == f_content_glued
+
+def test_convenience_crypto():
+    """
+    Tests convenience crypto function(s) - split_and_encrypt, decrypt and glue.
+    """
+
+    # splits file into shards, writes encrypted shards to respective
+    # node directories.
+    split_and_encrypt(TEST_FILE, config)
+
+    # create a copy of TEST_FILE (for later comparision)
+    TEST_FILE_COPY = "%s.copy" % TEST_FILE
+    copyfile(TEST_FILE, TEST_FILE_COPY)
+
+    # reads encrypted shards from node directories, glues them and
+    # writes decrypted back to combox directory.
+    decrypt_and_glue(TEST_FILE, config)
+
+    assert cmp(TEST_FILE, TEST_FILE_COPY, False)
