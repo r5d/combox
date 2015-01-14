@@ -21,6 +21,19 @@ from sys import exit
 from glob import glob
 
 
+def mk_nodedir(nodes, directory):
+    """
+    Creates directory `dir' inside the nodes.
+    """
+
+    abs_dir = path.abspath(directory)
+
+    for node in nodes:
+        try:
+            os.mkdir(abs_dir)
+        except IOError:
+            print "Something wrong. report bug to sravik@bgsu.edu"
+
 def split_data(data, n):
     """Split data into `n' parts and return them as an array.
 
