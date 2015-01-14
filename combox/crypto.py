@@ -142,4 +142,3 @@ def decrypt_and_glue(fpath, config):
 
     # write the glued content to fpath
     write_file(f, f_content)
-.
