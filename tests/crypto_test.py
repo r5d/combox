@@ -37,7 +37,7 @@ except yaml.YAMLError, exc:
     raise AssertionError("Error in configuration file:", exc)
 
 FILES_DIR = config['combox_dir']
-TEST_FILE = path.join(FILES_DIR,'the-red-star.jpg')
+TEST_FILE = path.join(FILES_DIR,'thgttg-21st.png')
 
 
 def test_encryption():

@@ -5,7 +5,6 @@
 build/
 dist/
 *egg-info/
-tests/files/
 lib/
 local/
 bin/
