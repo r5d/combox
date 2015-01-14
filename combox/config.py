@@ -64,32 +64,30 @@ def config_cb(config_dir = os.path.join(os.getenv('HOME'),'.combox/'),
               pass_func = get_secret,
               input_func = get_stdin):
     """
-    Configure combox, if not already configured.
+    Configure combox.
     """
 
     if not os.path.exists(config_dir):
-        # Create combox dir and configure.
+        # Create combox dir.
         os.mkdir(config_dir, 0700)
-        config_file_path = os.path.join(config_dir, 'config.yaml')
-        config_info = {}
+    config_file_path = os.path.join(config_dir, 'config.yaml')
+    config_info = {}
 
-        config_info['combox_dir'] = input_func('path to combox directory')
-        config_info['topsecret'] = hashlib.sha224(pass_func()).hexdigest()
+    config_info['combox_dir'] = input_func('path to combox directory')
+    config_info['topsecret'] = pass_func()
 
-        no_nodes = int(input_func('number of nodes'))
+    no_nodes = int(input_func('number of nodes'))
 
-        nodes = {}
-        for i in range(no_nodes):
-            node_name = input_func('node %d name' % i)
-            nodes[node_name] = {}
-            nodes[node_name]['path'] = input_func('node %d path' % i)
-            nodes[node_name]['size'] = input_func('node %d size (in mega bytes)' % i)
-            nodes[node_name]['available'] = nodes[node_name]['size']
+    nodes = {}
+    for i in range(no_nodes):
+        node_name = input_func('node %d name' % i)
+        nodes[node_name] = {}
+        nodes[node_name]['path'] = input_func('node %d path' % i)
+        nodes[node_name]['size'] = input_func('node %d size (in mega bytes)' % i)
+        nodes[node_name]['available'] = nodes[node_name]['size']
 
-        config_info['nodes_info'] = nodes
-        config_file = open(config_file_path, 'w')
-        yaml.dump(config_info, config_file, default_flow_style=False)
-        os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
-    else:
-        # should put something here later
-        pass
+    config_info['nodes_info'] = nodes
+    config_file = open(config_file_path, 'w')
+    yaml.dump(config_info, config_file, default_flow_style=False)
+    os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
+
