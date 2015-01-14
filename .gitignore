@@ -10,3 +10,4 @@ local/
 bin/
 include/
 trash/
+tests/files/*copy
