@@ -21,6 +21,7 @@ Core functionality is being written at the moment.
 
 # requirements
 
+* setuptools v5.5.x
 * virtualenv v1.9.x or later
 * python v2.7.x
 * PyYAML v3.x
@@ -34,6 +35,8 @@ At the moment `combox` is written and tested on a GNU/Linux based
 operating system.
 
 # setting up the environment
+
+Install `virtualenv` and python's `setuptools` packages.
 
 From the same directory as this README file, do:
 
