@@ -47,6 +47,8 @@ import hashlib
 import sys
 import stat
 
+from os import path
+
 def get_secret():
     "Gets the pass phrase from std. input."
     return getpass.getpass('passphrase: ')
@@ -91,3 +93,17 @@ def config_cb(config_dir = os.path.join(os.getenv('HOME'),'.combox/'),
     yaml.dump(config_info, config_file, default_flow_style=False)
     os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
 
+
+def get_nodedirs(config):
+    """
+    Returns the node path to directories as a list.
+
+    config: a dictionary which has the combox configuration
+    """
+    nodes = []
+
+    for node in config['nodes_info'].itervalues():
+        node_path = path.abspath(node['path'])
+        nodes.append(node_path)
+
+    return sorted(nodes)
