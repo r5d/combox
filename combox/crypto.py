@@ -21,7 +21,13 @@
 import base64
 import os
 
+from combox.config import get_nodedirs
+from combox.file import (read_file, write_file,
+                         read_shards, write_shards,
+                         split_data, glue_data)
+
 from Crypto.Cipher import AES
+from os import path
 
 BLOCK_SIZE = 32
 PAD_CHAR = '#'
@@ -82,3 +88,58 @@ def decrypt_shards(ciphers, secret):
         shards.append(shard)
 
     return shards
+
+
+def split_and_encrypt(fpath, config):
+    """
+    Splits the file, encrypts the shards and writes them to the nodes.
+
+    fpath: The path to file that has to be split.
+    config: The dictonary containing the combox configuration information.
+    """
+
+    # no. of shards = no. of nodes.
+    SHARDS = len(config['nodes_info'].keys())
+
+    f = path.abspath(fpath)
+    f_content = read_file(f)
+    f_shards = split_data(f_content, SHARDS)
+
+    # encrypt shards
+    ciphered_shards = encrypt_shards(f_shards, config['topsecret'])
+
+
+    # write ciphered shards to disk
+    f_basename =  path.basename(f)
+    # gets the list of node' directories.
+    nodes = get_nodedirs(config)
+
+    write_shards(ciphered_shards, nodes, f_basename)
+
+
+def decrypt_and_glue(fpath, config):
+
+    """
+    Reads encrypted shards, decrypts and glues them.
+
+    fpath: The path to file that has to be decrypted & glued from the nodes.
+    config: The dictonary containing the combox configuration information.
+
+    """
+
+    f = path.abspath(fpath)
+    f_basename = path.basename(f)
+    # gets the list of node' directories.
+    nodes = get_nodedirs(config)
+
+    ciphered_shards = read_shards(nodes, f_basename)
+
+    # decrypt shards
+    f_parts = decrypt_shards(ciphered_shards, config['topsecret'])
+
+    # glue them together
+    f_content = glue_data(f_parts)
+
+    # write the glued content to fpath
+    write_file(f, f_content)
+.
