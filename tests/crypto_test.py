@@ -22,8 +22,10 @@ from glob import glob
 from nose.tools import *
 from os import path, remove
 
-from combox.file import *
+from combox.config import get_nodedirs
 from combox.crypto import *
+from combox.file import *
+
 
 
 CONFIG_DIR = path.join('tests', 'test-config')
@@ -71,8 +73,8 @@ def test_split_encryption():
     ciphered_shards = encrypt_shards(f_shards, config['topsecret'])
 
     # write ciphered shards to disk
-    f_basename = "%s.ciphered" % path.basename(f)
-    nodes = [path.abspath(node['path']) for node in config['nodes_info'].itervalues()]
+    f_basename = path.basename(f)
+    nodes = get_nodedirs(config)
     write_shards(ciphered_shards, nodes, f_basename)
 
     # read ciphered shards from disk
