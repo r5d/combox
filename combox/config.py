@@ -88,6 +88,10 @@ def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
         nodes[node_name]['size'] = input_func('node %d size (in mega bytes)' % i)
         nodes[node_name]['available'] = nodes[node_name]['size']
 
+        # create node path, if it doesn't exists yet.
+        if not path.exists(nodes[node_name]['path']):
+            os.mkdir(nodes[node_name]['path'])
+
     config_info['nodes_info'] = nodes
     config_file = open(config_file_path, 'w')
     yaml.dump(config_info, config_file, default_flow_style=False)
