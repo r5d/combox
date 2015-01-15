@@ -29,7 +29,7 @@ from watchdog.observers import Observer
 
 from combox.events import ComboxEventHandler
 from combox.config import get_nodedirs
-from combox.file import relative_path
+from combox.file import relative_path, purge_dir
 
 CONFIG_DIR = path.join('tests', 'test-config')
 
@@ -77,14 +77,14 @@ def test_CEH():
     observer.start()
 
     # Test - new file addition
-    TEST_FILE_COPY = "%s.mutant" % TEST_FILE
-    copyfile(TEST_FILE, TEST_FILE_COPY)
+    TEST_FILE_COPY_0 = "%s.mutant" % TEST_FILE
+    copyfile(TEST_FILE, TEST_FILE_COPY_0)
     ## wait for ComboxEventHandler to split and scatter the file in the
     ## node directories.
     time.sleep(1)
     ## check if the shards were created.
-    shardedp(TEST_FILE_COPY)
-    remove(TEST_FILE_COPY)
+    shardedp(TEST_FILE_COPY_0)
+    remove(TEST_FILE_COPY_0)
 
     # Test - directory creation
     TEST_DIR_0 = path.join(FILES_DIR, 'foo')
@@ -98,6 +98,18 @@ def test_CEH():
     time.sleep(2)
     ## check if TEST_DIR_1 is created under node directories.
     dirp(TEST_DIR_1)
+
+    # Test - new file in a nested directory
+    TEST_FILE_COPY_1 = path.join(TEST_DIR_1, path.basename(TEST_FILE))
+    copyfile(TEST_FILE, TEST_FILE_COPY_1)
+    time.sleep(1)
+    shardedp(TEST_FILE_COPY_1)
+    remove(TEST_FILE_COPY_1)
+    # purge nested dir TEST_DIR_0
+    purge_dir(TEST_DIR_0)
+    # remove the directory itself.
+    os.rmdir(TEST_DIR_0)
+    time.sleep(2)
 
     observer.stop()
     observer.join()
