@@ -24,7 +24,8 @@ import os
 from combox.config import get_nodedirs
 from combox.file import (read_file, write_file,
                          read_shards, write_shards,
-                         split_data, glue_data)
+                         split_data, glue_data,
+                         relative_path)
 
 from Crypto.Cipher import AES
 from os import path
@@ -98,10 +99,12 @@ def split_and_encrypt(fpath, config):
     config: The dictonary containing the combox configuration information.
     """
 
+    rel_path = relative_path(fpath, config)
+
     # no. of shards = no. of nodes.
     SHARDS = len(config['nodes_info'].keys())
 
-    f = path.abspath(fpath)
+    f = path.join(config['combox_dir'], rel_path)
     f_content = read_file(f)
     f_shards = split_data(f_content, SHARDS)
 
@@ -110,7 +113,7 @@ def split_and_encrypt(fpath, config):
 
 
     # write ciphered shards to disk
-    f_basename =  path.basename(f)
+    f_basename =  rel_path
     # gets the list of node' directories.
     nodes = get_nodedirs(config)
 
@@ -127,8 +130,10 @@ def decrypt_and_glue(fpath, config):
 
     """
 
+    rel_path = relative_path(fpath, config)
+
     f = path.abspath(fpath)
-    f_basename = path.basename(f)
+    f_basename = rel_path
     # gets the list of node' directories.
     nodes = get_nodedirs(config)
 
