@@ -16,23 +16,69 @@
 #   along with Combox (see COPYING).  If not, see
 #   <http://www.gnu.org/licenses/>.
 
+import os
+
 from os import path
 from sys import exit
 from glob import glob
 
+from combox.config import get_nodedirs
 
-def mk_nodedir(nodes, directory):
+
+def relative_path(p, config):
+    """Returns the relative path to the `p' w. r. t combox directory.
+
+    p: path to a directory or file.
+
+    config: a dictionary that contains configuration information about
+    combox.
+
     """
-    Creates directory `dir' inside the nodes.
+    combox_dir = '%s/' % config['combox_dir']
+
+    return p.partition(combox_dir)[2]
+
+
+def mk_nodedir(directory, config):
+    """
+    Creates directory `directory' inside the nodes.
+
+    config: a dictionary containing configuration info about combox.
     """
 
-    abs_dir = path.abspath(directory)
+    nodes = get_nodedirs(config)
+
+    rel_path = relative_path(directory, config)
 
     for node in nodes:
+        dir_path = path.join(node, rel_path)
         try:
-            os.mkdir(abs_dir)
-        except IOError:
-            print "Something wrong. report bug to sravik@bgsu.edu"
+            os.mkdir(dir_path)
+        except OSError, e:
+            print e, "Something wrong. report bug to sravik@bgsu.edu"
+
+
+def purge_dir(p):
+    """
+    Purge everything under the given directory `p'.
+
+    Directory `p' itself is not deleted.
+    """
+
+    p = path.abspath(p)
+
+    if path.isfile(p):
+        return os.remove(p)
+
+    for f in os.listdir(p):
+        f_path = path.join(p, f)
+
+        if path.isfile(f_path):
+            os.remove(f_path)
+        else:
+            purge_dir(f_path)
+            os.rmdir(f_path)
+
 
 def split_data(data, n):
     """Split data into `n' parts and return them as an array.
@@ -111,6 +157,7 @@ def write_shards(shards, directories, shard_basename):
     """Write shards to respective files respective files.
 
     shard: list of strings (ciphers or data).
+
     directories: absolute path of directories to which it shards must be written to.
     shard_basename: base name of the shard.
     """
