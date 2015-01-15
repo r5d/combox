@@ -1,11 +1,11 @@
-combox_dir: tests/files
+combox_dir: /home/rsd/bgc/combox/tests/files
 nodes_info:
   node-0:
     available: '1024'
-    path: tests/shard-dir-0
+    path: /home/rsd/bgc/combox/tests/shard-dir-0
     size: '1024'
   node-1:
     available: '1024'
-    path: tests/shard-dir-1
+    path: /home/rsd/bgc/combox/tests/shard-dir-1
     size: '1024'
 topsecret: topsecret
