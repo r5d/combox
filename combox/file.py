@@ -58,6 +58,105 @@ def mk_nodedir(directory, config):
             print e, "Something wrong. report bug to sravik@bgsu.edu"
 
 
+def rm_nodedir(directory, config):
+    """
+    Removes directory `directory' inside the nodes.
+
+    config: a dictionary containing configuration info about combox.
+    """
+
+    nodes = get_nodedirs(config)
+
+    rel_path = relative_path(directory, config)
+
+    for node in nodes:
+        dir_path = path.join(node, rel_path)
+        try:
+            os.rmdir(dir_path)
+        except OSError, e:
+            print e, "Something wrong. report bug to sravik@bgsu.edu"
+
+
+def move_nodedir(src, dest, config):
+    """
+    Moves directory `directory' inside the nodes from old to new location.
+
+    src: old path to the directory
+    dest: new path to the directory
+    config: a dictionary containing configuration info about combox.
+    """
+
+    nodes = get_nodedirs(config)
+
+    src_rel_path = relative_path(src, config)
+    dest_rel_path = relative_path(dest, config)
+
+    for node in nodes:
+        src_dir_path = path.join(node, src_rel_path)
+        dest_dir_path = path.join(node, dest_rel_path)
+        try:
+            os.rename(src_dir_path, dest_dir_path)
+        except OSError, e:
+            print e, "Something wrong. report bug to sravik@bgsu.edu"
+
+
+def rm_shards(fpath, config):
+    """
+    Removes the file shards of `fpath' in the node directories.
+
+    fpath: is the path to a file in the combox directory.
+
+    config: a dictionary containing configuration info about combox.
+    """
+
+    nodes = get_nodedirs(config)
+
+    rel_path = relative_path(fpath, config)
+
+    for node in nodes:
+        shard_glob = "%s.shard*" % path.join(node, rel_path)
+        # there's always only one shard in each node directory. So,
+        # the glob() will alawys return a list of size 1.
+        shard = glob(shard_glob)[0]
+        try:
+            os.remove(shard)
+        except OSError, e:
+            print e, "Something wrong. report bug to sravik@bgsu.edu"
+
+
+def move_shards(src, dest, config):
+    """Move the shards in node directories.
+
+    This function is used when a file is moved to different location
+    inside the combox directory. It moves the shards to the
+    corresponding location in the node directories.
+
+    src: old path to the file that was moved.
+    dest: new path to the file that was moved.
+    config: a dictionary containing configuration info about combox.
+    """
+
+    nodes = get_nodedirs(config)
+
+    src_rel_path = relative_path(src, config)
+    dest_rel_path = relative_path(dest, config)
+
+    for node in nodes:
+        src_shard_glob = "%s.shard*" % path.join(node, src_rel_path)
+        # there's always only one shard in each node directory. So,
+        # the glob() will alawys return a list of size 1.
+        src_shard = glob(src_shard_glob)[0]
+
+        # get shard number
+        shard_no = src_shard.partition('.shard')[2]
+        dest_shard = "%s.shard%s" % (path.join(node, dest_rel_path),
+                                     shard_no)
+        try:
+            os.rename(src_shard, dest_shard)
+        except OSError, e:
+            print e, "Something wrong. report bug to sravik@bgsu.edu"
+
+
 def purge_dir(p):
     """
     Purge everything under the given directory `p'.
