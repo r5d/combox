@@ -62,20 +62,20 @@ def get_stdin(prompt):
     return raw_input(prompt)
 
 
-def config_cb(config_dir = os.path.join(os.getenv('HOME'),'.combox/'),
+def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
               pass_func = get_secret,
               input_func = get_stdin):
     """
     Configure combox.
     """
 
-    if not os.path.exists(config_dir):
+    if not path.exists(config_dir):
         # Create combox dir.
         os.mkdir(config_dir, 0700)
-    config_file_path = os.path.join(config_dir, 'config.yaml')
+    config_file_path = path.join(config_dir, 'config.yaml')
     config_info = {}
 
-    config_info['combox_dir'] = input_func('path to combox directory')
+    config_info['combox_dir'] = path.abspath(input_func('path to combox directory'))
     config_info['topsecret'] = pass_func()
 
     no_nodes = int(input_func('number of nodes'))
@@ -84,7 +84,7 @@ def config_cb(config_dir = os.path.join(os.getenv('HOME'),'.combox/'),
     for i in range(no_nodes):
         node_name = input_func('node %d name' % i)
         nodes[node_name] = {}
-        nodes[node_name]['path'] = input_func('node %d path' % i)
+        nodes[node_name]['path'] = path.abspath(input_func('node %d path' % i))
         nodes[node_name]['size'] = input_func('node %d size (in mega bytes)' % i)
         nodes[node_name]['available'] = nodes[node_name]['size']
 
