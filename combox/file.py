@@ -136,6 +136,11 @@ def move_shards(src, dest, config):
     config: a dictionary containing configuration info about combox.
     """
 
+    if path.basename(src) == path.basename(dest):
+        # this means the parent directory was rename, no the file
+        # itself! So we don't have to do anything.
+        return
+
     nodes = get_nodedirs(config)
 
     src_rel_path = relative_path(src, config)
