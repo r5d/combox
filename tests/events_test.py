@@ -65,6 +65,34 @@ def dirp(d):
         directory = path.join(node, rel_path)
         assert path.isdir(directory)
 
+def renamedp(old_p, new_p):
+    """
+    Checks if the file shards or directory were/was renamed in the  under the node directories.
+
+    old_p: old path to directory or file under combox directory.
+    new_p: new (present) path to the directory or file under combox directory.
+    """
+
+    nodes = get_nodedirs(config)
+
+    is_dir = True if path.isdir(new_p) else False
+    i = 0
+
+    for node in nodes:
+        old_rel_path = relative_path(old_p, config)
+        new_rel_path = relative_path(new_p, config)
+
+        if is_dir:
+            old_path = path.join(node, old_rel_path)
+            new_path = path.join(node, new_rel_path)
+        else:
+            old_path = "%s.shard%s" % (path.join(node, old_rel_path), i)
+            new_path = "%s.shard%s" % (path.join(node, new_rel_path), i)
+            i += 1
+
+        assert not path.exists(old_path)
+        assert path.exists(new_path)
+
 
 def path_deletedp(p):
     """
@@ -132,6 +160,15 @@ def test_CEH():
     copyfile(TEST_FILE, TEST_FILE_COPY_1)
     time.sleep(1)
     shardedp(TEST_FILE_COPY_1)
+
+    # Test - dir rename
+    TEST_DIR_1_NEW = path.join(path.dirname(TEST_DIR_1),
+                               'snafu')
+    TEST_FILE_COPY_1_NEW = path.join(TEST_DIR_1_NEW, path.basename(TEST_FILE))
+    os.rename(TEST_DIR_1, TEST_DIR_1_NEW)
+    time.sleep(1)
+    renamedp(TEST_DIR_1, TEST_DIR_1_NEW)
+    renamedp(TEST_FILE_COPY_1, TEST_FILE_COPY_1_NEW)
 
     # Test directory & file deletion
     purge_dir(TEST_DIR_0)
