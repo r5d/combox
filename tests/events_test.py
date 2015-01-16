@@ -49,8 +49,8 @@ def shardedp(f):
     nodes = get_nodedirs(config)
     i = 0
     for node in nodes:
-        f_basename = relative_path(f, config)
-        shard = "%s.shard%s" % (path.join(node, f_basename), i)
+        rel_path = relative_path(f, config)
+        shard = "%s.shard%s" % (path.join(node, rel_path), i)
         i += 1
         assert path.isfile(shard)
 
@@ -64,6 +64,30 @@ def dirp(d):
         rel_path = relative_path(d, config)
         directory = path.join(node, rel_path)
         assert path.isdir(directory)
+
+
+def path_deletedp(p):
+    """
+    Checks if the directory or respective file shards  is deleted under node directories.
+
+    p: path to the directory or file, under the combox directory, that was deleted.
+    """
+
+    nodes = get_nodedirs(config)
+
+    is_dir = True if path.isdir(p) else False
+    i = 0
+
+    for node in nodes:
+        rel_path = relative_path(p, config)
+
+        if is_dir:
+            path_ = path.join(node, rel_path)
+        else:
+            path_ = "%s.shard%s" % (path.join(node, rel_path), i)
+            i += 1
+
+        assert not path.exists(path_)
 
 
 def test_CEH():
@@ -84,7 +108,11 @@ def test_CEH():
     time.sleep(1)
     ## check if the shards were created.
     shardedp(TEST_FILE_COPY_0)
+
+    # Test - File deletion.
     remove(TEST_FILE_COPY_0)
+    time.sleep(1)
+    path_deletedp(TEST_FILE_COPY_0)
 
     # Test - directory creation
     TEST_DIR_0 = path.join(FILES_DIR, 'foo')
@@ -104,12 +132,15 @@ def test_CEH():
     copyfile(TEST_FILE, TEST_FILE_COPY_1)
     time.sleep(1)
     shardedp(TEST_FILE_COPY_1)
-    remove(TEST_FILE_COPY_1)
-    # purge nested dir TEST_DIR_0
+
+    # Test directory & file deletion
     purge_dir(TEST_DIR_0)
     # remove the directory itself.
     os.rmdir(TEST_DIR_0)
     time.sleep(2)
+    path_deletedp(TEST_FILE_COPY_1)
+    path_deletedp(TEST_DIR_1)
+    path_deletedp(TEST_DIR_0)
 
     observer.stop()
     observer.join()
