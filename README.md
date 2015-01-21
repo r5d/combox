@@ -24,10 +24,15 @@ Core functionality is being written at the moment.
 * setuptools v5.5.x
 * virtualenv v1.9.x or later
 * python v2.7.x
-* PyYAML v3.x
+
+# dependencies
+
+* argparse v1.2.x or later
 * nose v1.3.x
-* watchdog v0.8.2
 * pycrypto v2.6.1
+* pickledb v0.3
+* PyYAML v3.x
+* watchdog v0.8.2
 
 # platform
 
