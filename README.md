@@ -56,9 +56,14 @@ Install dependencies by simply installing combox:
 
 # license
 
-`combox` is licensed under the GNU General Public License version 3 or
-later. See COPYING.
+The source code of `combox` is licensed under the GNU General Public
+License version 3 or later. See COPYING.
+
+The `combox` [logo][lg] is under [Public Domain][pd].
+
+[lg]: graphics/logo/combox-logo.svg
+[pd]: http://creativecommons.org/publicdomain/zero/1.0/
 
 # contact
 
-siddharth ravikumar <sravik@bgsu.edu> (`gpg id: 0x00B252AF`)
+siddharth ravikumar <sravik@bgsu.edu> (gpg id: `0x00B252AF`)
