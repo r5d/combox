@@ -30,8 +30,9 @@ config = {
     'license': 'GNU General Public License v3.0 or later',
     'platform': 'GNU/Linux',
     'author_email': 'sravik@bgsu.edu',
-    'version': '0.0.1',
-    'install_requires': ['nose', 'watchdog', 'PyYAML', 'pycrypto'],
+    'version': '0.0.0',
+    'install_requires': ['nose', 'watchdog', 'PyYAML', 'pycrypto',
+                         'pickledb'],
     'packages': ['combox'],
     'scripts': [],
     'name': 'combox'
