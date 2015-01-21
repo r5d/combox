@@ -96,5 +96,13 @@ class ComboxEventHandler(FileSystemEventHandler):
     def on_modified(self, event):
         super(ComboxEventHandler, self).on_modified(event)
 
+        if event.is_directory:
+            # do nothing
+            pass
+        else:
+            # file was modified
+            split_and_encrypt(event.src_path, self.config)
+            # TODO: code for updating file info in YAML silo.
+
         type_ = 'directory' if event.is_directory else 'file'
         logging.info("Modified %s: %s", type_, event.src_path)

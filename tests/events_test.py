@@ -29,7 +29,9 @@ from watchdog.observers import Observer
 
 from combox.events import ComboxEventHandler
 from combox.config import get_nodedirs
-from combox.file import relative_path, purge_dir
+from combox.crypto import decrypt_and_glue
+from combox.file import (relative_path, purge_dir,
+                         read_file, write_file)
 
 CONFIG_DIR = path.join('tests', 'test-config')
 
@@ -177,6 +179,38 @@ def test_CEH():
     path_deletedp(TEST_FILE_COPY_1)
     path_deletedp(TEST_DIR_1, True)
     path_deletedp(TEST_DIR_0, True)
+
+
+    # Test - file modification
+    lorem_file = path.join(FILES_DIR, 'lorem.txt')
+    lorem_file_copy = "%s.copy" % lorem_file
+    # this will shard lorem.txt.copy in the node directories.
+    copyfile(lorem_file, lorem_file_copy)
+    time.sleep(1)
+    shardedp(lorem_file_copy)
+
+    ipsum_file = path.join(FILES_DIR, 'ipsum.txt')
+    ipsum_content = read_file(ipsum_file)
+    lorem_content = read_file(lorem_file_copy)
+    lorem_content = "%s\n%s" % (lorem_content, ipsum_content)
+
+    # write lorem's new content to  lorem_file_copy
+    write_file(lorem_file_copy, lorem_content)
+    time.sleep(1)
+
+    # decrypt_and_glue will decrypt the file shards, glues them and
+    # writes it to the respective file
+    decrypt_and_glue(lorem_file_copy, config)
+    time.sleep(1)
+
+    lorem_content_from_disk = read_file(lorem_file_copy)
+    assert lorem_content == lorem_content_from_disk
+
+    # remove lorem_file_copy and confirm that its shards are deleted
+    # in the node directories.
+    remove(lorem_file_copy)
+    time.sleep(1)
+    path_deletedp(lorem_file_copy)
 
     observer.stop()
     observer.join()
