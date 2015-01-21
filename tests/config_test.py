@@ -1,4 +1,4 @@
-#    Copyright (C) 2014 Combox author(s). See AUTHORS.
+#    Copyright (C) 2015 Combox author(s). See AUTHORS.
 #
 #    This file is part of Combox.
 #
