@@ -8,4 +8,5 @@ nodes_info:
     available: '1024'
     path: /home/rsd/bgc/combox/tests/shard-dir-1
     size: '1024'
+silo_dir: /home/rsd/bgc/combox/tests/test-config
 topsecret: topsecret
