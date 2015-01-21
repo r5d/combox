@@ -1,4 +1,5 @@
 combox_dir: /home/rsd/bgc/combox/tests/files
+combox_name: testbox
 nodes_info:
   node-0:
     available: '1024'

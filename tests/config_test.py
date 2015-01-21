@@ -31,7 +31,7 @@ node_dir_0 = path.join('tests', 'shard-dir-0')
 node_dir_1 = path.join('tests', 'shard-dir-1')
 
 # sample config info.
-CONFIG_INFO = [combox_dir, CONFIG_DIR, '2',
+CONFIG_INFO = ['testbox', combox_dir, CONFIG_DIR, '2',
                'node-0', node_dir_0, '1024',
                'node-1', node_dir_1, '1024']
 

@@ -75,6 +75,7 @@ def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
     config_file_path = path.join(config_dir, 'config.yaml')
     config_info = {}
 
+    config_info['combox_name'] = input_func('name of this combox')
     config_info['combox_dir'] = path.abspath(input_func('path to combox directory'))
 
     silo_help_txt = 'silo directory (default: %s)' % (config_dir)
