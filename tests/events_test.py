@@ -94,18 +94,17 @@ def renamedp(old_p, new_p):
         assert path.exists(new_path)
 
 
-def path_deletedp(p):
+def path_deletedp(p, is_dir=False):
     """
     Checks if the directory or respective file shards  is deleted under node directories.
 
     p: path to the directory or file, under the combox directory, that was deleted.
+    is_dir: set to True if `p' denotes a deleted directory. Default value is False.
     """
 
     nodes = get_nodedirs(config)
 
-    is_dir = True if path.isdir(p) else False
     i = 0
-
     for node in nodes:
         rel_path = relative_path(p, config)
 
@@ -176,8 +175,8 @@ def test_CEH():
     os.rmdir(TEST_DIR_0)
     time.sleep(2)
     path_deletedp(TEST_FILE_COPY_1)
-    path_deletedp(TEST_DIR_1)
-    path_deletedp(TEST_DIR_0)
+    path_deletedp(TEST_DIR_1, True)
+    path_deletedp(TEST_DIR_0, True)
 
     observer.stop()
     observer.join()
