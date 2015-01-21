@@ -27,7 +27,7 @@ from os import path, remove
 from shutil import copyfile
 from watchdog.observers import Observer
 
-from combox.events import ComboxEventHandler
+from combox.events import ComboxDirMonitor
 from combox.config import get_nodedirs
 from combox.crypto import decrypt_and_glue
 from combox.file import (relative_path, purge_dir,
@@ -121,10 +121,10 @@ def path_deletedp(p, is_dir=False):
 
 def test_CEH():
     """
-    Tests the ComboxEventHandler class.
+    Tests the ComboxDirMonitor class.
     """
 
-    event_handler = ComboxEventHandler(config)
+    event_handler = ComboxDirMonitor(config)
     observer = Observer()
     observer.schedule(event_handler, FILES_DIR, recursive=True)
     observer.start()
@@ -132,7 +132,7 @@ def test_CEH():
     # Test - new file addition
     TEST_FILE_COPY_0 = "%s.mutant" % TEST_FILE
     copyfile(TEST_FILE, TEST_FILE_COPY_0)
-    ## wait for ComboxEventHandler to split and scatter the file in the
+    ## wait for ComboxDirMonitor to split and scatter the file in the
     ## node directories.
     time.sleep(1)
     ## check if the shards were created.

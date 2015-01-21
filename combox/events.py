@@ -28,7 +28,7 @@ from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir)
 
 
-class ComboxEventHandler(FileSystemEventHandler):
+class ComboxDirMonitor(FileSystemEventHandler):
     """Monitors Combox directory for changes and does its crypto thing.
 
     """
@@ -45,7 +45,7 @@ class ComboxEventHandler(FileSystemEventHandler):
 
 
     def on_moved(self, event):
-        super(ComboxEventHandler, self).on_moved(event)
+        super(ComboxDirMonitor, self).on_moved(event)
 
         if event.is_directory:
             # creates a corresponding directory at the node dirs.
@@ -63,7 +63,7 @@ class ComboxEventHandler(FileSystemEventHandler):
 
 
     def on_created(self, event):
-        super(ComboxEventHandler, self).on_created(event)
+        super(ComboxDirMonitor, self).on_created(event)
 
         if event.is_directory:
             # creates a corresponding directory at the node dirs.
@@ -78,7 +78,7 @@ class ComboxEventHandler(FileSystemEventHandler):
 
 
     def on_deleted(self, event):
-        super(ComboxEventHandler, self).on_deleted(event)
+        super(ComboxDirMonitor, self).on_deleted(event)
 
         if event.is_directory:
             # Delete corresponding directory in the nodes.
@@ -94,7 +94,7 @@ class ComboxEventHandler(FileSystemEventHandler):
 
 
     def on_modified(self, event):
-        super(ComboxEventHandler, self).on_modified(event)
+        super(ComboxDirMonitor, self).on_modified(event)
 
         if event.is_directory:
             # do nothing
