@@ -18,6 +18,7 @@
 
 import os
 
+from hashlib import sha512
 from os import path
 from sys import exit
 from glob import glob
@@ -241,6 +242,18 @@ def read_file(filename):
         exit(1)
 
     return file_.read()
+
+
+def hash_file(filename):
+    """Does a SHA512 hash on the contents of file.
+
+    Returns the hexdigest of the file content's hash.
+
+    filename: Absolute pathname of the file.
+    """
+    file_content = read_file(filename)
+
+    return sha512(file_content).hexdigest()
 
 
 def write_file(filename, filecontent):

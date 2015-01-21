@@ -18,13 +18,15 @@
 
 import yaml
 
+from hashlib import sha512
 from glob import glob
 from nose.tools import *
 from os import path, remove
 
 from combox.config import get_nodedirs
 from combox.file import (split_data, glue_data, write_file,
-                  read_file, write_shards, read_shards)
+                         read_file, write_shards, read_shards,
+                         hash_file)
 
 CONFIG_DIR = path.join('tests', 'test-config')
 
@@ -82,3 +84,13 @@ and check if they're the same as the orginal file.
     f_content_glued = glue_data(f_shards)
 
     assert f_content == f_content_glued
+
+
+def test_hashing():
+    """
+    Tests the hashing function - hash_file
+    """
+    fhash = hash_file(TEST_FILE)
+    fcontent = read_file(TEST_FILE)
+
+    assert fhash == sha512(fcontent).hexdigest()
