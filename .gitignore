@@ -12,3 +12,4 @@ bin/
 include/
 trash/
 tests/files/*copy
+tests/test-config/silo.db
