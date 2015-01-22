@@ -33,6 +33,7 @@ from combox.crypto import decrypt_and_glue
 from combox.events import ComboxDirMonitor
 from combox.file import (relative_path, purge_dir,
                          read_file, write_file)
+from combox.silo import ComboxSilo
 
 
 CONFIG_DIR = path.join('tests', 'test-config')
@@ -139,11 +140,17 @@ def test_CEH():
     time.sleep(1)
     ## check if the shards were created.
     shardedp(TEST_FILE_COPY_0)
+    ## check if the new file's info is in silo
+    silo = ComboxSilo(config)
+    assert silo.exists(TEST_FILE_COPY_0)
 
     # Test - File deletion.
     remove(TEST_FILE_COPY_0)
     time.sleep(1)
     path_deletedp(TEST_FILE_COPY_0)
+    ## check if the new file's info is removed from silo
+    silo = ComboxSilo(config)
+    assert not silo.exists(TEST_FILE_COPY_0)
 
     # Test - directory creation
     TEST_DIR_0 = path.join(FILES_DIR, 'foo')
@@ -168,17 +175,22 @@ def test_CEH():
     TEST_DIR_1_NEW = path.join(path.dirname(TEST_DIR_1),
                                'snafu')
     TEST_FILE_COPY_1_NEW = path.join(TEST_DIR_1_NEW, path.basename(TEST_FILE))
+
     os.rename(TEST_DIR_1, TEST_DIR_1_NEW)
     time.sleep(1)
     renamedp(TEST_DIR_1, TEST_DIR_1_NEW)
     renamedp(TEST_FILE_COPY_1, TEST_FILE_COPY_1_NEW)
+    ## check if the new file's info is updated in silo
+    silo = ComboxSilo(config)
+    assert not silo.exists(TEST_FILE_COPY_1)
+    assert silo.exists(TEST_FILE_COPY_1_NEW)
 
     # Test directory & file deletion
     purge_dir(TEST_DIR_0)
     # remove the directory itself.
     os.rmdir(TEST_DIR_0)
     time.sleep(2)
-    path_deletedp(TEST_FILE_COPY_1)
+    path_deletedp(TEST_FILE_COPY_1_NEW)
     path_deletedp(TEST_DIR_1, True)
     path_deletedp(TEST_DIR_0, True)
 
@@ -190,15 +202,22 @@ def test_CEH():
     copyfile(lorem_file, lorem_file_copy)
     time.sleep(1)
     shardedp(lorem_file_copy)
+    ## check if the lorem_file_copy's info is stored in silo
+    silo = ComboxSilo(config)
+    lorem_file_copy_hash = silo.db.get(lorem_file_copy)
 
     ipsum_file = path.join(FILES_DIR, 'ipsum.txt')
     ipsum_content = read_file(ipsum_file)
-    lorem_content = read_file(lorem_file_copy)
-    lorem_content = "%s\n%s" % (lorem_content, ipsum_content)
+    lorem_copy_content = read_file(lorem_file_copy)
+    lorem_copy_content = "%s\n%s" % (lorem_copy_content, ipsum_content)
 
     # write lorem's new content to  lorem_file_copy
-    write_file(lorem_file_copy, lorem_content)
+    write_file(lorem_file_copy, lorem_copy_content)
     time.sleep(1)
+    ## check if the lorem_file_copy's info is updated in silo
+    silo = ComboxSilo(config)
+    assert lorem_file_copy_hash != silo.db.get(lorem_file_copy)
+
 
     # decrypt_and_glue will decrypt the file shards, glues them and
     # writes it to the respective file
@@ -206,13 +225,16 @@ def test_CEH():
     time.sleep(1)
 
     lorem_content_from_disk = read_file(lorem_file_copy)
-    assert lorem_content == lorem_content_from_disk
+    assert lorem_copy_content == lorem_content_from_disk
 
     # remove lorem_file_copy and confirm that its shards are deleted
     # in the node directories.
     remove(lorem_file_copy)
     time.sleep(1)
     path_deletedp(lorem_file_copy)
+    ## check if the lorem_file_copy's info is deleted from silo
+    silo = ComboxSilo(config)
+    assert not silo.exists(lorem_file_copy)
 
     observer.stop()
     observer.join()

@@ -26,6 +26,7 @@ from watchdog.events import FileSystemEventHandler
 from combox.crypto import split_and_encrypt
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir)
+from combox.silo import ComboxSilo
 
 
 class ComboxDirMonitor(FileSystemEventHandler):
@@ -38,6 +39,7 @@ class ComboxDirMonitor(FileSystemEventHandler):
         config: a dictinary which contains combox configuration.
         """
         self.config = config
+        self.silo = ComboxSilo(self.config)
 
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s - %(message)s',
@@ -50,12 +52,12 @@ class ComboxDirMonitor(FileSystemEventHandler):
         if event.is_directory:
             # creates a corresponding directory at the node dirs.
             move_nodedir(event.src_path, event.dest_path, self.config)
-            # TODO: code for updating files under the renamed
-            # directory in YAML silo.
         else:
             # file moved
             move_shards(event.src_path, event.dest_path, self.config)
-            # TODO: code for updating file info in YAML silo.
+            # update file info in silo.
+            self.silo.remove(event.src_path)
+            self.silo.update(event.dest_path)
 
         type_ = 'directory' if event.is_directory else 'file'
         logging.info("Moved %s: from %s to %s", type_, event.src_path,
@@ -71,7 +73,8 @@ class ComboxDirMonitor(FileSystemEventHandler):
         else:
             # file was created
             split_and_encrypt(event.src_path, self.config)
-            # TODO: code for storing file info in YAML silo.
+            # store file info in silo.
+            self.silo.update(event.src_path)
 
         type_ = 'directory' if event.is_directory else 'file'
         logging.info("Created %s: %s", type_, event.src_path)
@@ -87,7 +90,8 @@ class ComboxDirMonitor(FileSystemEventHandler):
             # remove the corresponding file shards in the node
             # directories.
             rm_shards(event.src_path, self.config)
-            # TODO: code for removing file info from YAML silo.
+            # remove file info from silo.
+            self.silo.remove(event.src_path)
 
         type_ = 'directory' if event.is_directory else 'file'
         logging.info("Deleted %s: %s", type_, event.src_path)
@@ -102,7 +106,8 @@ class ComboxDirMonitor(FileSystemEventHandler):
         else:
             # file was modified
             split_and_encrypt(event.src_path, self.config)
-            # TODO: code for updating file info in YAML silo.
+            # update file info in silo.
+            self.silo.update(event.src_path)
 
         type_ = 'directory' if event.is_directory else 'file'
         logging.info("Modified %s: %s", type_, event.src_path)
