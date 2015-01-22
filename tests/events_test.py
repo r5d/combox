@@ -17,21 +17,23 @@
 #   <http://www.gnu.org/licenses/>.
 
 import os
+import time
 import yaml
 
 from filecmp import cmp
 from glob import glob
-import time
-from nose.tools import *
 from os import path, remove
 from shutil import copyfile
+
+from nose.tools import *
 from watchdog.observers import Observer
 
-from combox.events import ComboxDirMonitor
 from combox.config import get_nodedirs
 from combox.crypto import decrypt_and_glue
+from combox.events import ComboxDirMonitor
 from combox.file import (relative_path, purge_dir,
                          read_file, write_file)
+
 
 CONFIG_DIR = path.join('tests', 'test-config')
 
