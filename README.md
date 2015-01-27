@@ -2,8 +2,8 @@
 
 # combox
 
-Splits and encrypts files and scatters them to directories from which
-files are slurped into surveillance nodes like Google Docs, Dropbox,
+Encrypts files and scatters them across storage provided by
+proprietary online file storage providers like Google Drive, Dropbox,
 etc.
 
 The ideas for this program is based on [`combobox`][1].
