@@ -57,7 +57,7 @@ Install dependencies by simply installing combox:
 
 # running tests
 
-    $ nosetests
+    $ nosetests -s
 
 # license
 
