@@ -32,7 +32,9 @@ from combox.config import get_nodedirs
 from combox.crypto import decrypt_and_glue
 from combox.events import ComboxDirMonitor
 from combox.file import (relative_path, purge_dir,
-                         read_file, write_file)
+                         read_file, write_file,
+                         rm_shards)
+
 from combox.silo import ComboxSilo
 
 
@@ -238,3 +240,23 @@ def test_CDM():
 
     observer.stop()
     observer.join()
+
+
+def test_housekeep():
+    """ComboxDirMonitor's housekeep method test."""
+
+    lorem = path.join(FILES_DIR, 'lorem.txt')
+    lorem_moved = path.join(FILES_DIR, 'lorem.moved.txt')
+    os.rename(lorem, lorem_moved)
+
+    cdm = ComboxDirMonitor(config)
+    cdm.housekeep()
+
+    silo = ComboxSilo(config)
+    assert not silo.exists(lorem)
+    assert silo.exists(lorem_moved)
+    shardedp(lorem_moved)
+
+    os.rename(lorem_moved, lorem)
+    rm_shards(lorem_moved, config)
+    silo.remove(lorem_moved)
