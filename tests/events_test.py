@@ -245,6 +245,8 @@ def test_CDM():
 def test_housekeep():
     """ComboxDirMonitor's housekeep method test."""
 
+    # test file deletion and addition
+
     lorem = path.join(FILES_DIR, 'lorem.txt')
     lorem_moved = path.join(FILES_DIR, 'lorem.moved.txt')
     os.rename(lorem, lorem_moved)
@@ -260,3 +262,29 @@ def test_housekeep():
     os.rename(lorem_moved, lorem)
     rm_shards(lorem_moved, config)
     silo.remove(lorem_moved)
+
+    # test file modification
+
+    lorem_ipsum = path.join(FILES_DIR, 'lorem.ipsum.txt')
+    copyfile(lorem, lorem_ipsum)
+    assert path.exists(lorem_ipsum)
+
+    cdm = ComboxDirMonitor(config)
+    cdm.housekeep()
+
+    silo = ComboxSilo(config)
+    assert silo.exists(lorem_ipsum)
+
+    ipsum = path.join(FILES_DIR, "ipsum.txt")
+    ipsum_content = read_file(ipsum)
+
+    lorem_ipsum_content = read_file(lorem_ipsum)
+    lorem_ipsum_content = "%s\n%s" % (lorem_ipsum_content, ipsum_content)
+    write_file(lorem_ipsum, lorem_ipsum_content)
+
+    cdm.housekeep()
+
+    silo = ComboxSilo(config)
+    assert not silo.stale(lorem_ipsum)
+    os.remove(lorem_ipsum)
+    silo.remove(lorem_ipsum)
