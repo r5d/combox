@@ -122,7 +122,7 @@ def path_deletedp(p, is_dir=False):
         assert not path.exists(path_)
 
 
-def test_CEH():
+def test_CDM():
     """
     Tests the ComboxDirMonitor class.
     """
