@@ -116,9 +116,15 @@ def rm_shards(fpath, config):
 
     for node in nodes:
         shard_glob = "%s.shard*" % path.join(node, rel_path)
+
+        shard_glob = glob(shard_glob)
+        if not len(shard_glob):
+            # shard was already deleted.
+            continue
+
         # there's always only one shard in each node directory. So,
         # the glob() will alawys return a list of size 1.
-        shard = glob(shard_glob)[0]
+        shard = shard_glob[0]
         try:
             os.remove(shard)
         except OSError, e:
