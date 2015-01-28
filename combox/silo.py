@@ -53,13 +53,19 @@ class ComboxSilo(object):
         return self.db.set(filep, fhash)
 
 
+    def keys(self):
+        """Returns a list of all keys in db."""
+        # this is why Redis or some other key-value DB should be used
+        # instead of PickleDB
+        return self.db.db.keys()
+
+
     def remove(self, filep):
         """Removes filep from db.
 
         filep: path to the file in combox directory.
 
         """
-
         return self.db.rem(filep)
 
 
