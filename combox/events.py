@@ -21,7 +21,7 @@ import logging
 
 from os import path
 
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import LoggingEventHandler
 
 from combox.crypto import split_and_encrypt
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
@@ -29,7 +29,7 @@ from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
 from combox.silo import ComboxSilo
 
 
-class ComboxDirMonitor(FileSystemEventHandler):
+class ComboxDirMonitor(LoggingEventHandler):
     """Monitors Combox directory for changes and does its crypto thing.
 
     """
@@ -38,12 +38,10 @@ class ComboxDirMonitor(FileSystemEventHandler):
         """
         config: a dictinary which contains combox configuration.
         """
+        super(ComboxDirMonitor, self).__init__()
+
         self.config = config
         self.silo = ComboxSilo(self.config)
-
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s - %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S')
 
 
     def housekeep(self):
@@ -111,10 +109,6 @@ class ComboxDirMonitor(FileSystemEventHandler):
             self.silo.remove(event.src_path)
             self.silo.update(event.dest_path)
 
-        type_ = 'directory' if event.is_directory else 'file'
-        logging.info("Moved %s: from %s to %s", type_, event.src_path,
-                    event.dest_path)
-
 
     def on_created(self, event):
         super(ComboxDirMonitor, self).on_created(event)
@@ -127,9 +121,6 @@ class ComboxDirMonitor(FileSystemEventHandler):
             split_and_encrypt(event.src_path, self.config)
             # store file info in silo.
             self.silo.update(event.src_path)
-
-        type_ = 'directory' if event.is_directory else 'file'
-        logging.info("Created %s: %s", type_, event.src_path)
 
 
     def on_deleted(self, event):
@@ -145,9 +136,6 @@ class ComboxDirMonitor(FileSystemEventHandler):
             # remove file info from silo.
             self.silo.remove(event.src_path)
 
-        type_ = 'directory' if event.is_directory else 'file'
-        logging.info("Deleted %s: %s", type_, event.src_path)
-
 
     def on_modified(self, event):
         super(ComboxDirMonitor, self).on_modified(event)
@@ -160,6 +148,3 @@ class ComboxDirMonitor(FileSystemEventHandler):
             split_and_encrypt(event.src_path, self.config)
             # update file info in silo.
             self.silo.update(event.src_path)
-
-        type_ = 'directory' if event.is_directory else 'file'
-        logging.info("Modified %s: %s", type_, event.src_path)
