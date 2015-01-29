@@ -43,6 +43,8 @@ class ComboxDirMonitor(LoggingEventHandler):
         self.config = config
         self.silo = ComboxSilo(self.config)
 
+        self.housekeep()
+
 
     def housekeep(self):
         """Recursively traverses combox directory, discovers changes and updates silo and node directories.
