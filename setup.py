@@ -35,6 +35,9 @@ config = {
                          'pickledb'],
     'packages': ['combox'],
     'scripts': [],
+    'entry_points': {
+        'console_scripts': ['combox = combox.cbox:main']
+    },
     'name': 'combox'
     }
 
