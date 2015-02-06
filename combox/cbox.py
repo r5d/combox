@@ -28,7 +28,7 @@ from sys import exit
 from watchdog.observers import Observer
 
 from combox.config import config_cb
-from combox.events import ComboxEventHandler
+from combox.events import ComboxDirMonitor
 
 
 ## Function adapted from Watchdog's docs:
@@ -39,7 +39,7 @@ def run_cb(config):
     Runs combox.
     """
     c_path = path.abspath(config['combox_dir'])
-    event_handler = ComboxEventHandler(config)
+    event_handler = ComboxDirMonitor(config)
 
     observer = Observer()
     observer.schedule(event_handler, c_path, recursive=True)
