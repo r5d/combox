@@ -40,6 +40,10 @@ class ComboxDirMonitor(LoggingEventHandler):
         """
         super(ComboxDirMonitor, self).__init__()
 
+        logging.basicConfig(level=logging.INFO,
+                            format='%(asctime)s - %(message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S')
+
         self.config = config
         self.silo = ComboxSilo(self.config)
 
