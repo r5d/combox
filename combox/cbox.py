@@ -53,8 +53,10 @@ def run_cb(config):
     observer.join()
 
 
-if __name__ == "__main__":
-
+def main():
+    """
+    Main functions, parses args and calls run_cb()
+    """
     parser = ArgumentParser()
     parser.add_argument("-t", "--test",
                         help="Use the combox config file in testing area.",
@@ -80,3 +82,7 @@ if __name__ == "__main__":
 
     # run combox.
     run_cb(config)
+
+
+if __name__ == "__main__":
+    main()
