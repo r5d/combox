@@ -64,7 +64,8 @@ def get_stdin(prompt):
 
 def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
               pass_func = get_secret,
-              input_func = get_stdin):
+              input_func = get_stdin,
+              write=True):
     """
     Configure combox.
     """
@@ -89,7 +90,6 @@ def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
     config_info['topsecret'] = pass_func()
 
     no_nodes = int(input_func('number of nodes'))
-
     nodes = {}
     for i in range(no_nodes):
         node_name = input_func('node %d name' % i)
@@ -103,9 +103,12 @@ def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
             os.mkdir(nodes[node_name]['path'])
 
     config_info['nodes_info'] = nodes
-    config_file = open(config_file_path, 'w')
-    yaml.dump(config_info, config_file, default_flow_style=False)
-    os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
+    if write:
+        config_file = open(config_file_path, 'w')
+        yaml.dump(config_info, config_file, default_flow_style=False)
+        os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
+    else:
+        return config_info
 
 
 def get_nodedirs(config):
