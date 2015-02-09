@@ -79,9 +79,11 @@ def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
     config_info['combox_dir'] = path.abspath(input_func('path to combox directory'))
 
     silo_help_txt = 'silo directory (default: %s)' % (config_dir)
-    config_info['silo_dir'] = path.abspath(input_func(silo_help_txt))
+    silo_dir = input_func(silo_help_txt)
 
-    if not config_info['silo_dir']:
+    if silo_dir:
+        config_info['silo_dir'] = path.abspath(silo_dir)
+    else:
         config_info['silo_dir'] = config_dir
 
     config_info['topsecret'] = pass_func()
