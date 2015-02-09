@@ -21,7 +21,7 @@ import yaml
 from nose.tools import *
 from os import path, remove, rmdir
 
-from combox.config import (config_cb, get_secret, get_stdin)
+from combox.config import config_cb
 
 
 def get_input_func():
