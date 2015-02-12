@@ -27,83 +27,95 @@ from shutil import copyfile
 from combox.config import get_nodedirs
 from combox.crypto import *
 from combox.file import *
+from tests.utils import get_config
 
 
-
-CONFIG_DIR = path.join('tests', 'test-config')
-
-config_file = path.join(CONFIG_DIR, 'config.yaml')
-try:
-    config = yaml.load(file(config_file, 'r'))
-except yaml.YAMLError, exc:
-    raise AssertionError("Error in configuration file:", exc)
-
-FILES_DIR = config['combox_dir']
-TEST_FILE = path.join(FILES_DIR,'thgttg-21st.png')
-
-
-def test_encryption():
-    """ Read file, encrypt it to a cipher, write cipher to file, read
-    encrypted file, decrypt it, write decrypted data to file.
-"""
-
-    f = path.abspath(TEST_FILE)
-    f_content = read_file(f)
-
-    # encrypt
-    f_cipher = encrypt(f_content, config['topsecret'])
-    # decrypt
-    f_content_decrypted = decrypt(f_cipher, config['topsecret'])
-
-    assert f_content == f_content_decrypted
-
-
-def test_split_encryption():
-    """Read file, split it, encrypt shards, write encrypted shards to
-    file, read encrypted shards from file, decrypt the encrypted shards,
-    glue the shards together, write glued data to file.
+class TestCrypto(object):
+    """
+    Class that tests they crypto.py module.
     """
 
-    # no. of shards = no. of nodes
-    SHARDS = len(config['nodes_info'].keys())
+    @classmethod
+    def setup_class(self):
+        """Set things up."""
 
-    f = path.abspath(TEST_FILE)
-    f_content = read_file(f)
-    f_shards = split_data(f_content, SHARDS)
+        self.config = get_config()
+        FILES_DIR = self.config['combox_dir']
+        self.TEST_FILE = path.join(FILES_DIR,'thgttg-21st.png')
 
-    # encrypt shards
-    ciphered_shards = encrypt_shards(f_shards, config['topsecret'])
+        # create a copy of TEST_FILE (for later comparision)
+        self.TEST_FILE_COPY = "%s.copy" % self.TEST_FILE
+        copyfile(self.TEST_FILE, self.TEST_FILE_COPY)
 
-    # write ciphered shards to disk
-    f_basename = path.basename(f)
-    nodes = get_nodedirs(config)
-    write_shards(ciphered_shards, nodes, f_basename)
 
-    # read ciphered shards from disk
-    ciphered_shards = read_shards(nodes, f_basename)
+    def test_encryption(self):
+        """ Read file, encrypt it to a cipher, write cipher to file, read
+        encrypted file, decrypt it, write decrypted data to file.
+        """
 
-    # decrypt shards
-    f_parts = decrypt_shards(ciphered_shards, config['topsecret'])
-    # glue them shards together
-    f_content_glued = glue_data(f_parts)
+        f = path.abspath(self.TEST_FILE)
+        f_content = read_file(f)
 
-    assert f_content == f_content_glued
+        # encrypt
+        f_cipher = encrypt(f_content, self.config['topsecret'])
+        # decrypt
+        f_content_decrypted = decrypt(f_cipher, self.config['topsecret'])
 
-def test_convenience_crypto():
-    """
-    Tests convenience crypto function(s) - split_and_encrypt, decrypt and glue.
-    """
+        assert f_content == f_content_decrypted
 
-    # splits file into shards, writes encrypted shards to respective
-    # node directories.
-    split_and_encrypt(TEST_FILE, config)
 
-    # create a copy of TEST_FILE (for later comparision)
-    TEST_FILE_COPY = "%s.copy" % TEST_FILE
-    copyfile(TEST_FILE, TEST_FILE_COPY)
+    def test_split_encryption(self):
+        """Read file, split it, encrypt shards, write encrypted shards to
+        file, read encrypted shards from file, decrypt the encrypted shards,
+        glue the shards together, write glued data to file.
+        """
 
-    # reads encrypted shards from node directories, glues them and
-    # writes decrypted back to combox directory.
-    decrypt_and_glue(TEST_FILE, config)
+        # no. of shards = no. of nodes
+        SHARDS = len(self.config['nodes_info'].keys())
 
-    assert cmp(TEST_FILE, TEST_FILE_COPY, False)
+        f = path.abspath(self.TEST_FILE)
+        f_content = read_file(f)
+        f_shards = split_data(f_content, SHARDS)
+
+        # encrypt shards
+        ciphered_shards = encrypt_shards(f_shards, self.config['topsecret'])
+
+        # write ciphered shards to disk
+        # f_basename = path.basename(f)
+        f_basename = relative_path(f, self.config)
+        nodes = get_nodedirs(self.config)
+        write_shards(ciphered_shards, nodes, f_basename)
+
+        # read ciphered shards from disk
+        ciphered_shards = read_shards(nodes, f_basename)
+
+        # decrypt shards
+        f_parts = decrypt_shards(ciphered_shards, self.config['topsecret'])
+        # glue them shards together
+        f_content_glued = glue_data(f_parts)
+
+        assert f_content == f_content_glued
+
+
+    def test_convenience_crypto(self):
+        """
+        Tests convenience crypto function(s) - split_and_encrypt, decrypt and glue.
+        """
+
+        # splits file into shards, writes encrypted shards to respective
+        # node directories.
+        split_and_encrypt(self.TEST_FILE, self.config)
+
+        # reads encrypted shards from node directories, glues them and
+        # writes decrypted back to combox directory.
+        decrypt_and_glue(self.TEST_FILE, self.config)
+
+        assert cmp(self.TEST_FILE, self.TEST_FILE_COPY, False)
+
+
+    @classmethod
+    def teardown_class(self):
+        """Purge the mess created by this test"""
+
+        rm_shards(self.TEST_FILE, self.config)
+        remove(self.TEST_FILE_COPY)
