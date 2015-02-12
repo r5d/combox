@@ -26,71 +26,77 @@ from os import path, remove
 from combox.config import get_nodedirs
 from combox.file import (split_data, glue_data, write_file,
                          read_file, write_shards, read_shards,
-                         hash_file)
-
-CONFIG_DIR = path.join('tests', 'test-config')
-
-config_file = path.join(CONFIG_DIR, 'config.yaml')
-try:
-    config = yaml.load(file(config_file, 'r'))
-except yaml.YAMLError, exc:
-    raise AssertionError("Error in configuration file:", exc)
+                         hash_file, rm_shards)
+from tests.utils import get_config
 
 
-FILES_DIR = config['combox_dir']
-TEST_FILE = path.join(FILES_DIR,'the-red-star.jpg')
-
-def test_split():
-    """Test to split, glue and create a copy of the image file from the
-    glued image file.
-
+class TestFile(object):
+    """
+    Class that tests the config.py module.
     """
 
-    f = path.abspath(TEST_FILE)
-    f_content = read_file(f)
-    f_parts = split_data(f_content, 5)
-    f_content_glued = glue_data(f_parts)
+    @classmethod
+    def setup_class(self):
+        """Set things up."""
 
-    assert f_content == f_content_glued
-    #f_copy = path.abspath('tests/files/the-red-star-copy.jpg')
-    #write_file(f_copy, f_content)
-
-
-def test_shards():
-    """Split file into N shards, write them to disk, glue them together
-and check if they're the same as the orginal file.
-    """
-
-    # no. of shards = no. of nodes
-    SHARDS = len(config['nodes_info'].keys())
-
-    f = path.abspath(TEST_FILE)
-    f_content = read_file(f)
-    f_shards = split_data(f_content, SHARDS)
-
-    f_basename = path.basename(f)
-    nodes = get_nodedirs(config)
-    write_shards(f_shards, nodes, f_basename)
-
-    # check if the shards have been created.
-    i = 0
-    for node in nodes:
-        shard = "%s.shard%s" % (path.join(node, f_basename), i)
-        i += 1
-        assert path.isfile(shard)
+        self.config = get_config()
+        FILES_DIR = self.config['combox_dir']
+        self.TEST_FILE = path.join(FILES_DIR,'the-red-star.jpg')
 
 
-    f_shards = read_shards(nodes, f_basename)
-    f_content_glued = glue_data(f_shards)
+    def test_split(self):
+        """Test to split, glue and create a copy of the image file from the
+        glued image file.
+        """
+        f = path.abspath(self.TEST_FILE)
+        f_content = read_file(f)
+        f_parts = split_data(f_content, 5)
+        f_content_glued = glue_data(f_parts)
 
-    assert f_content == f_content_glued
+        assert f_content == f_content_glued
 
 
-def test_hashing():
-    """
-    Tests the hashing function - hash_file
-    """
-    fhash = hash_file(TEST_FILE)
-    fcontent = read_file(TEST_FILE)
+    def test_shards(self):
+        """Split file into N shards, write them to disk, glue them together
+        and check if they're the same as the orginal file.
 
-    assert fhash == sha512(fcontent).hexdigest()
+        """
+
+        # no. of shards = no. of nodes
+        SHARDS = len(self.config['nodes_info'].keys())
+
+        f = path.abspath(self.TEST_FILE)
+        f_content = read_file(f)
+        f_shards = split_data(f_content, SHARDS)
+
+        f_basename = path.basename(f)
+        nodes = get_nodedirs(self.config)
+        write_shards(f_shards, nodes, f_basename)
+
+        # check if the shards have been created.
+        i = 0
+        for node in nodes:
+            shard = "%s.shard%s" % (path.join(node, f_basename), i)
+            i += 1
+            assert path.isfile(shard)
+
+        f_shards = read_shards(nodes, f_basename)
+        f_content_glued = glue_data(f_shards)
+        assert f_content == f_content_glued
+
+
+    def test_hashing(self):
+        """
+        Tests the hashing function - hash_file
+        """
+        fhash = hash_file(self.TEST_FILE)
+        fcontent = read_file(self.TEST_FILE)
+
+        assert fhash == sha512(fcontent).hexdigest()
+
+
+    @classmethod
+    def teardown_class(self):
+        """Purge the mess created by this test."""
+
+        rm_shards(self.TEST_FILE, self.config)
