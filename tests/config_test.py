@@ -34,7 +34,7 @@ class TestConfig(object):
     def setup_class(self):
         """Set things up."""
         self.CONFIG_DIR = path.join('tests', 'test-config')
-
+        self.config_file = path.join(self.CONFIG_DIR, 'config.yaml')
 
     def test_config(self):
         "Tests the combox's config function."
@@ -46,9 +46,8 @@ class TestConfig(object):
         config_cb(config_dir, pass_func, input_func)
 
         # check if the config yaml file is valid
-        config_file = path.join(config_dir, 'config.yaml')
         try:
-            config = yaml.load(file(config_file, 'r'))
+            config = yaml.load(file(self.config_file, 'r'))
             print "config: ", config
         except yaml.YAMLError, exc:
             raise AssertionError("Error in configuration file:", exc)
@@ -57,5 +56,4 @@ class TestConfig(object):
     @classmethod
     def teardown_class(self):
         """Tear everything down."""
-        # must delete the created config.yaml
-        pass
+        remove(self.config_file)
