@@ -22,7 +22,7 @@ from nose.tools import *
 from os import path, remove, rmdir
 
 from combox.config import config_cb, get_nodedirs
-from combox.file import relative_path
+from combox.file import relative_path, purge_dir
 
 def get_input_func():
     """Returns the input function
@@ -55,6 +55,17 @@ def get_config():
     input_func = get_input_func()
 
     return config_cb(config_dir, pass_func, input_func, write=False)
+
+
+def rm_nodedirs(config):
+    """Removes node directories"""
+    nodes = get_nodedirs(config)
+    for node in nodes:
+        try:
+            purge_dir(node)
+            rmdir(node)
+        except OSError, e:
+            print "Problem deleting", node, e
 
 
 def shardedp(f):
