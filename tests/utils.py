@@ -21,8 +21,8 @@ import yaml
 from nose.tools import *
 from os import path, remove, rmdir
 
-from combox.config import config_cb
-
+from combox.config import config_cb, get_nodedirs
+from combox.file import relative_path
 
 def get_input_func():
     """Returns the input function
@@ -55,3 +55,82 @@ def get_config():
     input_func = get_input_func()
 
     return config_cb(config_dir, pass_func, input_func, write=False)
+
+
+def shardedp(f):
+    """Checks if file's shards exists in the node directories"""
+
+    config = get_config()
+    nodes = get_nodedirs(config)
+    i = 0
+    for node in nodes:
+        rel_path = relative_path(f, config)
+        shard = "%s.shard%s" % (path.join(node, rel_path), i)
+        i += 1
+        assert path.isfile(shard)
+
+
+def dirp(d):
+    """
+    Checks if the directory was created under node directories
+    """
+    config = get_config()
+    nodes = get_nodedirs(config)
+    for node in nodes:
+        rel_path = relative_path(d, config)
+        directory = path.join(node, rel_path)
+        assert path.isdir(directory)
+
+
+def renamedp(old_p, new_p):
+    """
+    Checks if the file shards or directory were/was renamed in the  under the node directories.
+
+    old_p: old path to directory or file under combox directory.
+    new_p: new (present) path to the directory or file under combox directory.
+    """
+
+    config = get_config()
+    nodes = get_nodedirs(config)
+
+    is_dir = True if path.isdir(new_p) else False
+    i = 0
+
+    for node in nodes:
+        old_rel_path = relative_path(old_p, config)
+        new_rel_path = relative_path(new_p, config)
+
+        if is_dir:
+            old_path = path.join(node, old_rel_path)
+            new_path = path.join(node, new_rel_path)
+        else:
+            old_path = "%s.shard%s" % (path.join(node, old_rel_path), i)
+            new_path = "%s.shard%s" % (path.join(node, new_rel_path), i)
+            i += 1
+
+        assert not path.exists(old_path)
+        assert path.exists(new_path)
+
+
+def path_deletedp(p, is_dir=False):
+    """
+    Checks if the directory or respective file shards  is deleted under node directories.
+
+    p: path to the directory or file, under the combox directory, that was deleted.
+    is_dir: set to True if `p' denotes a deleted directory. Default value is False.
+    """
+
+    config = get_config()
+    nodes = get_nodedirs(config)
+
+    i = 0
+    for node in nodes:
+        rel_path = relative_path(p, config)
+
+        if is_dir:
+            path_ = path.join(node, rel_path)
+        else:
+            path_ = "%s.shard%s" % (path.join(node, rel_path), i)
+            i += 1
+
+        assert not path.exists(path_)
