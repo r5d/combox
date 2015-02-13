@@ -227,6 +227,8 @@ class TestEvents(object):
 
         silo = ComboxSilo(self.config)
 
+        rm_shards(self.TEST_FILE, self.config)
+
         os.remove(self.lorem_ipsum)
         rm_shards(self.lorem_ipsum, self.config)
         silo.remove(self.lorem_ipsum)
