@@ -22,7 +22,7 @@ from nose.tools import *
 from os import path, remove, rmdir
 
 from combox.config import (config_cb, get_secret, get_stdin)
-from tests.utils import get_input_func
+from tests.utils import get_input_func, rm_nodedirs, get_config
 
 
 class TestConfig(object):
@@ -35,6 +35,7 @@ class TestConfig(object):
         """Set things up."""
         self.CONFIG_DIR = path.join('tests', 'test-config')
         self.config_file = path.join(self.CONFIG_DIR, 'config.yaml')
+
 
     def test_config(self):
         "Tests the combox's config function."
@@ -57,3 +58,4 @@ class TestConfig(object):
     def teardown_class(self):
         """Tear everything down."""
         remove(self.config_file)
+        rm_nodedirs(get_config())

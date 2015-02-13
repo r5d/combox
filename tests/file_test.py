@@ -27,7 +27,7 @@ from combox.config import get_nodedirs
 from combox.file import (split_data, glue_data, write_file,
                          read_file, write_shards, read_shards,
                          hash_file, rm_shards)
-from tests.utils import get_config
+from tests.utils import get_config, rm_nodedirs
 
 
 class TestFile(object):
@@ -100,3 +100,4 @@ class TestFile(object):
         """Purge the mess created by this test."""
 
         rm_shards(self.TEST_FILE, self.config)
+        rm_nodedirs(self.config)

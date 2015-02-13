@@ -27,7 +27,7 @@ from shutil import copyfile
 from combox.config import get_nodedirs
 from combox.crypto import *
 from combox.file import *
-from tests.utils import get_config
+from tests.utils import get_config, rm_nodedirs
 
 
 class TestCrypto(object):
@@ -119,3 +119,4 @@ class TestCrypto(object):
 
         rm_shards(self.TEST_FILE, self.config)
         remove(self.TEST_FILE_COPY)
+        rm_nodedirs(self.config)

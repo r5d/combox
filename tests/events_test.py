@@ -37,7 +37,7 @@ from combox.file import (relative_path, purge_dir,
 
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
-                         path_deletedp)
+                         path_deletedp, rm_nodedirs)
 
 
 class TestEvents(object):
@@ -240,3 +240,5 @@ class TestEvents(object):
         silo.remove(self.ipsum)
 
         silo.remove(self.TEST_FILE)
+
+        rm_nodedirs(self.config)
