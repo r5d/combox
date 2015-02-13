@@ -32,7 +32,7 @@ from tests.utils import get_config
 
 class TestCrypto(object):
     """
-    Class that tests they crypto.py module.
+    Class that tests the crypto.py module.
     """
 
     @classmethod

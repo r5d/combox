@@ -32,7 +32,7 @@ from tests.utils import get_config
 
 class TestFile(object):
     """
-    Class that tests the config.py module.
+    Class that tests the file.py module.
     """
 
     @classmethod
