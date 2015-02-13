@@ -36,255 +36,205 @@ from combox.file import (relative_path, purge_dir,
                          rm_shards)
 
 from combox.silo import ComboxSilo
+from tests.utils import (get_config, shardedp, dirp, renamedp,
+                         path_deletedp)
 
 
-CONFIG_DIR = path.join('tests', 'test-config')
-
-config_file = path.join(CONFIG_DIR, 'config.yaml')
-try:
-    config = yaml.load(file(config_file, 'r'))
-except yaml.YAMLError, exc:
-    raise AssertionError("Error in configuration file:", exc)
-
-FILES_DIR = path.abspath(config['combox_dir'])
-TEST_FILE = path.join(FILES_DIR,'thgttg-21st.png')
-
-
-def shardedp(f):
-    """Checks if file's shards exists in the node directories"""
-
-    nodes = get_nodedirs(config)
-    i = 0
-    for node in nodes:
-        rel_path = relative_path(f, config)
-        shard = "%s.shard%s" % (path.join(node, rel_path), i)
-        i += 1
-        assert path.isfile(shard)
-
-def dirp(d):
+class TestEvents(object):
     """
-    Checks if the directory was created under node directories
+    Class that tests they crypto.py module.
     """
 
-    nodes = get_nodedirs(config)
-    for node in nodes:
-        rel_path = relative_path(d, config)
-        directory = path.join(node, rel_path)
-        assert path.isdir(directory)
+    @classmethod
+    def setup_class(self):
+        """Set things up."""
 
-def renamedp(old_p, new_p):
-    """
-    Checks if the file shards or directory were/was renamed in the  under the node directories.
+        self.config = get_config()
+        self.FILES_DIR = self.config['combox_dir']
+        self.TEST_FILE = path.join(self.FILES_DIR,'thgttg-21st.png')
 
-    old_p: old path to directory or file under combox directory.
-    new_p: new (present) path to the directory or file under combox directory.
-    """
-
-    nodes = get_nodedirs(config)
-
-    is_dir = True if path.isdir(new_p) else False
-    i = 0
-
-    for node in nodes:
-        old_rel_path = relative_path(old_p, config)
-        new_rel_path = relative_path(new_p, config)
-
-        if is_dir:
-            old_path = path.join(node, old_rel_path)
-            new_path = path.join(node, new_rel_path)
-        else:
-            old_path = "%s.shard%s" % (path.join(node, old_rel_path), i)
-            new_path = "%s.shard%s" % (path.join(node, new_rel_path), i)
-            i += 1
-
-        assert not path.exists(old_path)
-        assert path.exists(new_path)
+        self.lorem = path.join(self.FILES_DIR, 'lorem.txt')
+        self.ipsum = path.join(self.FILES_DIR, "ipsum.txt")
+        self.lorem_moved = path.join(self.FILES_DIR, 'lorem.moved.txt')
+        self.lorem_ipsum = path.join(self.FILES_DIR, 'lorem.ipsum.txt')
 
 
-def path_deletedp(p, is_dir=False):
-    """
-    Checks if the directory or respective file shards  is deleted under node directories.
 
-    p: path to the directory or file, under the combox directory, that was deleted.
-    is_dir: set to True if `p' denotes a deleted directory. Default value is False.
-    """
+    def test_CDM(self):
+        """
+        Tests the ComboxDirMonitor class.
+        """
 
-    nodes = get_nodedirs(config)
+        event_handler = ComboxDirMonitor(self.config)
+        observer = Observer()
+        observer.schedule(event_handler, self.FILES_DIR, recursive=True)
+        observer.start()
 
-    i = 0
-    for node in nodes:
-        rel_path = relative_path(p, config)
+        # Test - new file addition
+        self.TEST_FILE_COPY_0 = "%s.mutant" % self.TEST_FILE
+        copyfile(self.TEST_FILE, self.TEST_FILE_COPY_0)
+        ## wait for ComboxDirMonitor to split and scatter the file in the
+        ## node directories.
+        time.sleep(1)
+        ## check if the shards were created.
+        shardedp(self.TEST_FILE_COPY_0)
+        ## check if the new file's info is in silo
+        silo = ComboxSilo(self.config)
+        assert silo.exists(self.TEST_FILE_COPY_0)
 
-        if is_dir:
-            path_ = path.join(node, rel_path)
-        else:
-            path_ = "%s.shard%s" % (path.join(node, rel_path), i)
-            i += 1
+        # Test - File deletion.
+        remove(self.TEST_FILE_COPY_0)
+        time.sleep(1)
+        path_deletedp(self.TEST_FILE_COPY_0)
+        ## check if the new file's info is removed from silo
+        silo = ComboxSilo(self.config)
+        assert not silo.exists(self.TEST_FILE_COPY_0)
 
-        assert not path.exists(path_)
+        # Test - directory creation
+        self.TEST_DIR_0 = path.join(self.FILES_DIR, 'foo')
+        os.mkdir(self.TEST_DIR_0)
+        time.sleep(2)
+        ## check if TEST_DIR_0 is created under node directories.
+        dirp(self.TEST_DIR_0)
 
+        self.TEST_DIR_1 = path.join(self.TEST_DIR_0, 'bar')
+        os.mkdir(self.TEST_DIR_1)
+        time.sleep(2)
+        ## check if TEST_DIR_1 is created under node directories.
+        dirp(self.TEST_DIR_1)
 
-def test_CDM():
-    """
-    Tests the ComboxDirMonitor class.
-    """
+        # Test - new file in a nested directory
+        self.TEST_FILE_COPY_1 = path.join(self.TEST_DIR_1,
+                                          path.basename(self.TEST_FILE))
+        copyfile(self.TEST_FILE, self.TEST_FILE_COPY_1)
+        time.sleep(1)
+        shardedp(self.TEST_FILE_COPY_1)
 
-    event_handler = ComboxDirMonitor(config)
-    observer = Observer()
-    observer.schedule(event_handler, FILES_DIR, recursive=True)
-    observer.start()
+        # Test - dir rename
+        self.TEST_DIR_1_NEW = path.join(path.dirname(self.TEST_DIR_1),
+                                        'snafu')
+        self.TEST_FILE_COPY_1_NEW = path.join(self.TEST_DIR_1_NEW,
+                                         path.basename(self.TEST_FILE))
 
-    # Test - new file addition
-    TEST_FILE_COPY_0 = "%s.mutant" % TEST_FILE
-    copyfile(TEST_FILE, TEST_FILE_COPY_0)
-    ## wait for ComboxDirMonitor to split and scatter the file in the
-    ## node directories.
-    time.sleep(1)
-    ## check if the shards were created.
-    shardedp(TEST_FILE_COPY_0)
-    ## check if the new file's info is in silo
-    silo = ComboxSilo(config)
-    assert silo.exists(TEST_FILE_COPY_0)
+        os.rename(self.TEST_DIR_1, self.TEST_DIR_1_NEW)
+        time.sleep(1)
+        renamedp(self.TEST_DIR_1, self.TEST_DIR_1_NEW)
+        renamedp(self.TEST_FILE_COPY_1, self.TEST_FILE_COPY_1_NEW)
+        ## check if the new file's info is updated in silo
+        silo = ComboxSilo(self.config)
+        assert not silo.exists(self.TEST_FILE_COPY_1)
+        assert silo.exists(self.TEST_FILE_COPY_1_NEW)
 
-    # Test - File deletion.
-    remove(TEST_FILE_COPY_0)
-    time.sleep(1)
-    path_deletedp(TEST_FILE_COPY_0)
-    ## check if the new file's info is removed from silo
-    silo = ComboxSilo(config)
-    assert not silo.exists(TEST_FILE_COPY_0)
-
-    # Test - directory creation
-    TEST_DIR_0 = path.join(FILES_DIR, 'foo')
-    os.mkdir(TEST_DIR_0)
-    time.sleep(2)
-    ## check if TEST_DIR_0 is created under node directories.
-    dirp(TEST_DIR_0)
-
-    TEST_DIR_1 = path.join(TEST_DIR_0, 'bar')
-    os.mkdir(TEST_DIR_1)
-    time.sleep(2)
-    ## check if TEST_DIR_1 is created under node directories.
-    dirp(TEST_DIR_1)
-
-    # Test - new file in a nested directory
-    TEST_FILE_COPY_1 = path.join(TEST_DIR_1, path.basename(TEST_FILE))
-    copyfile(TEST_FILE, TEST_FILE_COPY_1)
-    time.sleep(1)
-    shardedp(TEST_FILE_COPY_1)
-
-    # Test - dir rename
-    TEST_DIR_1_NEW = path.join(path.dirname(TEST_DIR_1),
-                               'snafu')
-    TEST_FILE_COPY_1_NEW = path.join(TEST_DIR_1_NEW, path.basename(TEST_FILE))
-
-    os.rename(TEST_DIR_1, TEST_DIR_1_NEW)
-    time.sleep(1)
-    renamedp(TEST_DIR_1, TEST_DIR_1_NEW)
-    renamedp(TEST_FILE_COPY_1, TEST_FILE_COPY_1_NEW)
-    ## check if the new file's info is updated in silo
-    silo = ComboxSilo(config)
-    assert not silo.exists(TEST_FILE_COPY_1)
-    assert silo.exists(TEST_FILE_COPY_1_NEW)
-
-    # Test directory & file deletion
-    purge_dir(TEST_DIR_0)
-    # remove the directory itself.
-    os.rmdir(TEST_DIR_0)
-    time.sleep(2)
-    path_deletedp(TEST_FILE_COPY_1_NEW)
-    path_deletedp(TEST_DIR_1, True)
-    path_deletedp(TEST_DIR_0, True)
+        # Test directory & file deletion
+        purge_dir(self.TEST_DIR_0)
+        # remove the directory itself.
+        os.rmdir(self.TEST_DIR_0)
+        time.sleep(2)
+        path_deletedp(self.TEST_FILE_COPY_1_NEW)
+        path_deletedp(self.TEST_DIR_1, True)
+        path_deletedp(self.TEST_DIR_0, True)
 
 
-    # Test - file modification
-    lorem_file = path.join(FILES_DIR, 'lorem.txt')
-    lorem_file_copy = "%s.copy" % lorem_file
-    # this will shard lorem.txt.copy in the node directories.
-    copyfile(lorem_file, lorem_file_copy)
-    time.sleep(1)
-    shardedp(lorem_file_copy)
-    ## check if the lorem_file_copy's info is stored in silo
-    silo = ComboxSilo(config)
-    lorem_file_copy_hash = silo.db.get(lorem_file_copy)
+        # Test - file modification
+        self.lorem_file = path.join(self.FILES_DIR, 'lorem.txt')
+        self.lorem_file_copy = "%s.copy" % self.lorem_file
+        # this will shard lorem.txt.copy in the node directories.
+        copyfile(self.lorem_file, self.lorem_file_copy)
+        time.sleep(1)
+        shardedp(self.lorem_file_copy)
+        ## check if the lorem_file_copy's info is stored in silo
+        silo = ComboxSilo(self.config)
+        lorem_file_copy_hash = silo.db.get(self.lorem_file_copy)
 
-    ipsum_file = path.join(FILES_DIR, 'ipsum.txt')
-    ipsum_content = read_file(ipsum_file)
-    lorem_copy_content = read_file(lorem_file_copy)
-    lorem_copy_content = "%s\n%s" % (lorem_copy_content, ipsum_content)
+        self.ipsum_file = path.join(self.FILES_DIR, 'ipsum.txt')
+        ipsum_content = read_file(self.ipsum_file)
+        lorem_copy_content = read_file(self.lorem_file_copy)
+        lorem_copy_content = "%s\n%s" % (lorem_copy_content, ipsum_content)
 
-    # write lorem's new content to  lorem_file_copy
-    write_file(lorem_file_copy, lorem_copy_content)
-    time.sleep(1)
-    ## check if the lorem_file_copy's info is updated in silo
-    silo = ComboxSilo(config)
-    assert lorem_file_copy_hash != silo.db.get(lorem_file_copy)
-
-
-    # decrypt_and_glue will decrypt the file shards, glues them and
-    # writes it to the respective file
-    decrypt_and_glue(lorem_file_copy, config)
-    time.sleep(1)
-
-    lorem_content_from_disk = read_file(lorem_file_copy)
-    assert lorem_copy_content == lorem_content_from_disk
-
-    # remove lorem_file_copy and confirm that its shards are deleted
-    # in the node directories.
-    remove(lorem_file_copy)
-    time.sleep(1)
-    path_deletedp(lorem_file_copy)
-    ## check if the lorem_file_copy's info is deleted from silo
-    silo = ComboxSilo(config)
-    assert not silo.exists(lorem_file_copy)
-
-    observer.stop()
-    observer.join()
+        # write lorem's new content to  lorem_file_copy
+        write_file(self.lorem_file_copy, lorem_copy_content)
+        time.sleep(1)
+        ## check if the lorem_file_copy's info is updated in silo
+        silo = ComboxSilo(self.config)
+        assert lorem_file_copy_hash != silo.db.get(self.lorem_file_copy)
 
 
-def test_housekeep():
-    """ComboxDirMonitor's housekeep method test."""
+        # decrypt_and_glue will decrypt the file shards, glues them and
+        # writes it to the respective file
+        decrypt_and_glue(self.lorem_file_copy, self.config)
+        time.sleep(1)
 
-    # test file deletion and addition
+        lorem_content_from_disk = read_file(self.lorem_file_copy)
+        assert lorem_copy_content == lorem_content_from_disk
 
-    lorem = path.join(FILES_DIR, 'lorem.txt')
-    lorem_moved = path.join(FILES_DIR, 'lorem.moved.txt')
-    os.rename(lorem, lorem_moved)
+        # remove lorem_file_copy and confirm that its shards are deleted
+        # in the node directories.
+        remove(self.lorem_file_copy)
+        time.sleep(1)
+        path_deletedp(self.lorem_file_copy)
+        ## check if the lorem_file_copy's info is deleted from silo
+        silo = ComboxSilo(self.config)
+        assert not silo.exists(self.lorem_file_copy)
 
-    cdm = ComboxDirMonitor(config)
-    cdm.housekeep()
+        observer.stop()
+        observer.join()
 
-    silo = ComboxSilo(config)
-    assert not silo.exists(lorem)
-    assert silo.exists(lorem_moved)
-    shardedp(lorem_moved)
 
-    os.rename(lorem_moved, lorem)
-    rm_shards(lorem_moved, config)
-    silo.remove(lorem_moved)
+    def test_housekeep(self):
+        """ComboxDirMonitor's housekeep method test."""
 
-    # test file modification
+        # test file deletion and addition
+        os.rename(self.lorem, self.lorem_moved)
 
-    lorem_ipsum = path.join(FILES_DIR, 'lorem.ipsum.txt')
-    copyfile(lorem, lorem_ipsum)
-    assert path.exists(lorem_ipsum)
+        cdm = ComboxDirMonitor(self.config)
+        cdm.housekeep()
 
-    cdm = ComboxDirMonitor(config)
-    cdm.housekeep()
+        silo = ComboxSilo(self.config)
+        assert not silo.exists(self.lorem)
+        assert silo.exists(self.lorem_moved)
+        shardedp(self.lorem_moved)
 
-    silo = ComboxSilo(config)
-    assert silo.exists(lorem_ipsum)
+        ##1
+        os.rename(self.lorem_moved, self.lorem)
+        rm_shards(self.lorem_moved, self.config)
+        silo.remove(self.lorem_moved)
 
-    ipsum = path.join(FILES_DIR, "ipsum.txt")
-    ipsum_content = read_file(ipsum)
+        # test file modification
+        copyfile(self.lorem, self.lorem_ipsum)
+        assert path.exists(self.lorem_ipsum)
 
-    lorem_ipsum_content = read_file(lorem_ipsum)
-    lorem_ipsum_content = "%s\n%s" % (lorem_ipsum_content, ipsum_content)
-    write_file(lorem_ipsum, lorem_ipsum_content)
+        cdm = ComboxDirMonitor(self.config)
+        cdm.housekeep()
 
-    cdm.housekeep()
+        silo = ComboxSilo(self.config)
+        assert silo.exists(self.lorem_ipsum)
 
-    silo = ComboxSilo(config)
-    assert not silo.stale(lorem_ipsum)
-    os.remove(lorem_ipsum)
-    silo.remove(lorem_ipsum)
+        ipsum_content = read_file(self.ipsum)
+
+        lorem_ipsum_content = read_file(self.lorem_ipsum)
+        lorem_ipsum_content = "%s\n%s" % (lorem_ipsum_content, ipsum_content)
+        write_file(self.lorem_ipsum, lorem_ipsum_content)
+
+        cdm.housekeep()
+
+        silo = ComboxSilo(self.config)
+        assert not silo.stale(self.lorem_ipsum)
+
+
+    @classmethod
+    def teardown_class(self):
+        """Purge the mess created by this test"""
+
+        silo = ComboxSilo(self.config)
+
+        os.remove(self.lorem_ipsum)
+        rm_shards(self.lorem_ipsum, self.config)
+        silo.remove(self.lorem_ipsum)
+
+        rm_shards(self.lorem, self.config)
+        silo.remove(self.lorem)
+
+        rm_shards(self.ipsum, self.config)
+        silo.remove(self.ipsum)
+
+        silo.remove(self.TEST_FILE)
