@@ -42,7 +42,7 @@ from tests.utils import (get_config, shardedp, dirp, renamedp,
 
 class TestEvents(object):
     """
-    Class that tests they crypto.py module.
+    Class that tests the events.py module.
     """
 
     @classmethod
