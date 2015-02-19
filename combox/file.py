@@ -26,8 +26,14 @@ from glob import glob
 from combox.config import get_nodedirs
 
 
-def relative_path(p, config):
-    """Returns the relative path to the `p' w. r. t combox directory.
+def relative_path(p, config, comboxd=True):
+    """Returns the relative path to the `p' w. r. t combox or node directory.
+
+    If `comboxd' is True, the relative path is w. r. t combox
+    directory.
+
+    If `comboxd' is False, the relative path is w. r. t node
+    directory.
 
     p: path to a directory or file.
 
@@ -35,9 +41,12 @@ def relative_path(p, config):
     combox.
 
     """
-    combox_dir = '%s/' % config['combox_dir']
+    if comboxd:
+        directory = '%s/' % config['combox_dir']
+    else:
+        directory = '%s/' % get_nodedirs(config)[0]
 
-    return p.partition(combox_dir)[2]
+    return p.partition(directory)[2]
 
 
 def mk_nodedir(directory, config):

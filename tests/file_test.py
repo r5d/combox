@@ -24,9 +24,8 @@ from nose.tools import *
 from os import path, remove
 
 from combox.config import get_nodedirs
-from combox.file import (split_data, glue_data, write_file,
-                         read_file, write_shards, read_shards,
-                         hash_file, rm_shards)
+from combox.crypto import split_and_encrypt
+from combox.file import *
 from tests.utils import get_config, rm_nodedirs, rm_configdir
 
 
@@ -93,6 +92,25 @@ class TestFile(object):
         fcontent = read_file(self.TEST_FILE)
 
         assert fhash == sha512(fcontent).hexdigest()
+
+
+    def test_relativepath(self):
+        """
+        Tests the relative_path function
+        """
+
+        test_file_basename = path.basename(self.TEST_FILE)
+        print test_file_basename
+        assert test_file_basename == relative_path(self.TEST_FILE,
+                                                   self.config)
+
+        split_and_encrypt(self.TEST_FILE, self.config)
+        test_file_shard_0 = '%s.shard.0' % test_file_basename
+        test_file_shard_0_abspath = "%s/%s" % (get_nodedirs(self.config)[0],
+                                          test_file_shard_0)
+
+        assert test_file_shard_0 == relative_path(test_file_shard_0_abspath,
+                                                  self.config, False)
 
 
     @classmethod
