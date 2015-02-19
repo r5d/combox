@@ -24,7 +24,7 @@ from os import path, remove
 from combox.silo import ComboxSilo
 from combox.file import read_file, write_file
 
-from tests.utils import get_config, rm_nodedirs
+from tests.utils import get_config, rm_nodedirs, rm_configdir
 
 class TestSilo(object):
     """
@@ -99,3 +99,4 @@ class TestSilo(object):
         csilo.remove(self.LOREM)
         csilo.remove(self.IPSUM)
         rm_nodedirs(self.config)
+        rm_configdir()

@@ -22,7 +22,8 @@ from nose.tools import *
 from os import path, remove, rmdir
 
 from combox.config import (config_cb, get_secret, get_stdin)
-from tests.utils import get_input_func, rm_nodedirs, get_config
+from tests.utils import (get_input_func, rm_nodedirs,
+                         get_config, rm_configdir)
 
 
 class TestConfig(object):
@@ -59,3 +60,4 @@ class TestConfig(object):
         """Tear everything down."""
         remove(self.config_file)
         rm_nodedirs(get_config())
+        rm_configdir()
