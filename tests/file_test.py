@@ -100,14 +100,13 @@ class TestFile(object):
         """
 
         test_file_basename = path.basename(self.TEST_FILE)
-        print test_file_basename
         assert test_file_basename == relative_path(self.TEST_FILE,
                                                    self.config)
 
         split_and_encrypt(self.TEST_FILE, self.config)
         test_file_shard_0 = '%s.shard.0' % test_file_basename
-        test_file_shard_0_abspath = "%s/%s" % (get_nodedirs(self.config)[0],
-                                          test_file_shard_0)
+        test_file_shard_0_abspath = path.join(get_nodedirs(self.config)[0],
+                                              test_file_shard_0)
 
         assert test_file_shard_0 == relative_path(test_file_shard_0_abspath,
                                                   self.config, False)
