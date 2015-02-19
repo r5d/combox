@@ -1,7 +1,5 @@
 *~
 *.pyc
-*-copy*
-*shard*
 build/
 dist/
 *egg-info/
@@ -11,5 +9,3 @@ man/
 bin/
 include/
 trash/
-tests/files/*copy
-tests/test-config/silo.db
