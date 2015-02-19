@@ -68,6 +68,16 @@ def rm_nodedirs(config):
             print "Problem deleting", node, e
 
 
+def rm_configdir():
+    """Removes the combox test config directory."""
+    config_dir = path.join('tests', 'test-config')
+    try:
+        purge_dir(config_dir)
+        rmdir(config_dir)
+    except OSError, e:
+        print "Problem deleting", config_dir, e
+
+
 def shardedp(f):
     """Checks if file's shards exists in the node directories"""
 
