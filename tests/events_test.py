@@ -226,26 +226,21 @@ class TestEvents(object):
         """Cleans up things after each test in this class"""
         purge_nodedirs(self.config)
 
+        silo_path = path.join(self.config['silo_dir'], 'silo.db')
+        os.remove(silo_path)
 
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test"""
 
-        silo = ComboxSilo(self.config)
-
         rm_shards(self.TEST_FILE, self.config)
 
         os.remove(self.lorem_ipsum)
         rm_shards(self.lorem_ipsum, self.config)
-        silo.remove(self.lorem_ipsum)
 
         rm_shards(self.lorem, self.config)
-        silo.remove(self.lorem)
 
         rm_shards(self.ipsum, self.config)
-        silo.remove(self.ipsum)
-
-        silo.remove(self.TEST_FILE)
 
         rm_nodedirs(self.config)
         rm_configdir()
