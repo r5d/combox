@@ -49,6 +49,16 @@ def relative_path(p, config, comboxd=True):
     return p.partition(directory)[2]
 
 
+def cb_path(shard_path, config):
+    """
+    Returns abs. path of file (in combox dir.) corresponding to the shard with path `shard_path'
+    """
+    rel_shard_path = relative_path(shard_path, config, False)
+    rel_file_path = rel_shard_path.partition('.shard')[0]
+
+    return path.join(config['combox_dir'], rel_file_path)
+
+
 def mk_nodedir(directory, config):
     """
     Creates directory `directory' inside the nodes.

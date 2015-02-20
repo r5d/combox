@@ -112,6 +112,16 @@ class TestFile(object):
                                                   self.config, False)
 
 
+    def test_cbpath(self):
+        """Tests the get_cbpath function"""
+        split_and_encrypt(self.TEST_FILE, self.config)
+        test_file_shard_0 = '%s.shard.0' % path.basename(self.TEST_FILE)
+        test_file_shard_0_abspath = path.join(get_nodedirs(self.config)[0],
+                                              test_file_shard_0)
+
+        assert self.TEST_FILE == cb_path(test_file_shard_0_abspath,
+                                            self.config)
+
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test."""
