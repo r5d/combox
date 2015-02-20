@@ -227,7 +227,9 @@ class TestEvents(object):
         purge_nodedirs(self.config)
 
         silo_path = path.join(self.config['silo_dir'], 'silo.db')
-        os.remove(silo_path)
+
+        if path.exists(silo_path):
+            os.remove(silo_path)
 
     @classmethod
     def teardown_class(self):
