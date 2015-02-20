@@ -126,7 +126,7 @@ def decrypt_and_glue(fpath, config):
     Reads encrypted shards, decrypts and glues them.
 
     fpath: The path to file that has to be decrypted & glued from the nodes.
-    config: The dictonary containing the combox configuration information.
+    config: The dictionary containing the combox configuration information.
 
     """
 
