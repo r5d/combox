@@ -37,7 +37,8 @@ from combox.file import (relative_path, purge_dir,
 
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
-                         path_deletedp, rm_nodedirs, rm_configdir)
+                         path_deletedp, rm_nodedirs, rm_configdir,
+                         purge_nodedirs)
 
 
 class TestEvents(object):
@@ -219,6 +220,11 @@ class TestEvents(object):
 
         silo = ComboxSilo(self.config)
         assert not silo.stale(self.lorem_ipsum)
+
+
+    def teardown(self):
+        """Cleans up things after each test in this class"""
+        purge_nodedirs(self.config)
 
 
     @classmethod
