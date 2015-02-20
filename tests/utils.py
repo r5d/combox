@@ -58,14 +58,22 @@ def get_config():
 
 
 def rm_nodedirs(config):
-    """Removes node directories"""
+    """Purges and removes node directories."""
     nodes = get_nodedirs(config)
+    purge_nodedirs(config)
+
     for node in nodes:
         try:
-            purge_dir(node)
             rmdir(node)
         except OSError, e:
             print "Problem deleting", node, e
+
+
+def purge_nodedirs(config):
+    """Purges everything inside node directories."""
+    nodes = get_nodedirs(config)
+    for node in nodes:
+        purge_dir(node)
 
 
 def rm_configdir():
