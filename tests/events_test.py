@@ -29,11 +29,11 @@ from nose.tools import *
 from watchdog.observers import Observer
 
 from combox.config import get_nodedirs
-from combox.crypto import decrypt_and_glue
-from combox.events import ComboxDirMonitor
+from combox.crypto import decrypt_and_glue, split_and_encrypt
+from combox.events import ComboxDirMonitor, NodeDirMonitor
 from combox.file import (relative_path, purge_dir,
                          read_file, write_file,
-                         rm_shards)
+                         rm_shards, mk_nodedir)
 
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
@@ -52,14 +52,17 @@ class TestEvents(object):
 
         self.config = get_config()
         self.FILES_DIR = self.config['combox_dir']
-        self.TEST_FILE = path.join(self.FILES_DIR,'thgttg-21st.png')
+        self.NODE_DIR = get_nodedirs(self.config)[0]
+        self.TEST_FILE = path.join(self.FILES_DIR, 'thgttg-21st.png')
 
         self.lorem = path.join(self.FILES_DIR, 'lorem.txt')
-        self.ipsum = path.join(self.FILES_DIR, "ipsum.txt")
+        self.ipsum = path.join(self.FILES_DIR, 'ipsum.txt')
         self.lorem_moved = path.join(self.FILES_DIR, 'lorem.moved.txt')
         self.lorem_ipsum = path.join(self.FILES_DIR, 'lorem.ipsum.txt')
 
-
+        # files that have to be removed at the end of this test class
+        # should be appended to this list.
+        self.purge_list = []
 
     def test_CDM(self):
         """
@@ -222,6 +225,48 @@ class TestEvents(object):
         assert not silo.stale(self.lorem_ipsum)
 
 
+    def test_NDM(self):
+        """
+        Tests the NodeDirMonitor class.
+        """
+
+        event_handler = NodeDirMonitor(self.config)
+        observer = Observer()
+        observer.schedule(event_handler, self.NODE_DIR, recursive=True)
+        observer.start()
+
+        # Test - new file addition, when shard is created in node_dirs
+        self.TEST_FILE_MUTANT = "%s.mutant" % self.TEST_FILE
+
+        fmutant_content = read_file(self.TEST_FILE)
+
+        split_and_encrypt(self.TEST_FILE_MUTANT, self.config,
+                          fmutant_content)
+        ## wait for NodeDirMonitor to reconstruct the shards and put
+        ## it in combox directory
+        time.sleep(1)
+        assert fmutant_content == read_file(self.TEST_FILE_MUTANT)
+        ## check if the new file's info is in silo
+        silo = ComboxSilo(self.config)
+        assert silo.exists(self.TEST_FILE_MUTANT)
+
+        # Test - directory creation
+        self.FOO_DIR = path.join(self.FILES_DIR, 'foo')
+        mk_nodedir(self.FOO_DIR, self.config)
+        time.sleep(2)
+        ## check if FOO_DIR is created under the combox directory
+        assert path.isdir(self.FOO_DIR)
+
+        self.BAR_DIR = path.join(self.FOO_DIR, 'bar')
+        mk_nodedir(self.BAR_DIR, self.config)
+        time.sleep(2)
+        ## check if BAR_DIR is created under the combox directory.
+        assert path.isdir(self.BAR_DIR)
+
+        self.purge_list.append(self.TEST_FILE_MUTANT)
+        self.purge_list.append(self.FOO_DIR)
+
+
     def teardown(self):
         """Cleans up things after each test in this class"""
         purge_nodedirs(self.config)
@@ -246,3 +291,10 @@ class TestEvents(object):
 
         rm_nodedirs(self.config)
         rm_configdir()
+
+        for f in self.purge_list:
+            if path.exists(f) and path.isfile(f):
+                os.remove(f)
+            elif path.exists(f) and path.isdir(f):
+                purge_dir(f)
+                os.rmdir(f)

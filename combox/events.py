@@ -23,9 +23,10 @@ from os import path
 
 from watchdog.events import LoggingEventHandler
 
-from combox.crypto import split_and_encrypt
+from combox.crypto import split_and_encrypt, decrypt_and_glue
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
-                         relative_path, move_shards, move_nodedir)
+                         relative_path, move_shards, move_nodedir,
+                         cb_path)
 from combox.silo import ComboxSilo
 
 
@@ -154,3 +155,76 @@ class ComboxDirMonitor(LoggingEventHandler):
             split_and_encrypt(event.src_path, self.config)
             # update file info in silo.
             self.silo.update(event.src_path)
+
+
+class NodeDirMonitor(LoggingEventHandler):
+    """Monitors Node directory for changes and does its crypto thing.
+
+    """
+
+    def __init__(self, config):
+        """
+        config: a dictinary which contains combox configuration.
+        """
+        super(NodeDirMonitor, self).__init__()
+
+        logging.basicConfig(level=logging.INFO,
+                            format='%(asctime)s - %(message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S')
+
+        self.config = config
+        self.silo = ComboxSilo(self.config)
+
+
+    def housekeep(self):
+        """Recursively traverses node directory, discovers changes and updates silo and combox directory.
+
+        If it detects that a shard was deleted, it purges the
+        corresponding file from the combox director and also removes
+        information about the file from the silo.
+
+        If it detects new shards, it reconstructs the file and places
+        it at the corresponding location in the combox directory.
+
+        If it detects shards have been modified, it reconstructs the
+        file and places the modified file at the corresponding
+        location in the combox directory.
+
+        """
+        pass
+
+
+    def on_moved(self, event):
+        super(NodeDirMonitor, self).on_moved(event)
+        pass
+
+
+    def on_created(self, event):
+        super(NodeDirMonitor, self).on_created(event)
+
+        file_cb_path = cb_path(event.src_path, self.config)
+
+        if event.is_directory and (not path.exists(file_cb_path)):
+            # means, the directory was created on another computer
+            # (also running combox). so, create this directory
+            # under the combox directory
+            os.mkdir(file_cb_path)
+        elif (not event.is_directory) and (not path.exists(file_cb_path)):
+            # shard created.
+
+            # means, file was created on another computer (also
+            # running combox). so, reconstruct the file and put it
+            # in the combox directory.
+            decrypt_and_glue(file_cb_path, self.config)
+            # update db.
+            self.silo.update(file_cb_path)
+
+
+    def on_deleted(self, event):
+        super(ComboxDirMonitor, self).on_deleted(event)
+        pass
+
+
+    def on_modified(self, event):
+        super(NodeDirMonitor, self).on_modified(event)
+        pass
