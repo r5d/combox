@@ -91,12 +91,16 @@ def decrypt_shards(ciphers, secret):
     return shards
 
 
-def split_and_encrypt(fpath, config):
-    """
-    Splits the file, encrypts the shards and writes them to the nodes.
+def split_and_encrypt(fpath, config, fcontent=None):
+    """Splits the file, encrypts the shards and writes them to the nodes.
 
     fpath: The path to file that has to be split.
     config: The dictonary containing the combox configuration information.
+    fcontent: Contents of the file at `fpath' (optional).
+
+    If `fcontent' is None, then this function reads the contents of
+    the file; otherwise it just assumes `fcontent' is the content of
+    the file.
     """
 
     rel_path = relative_path(fpath, config)
@@ -105,8 +109,11 @@ def split_and_encrypt(fpath, config):
     SHARDS = len(config['nodes_info'].keys())
 
     f = path.join(config['combox_dir'], rel_path)
-    f_content = read_file(f)
-    f_shards = split_data(f_content, SHARDS)
+
+    if not fcontent:
+        fcontent = read_file(f)
+
+    f_shards = split_data(fcontent, SHARDS)
 
     # encrypt shards
     ciphered_shards = encrypt_shards(f_shards, config['topsecret'])
