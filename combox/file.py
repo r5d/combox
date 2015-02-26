@@ -69,6 +69,28 @@ def cb_path(node_path, config):
     return file_cb_path
 
 
+def node_path(cb_path, config):
+    """Returns abs. path of file (in node dir.) given the cb_path (combox dir. path).
+
+    If cb_path is a file, it returns the path to its first shard in
+    the first node directory.
+
+    """
+
+    if path.isfile(cb_path):
+        # partition function is used to remove the `.shard.N' from the
+        # file name.
+        rel_file_path = relative_path(cb_path, config)
+        file_node_path = path.join(get_nodedirs(config)[0],
+                                 rel_file_path)
+        file_node_path = "%s.shard0" % file_node_path
+    else:
+        file_node_path = path.join(get_nodedirs(config)[0],
+                                   relative_path(cb_path, config))
+
+    return file_node_path
+
+
 def mk_nodedir(directory, config):
     """
     Creates directory `directory' inside the nodes.

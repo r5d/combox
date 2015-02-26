@@ -129,6 +129,25 @@ class TestFile(object):
                                 'foo')
         assert foo_dir == cb_path(foo_nodedir, self.config)
 
+
+    def test_nodepath(self):
+        """Tests the node_path function"""
+        split_and_encrypt(self.TEST_FILE, self.config)
+        test_file_shard_0 = '%s.shard0' % path.basename(self.TEST_FILE)
+        test_file_shard_0_abspath = path.join(get_nodedirs(self.config)[0],
+                                              test_file_shard_0)
+
+        assert test_file_shard_0_abspath == node_path(self.TEST_FILE,
+                                                      self.config)
+
+
+        foo_dir = path.join(self.config['combox_dir'], 'foo')
+        foo_nodedir = path.join(get_nodedirs(self.config)[0],
+                                'foo')
+
+        assert foo_nodedir == node_path(foo_dir, self.config)
+
+
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test."""
