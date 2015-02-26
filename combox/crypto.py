@@ -127,14 +127,14 @@ def split_and_encrypt(fpath, config, fcontent=None):
     write_shards(ciphered_shards, nodes, f_basename)
 
 
-def decrypt_and_glue(fpath, config):
+def decrypt_and_glue(fpath, config, write=True):
 
     """
     Reads encrypted shards, decrypts and glues them.
 
     fpath: The path to file that has to be decrypted & glued from the nodes.
     config: The dictionary containing the combox configuration information.
-
+    write: If set, writes the reconstructed file's content to disk.
     """
 
     rel_path = relative_path(fpath, config)
@@ -152,5 +152,8 @@ def decrypt_and_glue(fpath, config):
     # glue them together
     f_content = glue_data(f_parts)
 
-    # write the glued content to fpath
-    write_file(f, f_content)
+    if write:
+        # write the glued content to fpath
+        write_file(f, f_content)
+
+    return f_content
