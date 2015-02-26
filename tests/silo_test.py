@@ -22,7 +22,7 @@ from shutil import copyfile
 from os import path, remove
 
 from combox.silo import ComboxSilo
-from combox.file import read_file, write_file
+from combox.file import read_file, write_file, hash_file
 
 from tests.utils import get_config, rm_nodedirs, rm_configdir
 
@@ -77,6 +77,7 @@ class TestSilo(object):
         write_file(self.LOREM_IPSUM, lorem_ipsum_content)
 
         assert csilo.stale(self.LOREM_IPSUM)
+        assert csilo.stale(self.LOREM_IPSUM, hash_file(self.LOREM_IPSUM))
         csilo.update(self.LOREM_IPSUM)
         assert csilo.stale(self.LOREM_IPSUM) is False
 

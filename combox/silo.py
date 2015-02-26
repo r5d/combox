@@ -84,17 +84,19 @@ class ComboxSilo(object):
             return True
 
 
-    def stale(self, filep):
+    def stale(self, filep, fhash=None):
         """Returns True if filep's hash is different from the hash stored in db.
 
         Returns None, if filep's info is not yet stored in db.
         Returns False, if filep's hash has not changed it.
 
         filep: path to the file in combox directory.
-
+        fhash: If not None, it is assumed to be filep's hash.
         """
 
-        fhash = hash_file(filep)
+        if not fhash:
+            fhash = hash_file(filep)
+
         fhash_in_db = self.db.get(filep)
 
         if fhash_in_db is None:
