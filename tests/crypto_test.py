@@ -108,8 +108,12 @@ class TestCrypto(object):
 
         # reads encrypted shards from node directories, glues them and
         # writes decrypted back to combox directory.
-        decrypt_and_glue(self.TEST_FILE, self.config)
+        os.remove(self.TEST_FILE)
+        decrypt_and_glue(self.TEST_FILE, self.config, write=False)
+        assert not path.exists(self.TEST_FILE)
 
+        decrypt_and_glue(self.TEST_FILE, self.config)
+        assert path.exists(self.TEST_FILE)
         assert cmp(self.TEST_FILE, self.TEST_FILE_COPY, False)
 
 
