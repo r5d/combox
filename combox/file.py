@@ -301,14 +301,17 @@ def read_file(filename):
     return file_.read()
 
 
-def hash_file(filename):
+def hash_file(filename, file_content=None):
     """Does a SHA512 hash on the contents of file.
 
     Returns the hexdigest of the file content's hash.
 
     filename: Absolute pathname of the file.
+    file_content: If not None, hash of file_content is returned.
     """
-    file_content = read_file(filename)
+
+    if not file_content:
+        file_content = read_file(filename)
 
     return sha512(file_content).hexdigest()
 

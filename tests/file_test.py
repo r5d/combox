@@ -88,10 +88,12 @@ class TestFile(object):
         """
         Tests the hashing function - hash_file
         """
-        fhash = hash_file(self.TEST_FILE)
         fcontent = read_file(self.TEST_FILE)
+        fhash_0 = hash_file(self.TEST_FILE)
+        fhash_1 = hash_file(self.TEST_FILE, fcontent)
 
-        assert fhash == sha512(fcontent).hexdigest()
+        assert fhash_0 == sha512(fcontent).hexdigest()
+        assert fhash_1 == sha512(fcontent).hexdigest()
 
 
     def test_relativepath(self):
