@@ -96,7 +96,7 @@ def shardedp(f):
         rel_path = relative_path(f, config)
         shard = "%s.shard%s" % (path.join(node, rel_path), i)
         i += 1
-        assert path.isfile(shard)
+        assert path.exists(shard) and path.isfile(shard)
 
 
 def dirp(d):
