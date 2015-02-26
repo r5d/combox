@@ -26,7 +26,7 @@ from watchdog.events import LoggingEventHandler
 from combox.crypto import split_and_encrypt, decrypt_and_glue
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir,
-                         cb_path)
+                         cb_path, node_path)
 from combox.silo import ComboxSilo
 
 
@@ -120,10 +120,13 @@ class ComboxDirMonitor(LoggingEventHandler):
     def on_created(self, event):
         super(ComboxDirMonitor, self).on_created(event)
 
-        if event.is_directory:
+        file_node_path = node_path(event.src_path, self.config)
+
+        if event.is_directory and (not path.exists(file_node_path)):
             # creates a corresponding directory at the node dirs.
             mk_nodedir(event.src_path, self.config)
-        else:
+        elif (not event.is_directory) and (not path.exists(
+                file_node_path)):
             # file was created
             split_and_encrypt(event.src_path, self.config)
             # store file info in silo.
