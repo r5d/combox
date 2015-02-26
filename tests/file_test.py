@@ -113,7 +113,7 @@ class TestFile(object):
 
 
     def test_cbpath(self):
-        """Tests the get_cbpath function"""
+        """Tests the cb_path function"""
         split_and_encrypt(self.TEST_FILE, self.config)
         test_file_shard_0 = '%s.shard0' % path.basename(self.TEST_FILE)
         test_file_shard_0_abspath = path.join(get_nodedirs(self.config)[0],
