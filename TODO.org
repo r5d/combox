@@ -1,0 +1,39 @@
+* combox
+** DONE flesh out another method in NodeDirMonitor
+	CLOSED: [2015-02-26 Thu 22:58] DEADLINE: <2015-02-26 Thu 23:00>
+	- CLOSING NOTE [2015-02-26 Thu 22:58] \\
+	  Done. Fleshed out on_modified method + wrote tests for it.
+** DONE fix the on_create method in ComboxDirMonitor
+	CLOSED: [2015-02-26 Thu 02:46] DEADLINE: <2015-02-26 Thu 23:00>
+	- CLOSING NOTE [2015-02-26 Thu 02:46] \\
+	  Done.
+** DONE start thinking about how to write the node monitor.
+	CLOSED: [2015-02-13 Fri 09:40] DEADLINE: <2015-02-13 Fri 09:00>
+	- CLOSING NOTE [2015-02-13 Fri 09:40] \\
+	  Thought about during times of idleness. But haven't started writing
+	  the code for it yet.
+
+	  Must positively start working on it during the week to come.
+** DONE try to rewrite the tests.
+	CLOSED: [2015-02-13 Fri 09:38] DEADLINE: <2015-02-13 Fri 09:00>
+	- CLOSING NOTE [2015-02-13 Fri 09:38] \\
+	  Re-wrote all of the tests. Now tests have have proper setup and
+	  teardown methods.
+
+	  Still some work has to be done to remove files produced by the
+	  tests. Will work on it during the week to come.
+** DONE integrate config into cbox script.
+	CLOSED: [2015-02-08 Sun 21:22] DEADLINE: <2015-02-08 Sun 23:00>
+	- CLOSING NOTE [2015-02-08 Sun 21:22] \\
+	  This was already done before. Neverthless, when testing the cbox
+	  script, I found a bug and fixed it.
+** DONE redis - Read redis py README file.
+	DEADLINE: <2015-02-03 Tue 23:59>
+** DONE put cbox script in bin/
+	CLOSED: [2015-02-05 Thu 21:30] DEADLINE: <2015-02-06 Fri 09:00>
+	- CLOSING NOTE [2015-02-05 Thu 21:30] \\
+	  Did this using 'entry_points' thingy.
+	  See: https://pythonhosted.org/setuptools/setuptools.html#automatic-script-creation
+   must do it through setup.py
+** DONE Write the combox monitor startup thingy
+	DEADLINE: <2015-01-29 Thu>
