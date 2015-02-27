@@ -26,7 +26,7 @@ from watchdog.events import LoggingEventHandler
 from combox.crypto import split_and_encrypt, decrypt_and_glue
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir,
-                         cb_path, node_path)
+                         cb_path, node_path, hash_file)
 from combox.silo import ComboxSilo
 
 
@@ -179,6 +179,13 @@ class NodeDirMonitor(LoggingEventHandler):
         self.silo = ComboxSilo(self.config)
 
 
+    def silo_update(self):
+        """
+        Re-reads the silo from disk.
+        """
+        self.silo = ComboxSilo(self.config)
+
+
     def housekeep(self):
         """Recursively traverses node directory, discovers changes and updates silo and combox directory.
 
@@ -230,4 +237,25 @@ class NodeDirMonitor(LoggingEventHandler):
 
     def on_modified(self, event):
         super(NodeDirMonitor, self).on_modified(event)
-        pass
+        self.silo_update()
+
+        file_cb_path = cb_path(event.src_path, self.config)
+
+        if event.is_directory:
+            # do nothing
+            pass
+        elif (not event.is_directory):
+            file_content = decrypt_and_glue(file_cb_path,
+                                            self.config,
+                                            write=False)
+            file_content_hash = hash_file(file_cb_path, file_content)
+
+            if self.silo.stale(file_cb_path, file_content_hash):
+                # shard modified
+
+                # means, file was modified on another computer (also
+                # running combox). so, reconstruct the file and put it
+                # in the combox directory.
+                decrypt_and_glue(file_cb_path, self.config)
+                # update db.
+                self.silo.update(file_cb_path)

@@ -266,6 +266,40 @@ class TestEvents(object):
         self.purge_list.append(self.TEST_FILE_MUTANT)
         self.purge_list.append(self.FOO_DIR)
 
+        # Test - shard modification
+        self.lorem_file = path.join(self.FILES_DIR, 'lorem.txt')
+        lorem_content = read_file(self.lorem_file)
+        self.lorem_file_copy = "%s.copy" % self.lorem_file
+
+        copyfile(self.lorem_file, self.lorem_file_copy)
+        split_and_encrypt(self.lorem_file_copy, self.config,
+                          lorem_content)
+
+        silo = ComboxSilo(self.config)
+        silo.update(self.lorem_file_copy)
+        shardedp(self.lorem_file_copy)
+
+        silo = ComboxSilo(self.config)
+        lorem_file_copy_hash = silo.db.get(self.lorem_file_copy)
+
+        self.ipsum_file = path.join(self.FILES_DIR, 'ipsum.txt')
+        ipsum_content = read_file(self.ipsum_file)
+        lorem_copy_content = "%s\n%s" % (lorem_content, ipsum_content)
+
+        split_and_encrypt(self.lorem_file_copy, self.config,
+                          lorem_copy_content)
+        time.sleep(1)
+        ## check if the lorem_file_copy's info is updated in silo
+        silo = ComboxSilo(self.config)
+
+        assert lorem_copy_content == read_file(self.lorem_file_copy)
+        assert lorem_file_copy_hash != silo.db.get(self.lorem_file_copy)
+
+        self.purge_list.append(self.lorem_file_copy)
+
+        observer.stop()
+        observer.join()
+
 
     def teardown(self):
         """Cleans up things after each test in this class"""
