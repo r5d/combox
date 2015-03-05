@@ -33,7 +33,7 @@ from combox.crypto import decrypt_and_glue, split_and_encrypt
 from combox.events import ComboxDirMonitor, NodeDirMonitor
 from combox.file import (relative_path, purge_dir,
                          read_file, write_file,
-                         rm_shards, mk_nodedir)
+                         rm_shards, mk_nodedir, rm_nodedir)
 
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
@@ -263,8 +263,21 @@ class TestEvents(object):
         ## check if BAR_DIR is created under the combox directory.
         assert path.isdir(self.BAR_DIR)
 
-        self.purge_list.append(self.TEST_FILE_MUTANT)
         self.purge_list.append(self.FOO_DIR)
+
+        # Test - Shard deletion.
+        rm_shards(self.TEST_FILE_MUTANT, self.config)
+        time.sleep(1)
+        assert not path.exists(self.TEST_FILE_MUTANT)
+
+        ## check if the new file's info is removed from silo
+        silo = ComboxSilo(self.config)
+        assert not silo.exists(self.TEST_FILE_MUTANT)
+
+        # Test - directory deletion inside node directory
+        rm_nodedir(self.BAR_DIR, self.config)
+        time.sleep(1)
+        assert not path.exists(self.BAR_DIR)
 
         # Test - shard modification
         self.lorem_file = path.join(self.FILES_DIR, 'lorem.txt')

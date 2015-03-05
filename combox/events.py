@@ -26,7 +26,7 @@ from watchdog.events import LoggingEventHandler
 from combox.crypto import split_and_encrypt, decrypt_and_glue
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir,
-                         cb_path, node_path, hash_file)
+                         cb_path, node_path, hash_file, rm_path)
 from combox.silo import ComboxSilo
 
 
@@ -244,8 +244,19 @@ class NodeDirMonitor(LoggingEventHandler):
 
 
     def on_deleted(self, event):
-        super(ComboxDirMonitor, self).on_deleted(event)
+        super(NodeDirMonitor, self).on_deleted(event)
         self.silo_update()
+
+        file_cb_path = cb_path(event.src_path, self.config)
+
+        if event.is_directory:
+            # Delete corresponding directory under the combox directory.
+            rm_path(file_cb_path)
+        else:
+            # remove the corresponding file under the combox directory.
+            rm_path(file_cb_path)
+            # remove file info from silo.
+            self.silo.remove(file_cb_path)
 
 
     def on_modified(self, event):
