@@ -150,6 +150,16 @@ class TestFile(object):
         assert foo_nodedir == node_path(foo_dir, self.config)
 
 
+    def test_rmdir(self):
+        """Tests rm_dir function"""
+        new_dir = path.join(self.config['combox_dir'], 'fooius')
+        os.mkdir(new_dir)
+        assert path.isdir(new_dir)
+
+        rm_dir(new_dir)
+        assert not path.isdir(new_dir)
+
+
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test."""

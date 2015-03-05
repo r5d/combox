@@ -129,6 +129,14 @@ def rm_nodedir(directory, config):
             print e, "Something wrong. report bug to sravik@bgsu.edu"
 
 
+def rm_dir(directory):
+    """Removes directory"""
+    try:
+        os.rmdir(directory)
+    except OSError, e:
+        print e, "Something wrong. report bug to sravik@bgsu.edu"
+
+
 def move_nodedir(src, dest, config):
     """
     Moves directory `directory' inside the nodes from old to new location.
