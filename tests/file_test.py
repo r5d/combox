@@ -22,6 +22,7 @@ from hashlib import sha512
 from glob import glob
 from nose.tools import *
 from os import path, remove
+from shutil import copyfile
 
 from combox.config import get_nodedirs
 from combox.crypto import split_and_encrypt
@@ -154,13 +155,20 @@ class TestFile(object):
         assert foo_nodedir == node_path(foo_dir, self.config)
 
 
-    def test_rmdir(self):
-        """Tests rm_dir function"""
+    def test_rmpath(self):
+        """Tests rm_path function"""
         new_dir = path.join(self.config['combox_dir'], 'fooius')
         os.mkdir(new_dir)
         assert path.isdir(new_dir)
 
-        rm_dir(new_dir)
+        new_file = path.join(new_dir, 'fooius.ext')
+        copyfile(self.TEST_FILE, new_file)
+        assert path.isfile(new_file)
+
+        rm_path(new_file)
+        assert not path.isfile(new_file)
+
+        rm_path(new_dir)
         assert not path.isdir(new_dir)
 
 

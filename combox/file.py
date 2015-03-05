@@ -128,13 +128,19 @@ def rm_nodedir(directory, config):
 
     for node in nodes:
         dir_path = path.join(node, rel_path)
-        rm_dir(dir_path)
+        rm_path(dir_path)
 
 
-def rm_dir(directory):
-    """Removes directory"""
+def rm_path(fpath):
+    """Removes fpath.
+
+    fpath can be a file or a empty directory.
+    """
     try:
-        os.rmdir(directory)
+        if path.isfile(fpath):
+            os.remove(fpath)
+        else:
+            os.rmdir(fpath)
     except OSError, e:
         print e, "Something wrong. report bug to sravik@bgsu.edu"
 
