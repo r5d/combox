@@ -131,10 +131,7 @@ def rm_nodedir(directory, config):
 
     for node in nodes:
         dir_path = path.join(node, rel_path)
-        try:
-            os.rmdir(dir_path)
-        except OSError, e:
-            print e, "Something wrong. report bug to sravik@bgsu.edu"
+        rm_dir(dir_path)
 
 
 def rm_dir(directory):
