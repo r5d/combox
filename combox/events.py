@@ -51,6 +51,13 @@ class ComboxDirMonitor(LoggingEventHandler):
         self.housekeep()
 
 
+    def silo_update(self):
+        """
+        Re-reads the silo from disk.
+        """
+        self.silo = ComboxSilo(self.config)
+
+
     def housekeep(self):
         """Recursively traverses combox directory, discovers changes and updates silo and node directories.
 
@@ -66,6 +73,7 @@ class ComboxDirMonitor(LoggingEventHandler):
         updated and the file's shards are updated.
 
         """
+        self.silo_update()
         print "combox is housekeeping."
         print "Please don't make any changes to combox directory now."
         print "Thanks for your patience."
@@ -105,6 +113,7 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     def on_moved(self, event):
         super(ComboxDirMonitor, self).on_moved(event)
+        self.silo_update()
 
         if event.is_directory:
             # creates a corresponding directory at the node dirs.
@@ -119,6 +128,7 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     def on_created(self, event):
         super(ComboxDirMonitor, self).on_created(event)
+        self.silo_update()
 
         file_node_path = node_path(event.src_path, self.config)
 
@@ -135,6 +145,7 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     def on_deleted(self, event):
         super(ComboxDirMonitor, self).on_deleted(event)
+        self.silo_update()
 
         if event.is_directory:
             # Delete corresponding directory in the nodes.
@@ -149,6 +160,7 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     def on_modified(self, event):
         super(ComboxDirMonitor, self).on_modified(event)
+        self.silo_update()
 
         if event.is_directory:
             # do nothing
@@ -201,16 +213,17 @@ class NodeDirMonitor(LoggingEventHandler):
         location in the combox directory.
 
         """
-        pass
+        self.silo_update()
 
 
     def on_moved(self, event):
         super(NodeDirMonitor, self).on_moved(event)
-        pass
+        self.silo_update()
 
 
     def on_created(self, event):
         super(NodeDirMonitor, self).on_created(event)
+        self.silo_update()
 
         file_cb_path = cb_path(event.src_path, self.config)
 
@@ -232,7 +245,7 @@ class NodeDirMonitor(LoggingEventHandler):
 
     def on_deleted(self, event):
         super(ComboxDirMonitor, self).on_deleted(event)
-        pass
+        self.silo_update()
 
 
     def on_modified(self, event):
