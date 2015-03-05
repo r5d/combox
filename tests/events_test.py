@@ -97,13 +97,13 @@ class TestEvents(object):
         # Test - directory creation
         self.TEST_DIR_0 = path.join(self.FILES_DIR, 'foo')
         os.mkdir(self.TEST_DIR_0)
-        time.sleep(2)
+        time.sleep(1)
         ## check if TEST_DIR_0 is created under node directories.
         dirp(self.TEST_DIR_0)
 
         self.TEST_DIR_1 = path.join(self.TEST_DIR_0, 'bar')
         os.mkdir(self.TEST_DIR_1)
-        time.sleep(2)
+        time.sleep(1)
         ## check if TEST_DIR_1 is created under node directories.
         dirp(self.TEST_DIR_1)
 
@@ -133,7 +133,7 @@ class TestEvents(object):
         purge_dir(self.TEST_DIR_0)
         # remove the directory itself.
         os.rmdir(self.TEST_DIR_0)
-        time.sleep(2)
+        time.sleep(1)
         path_deletedp(self.TEST_FILE_COPY_1_NEW)
         path_deletedp(self.TEST_DIR_1, True)
         path_deletedp(self.TEST_DIR_0, True)
@@ -253,13 +253,13 @@ class TestEvents(object):
         # Test - directory creation
         self.FOO_DIR = path.join(self.FILES_DIR, 'foo')
         mk_nodedir(self.FOO_DIR, self.config)
-        time.sleep(2)
+        time.sleep(1)
         ## check if FOO_DIR is created under the combox directory
         assert path.isdir(self.FOO_DIR)
 
         self.BAR_DIR = path.join(self.FOO_DIR, 'bar')
         mk_nodedir(self.BAR_DIR, self.config)
-        time.sleep(2)
+        time.sleep(1)
         ## check if BAR_DIR is created under the combox directory.
         assert path.isdir(self.BAR_DIR)
 
