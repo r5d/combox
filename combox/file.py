@@ -104,10 +104,7 @@ def mk_nodedir(directory, config):
 
     for node in nodes:
         dir_path = path.join(node, rel_path)
-        try:
-            os.mkdir(dir_path)
-        except OSError, e:
-            print e, "Something wrong. report bug to sravik@bgsu.edu"
+        mk_dir(dir_path)
 
 
 def mk_dir(directory):
