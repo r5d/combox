@@ -42,6 +42,10 @@ class TestFile(object):
         FILES_DIR = self.config['combox_dir']
         self.TEST_FILE = path.join(FILES_DIR,'the-red-star.jpg')
 
+        # files that have to be removed at the end of this test class
+        # should be appended to this list.
+        self.purge_list = []
+
 
     def test_split(self):
         """Test to split, glue and create a copy of the image file from the
@@ -160,6 +164,17 @@ class TestFile(object):
         assert not path.isdir(new_dir)
 
 
+    def test_mkdir(self):
+        """Tests mk_dir function."""
+        new_dir = path.join(self.config['combox_dir'], 'barius')
+        mk_dir(new_dir)
+
+        assert path.isdir(new_dir)
+
+        # add it to purge list
+        self.purge_list.append(new_dir)
+
+
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test."""
@@ -167,3 +182,10 @@ class TestFile(object):
         rm_shards(self.TEST_FILE, self.config)
         rm_nodedirs(self.config)
         rm_configdir()
+
+        for f in self.purge_list:
+            if path.exists(f) and path.isfile(f):
+                os.remove(f)
+            elif path.exists(f) and path.isdir(f):
+                purge_dir(f)
+                os.rmdir(f)

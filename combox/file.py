@@ -110,6 +110,14 @@ def mk_nodedir(directory, config):
             print e, "Something wrong. report bug to sravik@bgsu.edu"
 
 
+def mk_dir(directory):
+    """Creates directory"""
+    try:
+        os.mkdir(directory)
+    except OSError, e:
+        print e, "Something wrong. report bug to sravik@bgsu.edu"
+
+
 def rm_nodedir(directory, config):
     """
     Removes directory `directory' inside the nodes.
