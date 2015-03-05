@@ -1,6 +1,8 @@
 * combox
-** TODO fix the silo bug in ComboxDirMonitor and NodeDirMonitor
-   DEADLINE: <2015-03-06 Fri 09:00>
+** DONE fix the silo bug in ComboxDirMonitor and NodeDirMonitor
+   CLOSED: [2015-03-04 Wed 20:12] DEADLINE: <2015-03-06 Fri 09:00>
+   - CLOSING NOTE [2015-03-04 Wed 20:12] \\
+	 Done.
 ** TODO flesh out on_delete method (NodeDirMonitor)
    DEADLINE: <2015-03-06 Fri 09:00>
 ** TODO start thinking about how to write on_moved method (NodeDirMonitor)
