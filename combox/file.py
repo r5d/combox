@@ -54,7 +54,7 @@ def cb_path(node_path, config):
     Returns abs. path of file (in combox dir.) given the node_path.
     """
 
-    if path.isfile(node_path):
+    if node_path[:-1].endswith('shard'):
         # partition function is used to remove the `.shard.N' from the
         # file name.
         rel_file_path = relative_path(node_path,
