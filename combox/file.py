@@ -69,15 +69,16 @@ def cb_path(node_path, config):
     return file_cb_path
 
 
-def node_path(cb_path, config):
+def node_path(cb_path, config, isfile):
     """Returns abs. path of file (in node dir.) given the cb_path (combox dir. path).
 
     If cb_path is a file, it returns the path to its first shard in
     the first node directory.
 
+    isfile: True if cb_path is a file.
     """
 
-    if path.isfile(cb_path):
+    if isfile:
         # partition function is used to remove the `.shard.N' from the
         # file name.
         rel_file_path = relative_path(cb_path, config)

@@ -130,7 +130,8 @@ class ComboxDirMonitor(LoggingEventHandler):
         super(ComboxDirMonitor, self).on_created(event)
         self.silo_update()
 
-        file_node_path = node_path(event.src_path, self.config)
+        file_node_path = node_path(event.src_path, self.config,
+                                   not event.is_directory)
 
         if event.is_directory and (not path.exists(file_node_path)):
             # creates a corresponding directory at the node dirs.

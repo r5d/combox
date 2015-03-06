@@ -145,14 +145,16 @@ class TestFile(object):
                                               test_file_shard_0)
 
         assert test_file_shard_0_abspath == node_path(self.TEST_FILE,
-                                                      self.config)
+                                                      self.config,
+                                                      isfile=True)
 
 
         foo_dir = path.join(self.config['combox_dir'], 'foo')
         foo_nodedir = path.join(get_nodedirs(self.config)[0],
                                 'foo')
 
-        assert foo_nodedir == node_path(foo_dir, self.config)
+        assert foo_nodedir == node_path(foo_dir, self.config,
+                                        isfile=False)
 
 
     def test_rmpath(self):
