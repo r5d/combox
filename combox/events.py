@@ -148,10 +148,13 @@ class ComboxDirMonitor(LoggingEventHandler):
         super(ComboxDirMonitor, self).on_deleted(event)
         self.silo_update()
 
-        if event.is_directory:
+        file_node_path = node_path(event.src_path, self.config,
+                                   not event.is_directory)
+
+        if event.is_directory and (path.exists(file_node_path)):
             # Delete corresponding directory in the nodes.
             rm_nodedir(event.src_path, self.config)
-        else:
+        elif(not event.is_directory) and (path.exists(file_node_path)):
             # remove the corresponding file shards in the node
             # directories.
             rm_shards(event.src_path, self.config)
