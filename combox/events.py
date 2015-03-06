@@ -256,7 +256,7 @@ class NodeDirMonitor(LoggingEventHandler):
         if event.is_directory:
             # Delete corresponding directory under the combox directory.
             rm_path(file_cb_path)
-        else:
+        elif not event.is_directory and path.exists(file_cb_path):
             # remove the corresponding file under the combox directory.
             rm_path(file_cb_path)
             # remove file info from silo.
