@@ -202,6 +202,17 @@ class NodeDirMonitor(LoggingEventHandler):
         self.silo = ComboxSilo(self.config)
 
 
+    def shardp(self, path):
+        """Returns True if `path' is a shard
+
+        Shards end with `.shardN' where `N' is a natural number.
+        """
+        if path[:-1].endswith('.shard'):
+            return True
+        else:
+            return False
+
+
     def housekeep(self):
         """Recursively traverses node directory, discovers changes and updates silo and combox directory.
 

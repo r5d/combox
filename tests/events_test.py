@@ -314,6 +314,16 @@ class TestEvents(object):
         observer.join()
 
 
+    def test_NDM_shardp(self):
+        """Testing shardp method in NodeDirMonitor class"""
+        shard = 'some.shard0'
+        not_shard = 'some.extension'
+        ndm = NodeDirMonitor(self.config)
+
+        assert_equal(True, ndm.shardp(shard))
+        assert_equal(False, ndm.shardp(not_shard))
+
+
     def teardown(self):
         """Cleans up things after each test in this class"""
         purge_nodedirs(self.config)
