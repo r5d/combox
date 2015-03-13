@@ -240,6 +240,11 @@ class NodeDirMonitor(LoggingEventHandler):
         super(NodeDirMonitor, self).on_created(event)
         self.silo_update()
 
+        if not self.shardp(event.src_path) and not event.is_directory:
+            # the file created can be ignored as it is not a shard or
+            # a directory.
+            return
+
         file_cb_path = cb_path(event.src_path, self.config)
 
         if event.is_directory and (not path.exists(file_cb_path)):
@@ -262,6 +267,11 @@ class NodeDirMonitor(LoggingEventHandler):
         super(NodeDirMonitor, self).on_deleted(event)
         self.silo_update()
 
+        if not self.shardp(event.src_path) and not event.is_directory:
+            # the file created can be ignored as it is not a shard or
+            # a directory.
+            return
+
         file_cb_path = cb_path(event.src_path, self.config)
 
         if event.is_directory:
@@ -277,6 +287,11 @@ class NodeDirMonitor(LoggingEventHandler):
     def on_modified(self, event):
         super(NodeDirMonitor, self).on_modified(event)
         self.silo_update()
+
+        if not self.shardp(event.src_path) and not event.is_directory:
+            # the file created can be ignored as it is not a shard or
+            # a directory.
+            return
 
         file_cb_path = cb_path(event.src_path, self.config)
 
