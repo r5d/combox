@@ -7,8 +7,8 @@
    CLOSED: [2015-03-04 Wed 23:06] DEADLINE: <2015-03-06 Fri 09:00>
    - CLOSING NOTE [2015-03-04 Wed 23:06] \\
 	 Done.
-** TODO start thinking about how to write on_moved method (NodeDirMonitor)
-   DEADLINE: <2015-03-13 Fri 09:00>
+** TODO  write on_moved method (NodeDirMonitor)
+   DEADLINE: <2015-03-22 Fri 09:00>
 ** DONE flesh out another method in NodeDirMonitor
 	CLOSED: [2015-02-26 Thu 22:58] DEADLINE: <2015-02-26 Thu 23:00>
 	- CLOSING NOTE [2015-02-26 Thu 22:58] \\
