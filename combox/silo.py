@@ -66,7 +66,11 @@ class ComboxSilo(object):
         filep: path to the file in combox directory.
 
         """
-        return self.db.rem(filep)
+        try:
+            return self.db.rem(filep)
+        except KeyError, e:
+            # means `filep' not present in db.
+            return False
 
 
     def exists(self, filep):
