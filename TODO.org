@@ -1,4 +1,6 @@
 * combox
+** TODO flesh out housekeep method in combox.events.NodeDirMonitor
+   DEADLINE: <2015-03-22 Sun 23:00>
 ** DONE fix the silo bug in ComboxDirMonitor and NodeDirMonitor
    CLOSED: [2015-03-04 Wed 20:12] DEADLINE: <2015-03-06 Fri 09:00>
    - CLOSING NOTE [2015-03-04 Wed 20:12] \\
