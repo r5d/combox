@@ -32,8 +32,9 @@ from combox.config import get_nodedirs
 from combox.crypto import decrypt_and_glue, split_and_encrypt
 from combox.events import ComboxDirMonitor, NodeDirMonitor
 from combox.file import (relative_path, purge_dir,
-                         read_file, write_file,
-                         rm_shards, mk_nodedir, rm_nodedir)
+                         read_file, write_file, move_shards,
+                         rm_shards, mk_nodedir, rm_nodedir,
+                         move_nodedir)
 
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
@@ -309,6 +310,64 @@ class TestEvents(object):
         assert lorem_file_copy_hash != silo.db.get(self.lorem_file_copy)
 
         self.purge_list.append(self.lorem_file_copy)
+
+        observer.stop()
+        observer.join()
+
+
+    def test_NDM_onmoved(self):
+        """Testing on_moved method in NodeDirMonitor"""
+
+        event_handler = NodeDirMonitor(self.config)
+        observer = Observer()
+        observer.schedule(event_handler, self.NODE_DIR, recursive=True)
+        observer.start()
+
+        self.testf = "%s.onm" % self.TEST_FILE
+        copyfile(self.TEST_FILE, self.testf)
+
+        silo = ComboxSilo(self.config)
+        silo.update(self.testf)
+
+        split_and_encrypt(self.testf, self.config)
+        time.sleep(1)
+
+        self.testf_moved = "%s.onm.moved" % self.TEST_FILE
+
+        # test file move/rename
+        move_shards(self.testf, self.testf_moved, self.config)
+        time.sleep(1)
+        assert path.isfile(self.testf_moved)
+
+        silo = ComboxSilo(self.config)
+        assert silo.exists(self.testf_moved)
+
+        # test directory move/rename
+        dirt = path.join(self.FILES_DIR, "fom")
+        os.mkdir(dirt)
+        mk_nodedir(dirt, self.config)
+
+        dirt_lorem = path.join(dirt, "lorem.txt")
+        copyfile(self.lorem, dirt_lorem)
+        split_and_encrypt(dirt_lorem, self.config)
+        time.sleep(1)
+
+        silo = ComboxSilo(self.config)
+        silo.update(dirt_lorem)
+
+        dirt_m = path.join(self.FILES_DIR, "mof")
+        dirt_m_lorem = path.join(dirt_m, "lorem.txt")
+        move_nodedir(dirt, dirt_m, self.config)
+        time.sleep(1)
+
+        assert path.isdir(dirt_m)
+        assert path.isfile(dirt_m_lorem)
+
+        silo = ComboxSilo(self.config)
+        assert silo.exists(dirt_m_lorem)
+
+        self.purge_list.append(self.testf_moved)
+        self.purge_list.append(dirt_m)
 
         observer.stop()
         observer.join()

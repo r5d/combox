@@ -235,6 +235,21 @@ class NodeDirMonitor(LoggingEventHandler):
         super(NodeDirMonitor, self).on_moved(event)
         self.silo_update()
 
+        src_cb_path = cb_path(event.src_path, self.config)
+        dest_cb_path = cb_path(event.dest_path, self.config)
+
+        if not path.exists(dest_cb_path):
+            # means this path was move on another computer that is
+            # running combox.
+            try:
+                os.rename(src_cb_path, dest_cb_path)
+            except OSError, e:
+                print "Jeez, failed to rename path.", e
+
+        if not event.is_directory:
+            self.silo.remove(src_cb_path)
+            self.silo.update(dest_cb_path)
+
 
     def on_created(self, event):
         super(NodeDirMonitor, self).on_created(event)
