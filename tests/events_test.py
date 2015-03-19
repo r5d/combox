@@ -333,6 +333,14 @@ class TestEvents(object):
         if path.exists(silo_path):
             os.remove(silo_path)
 
+        for f in self.purge_list:
+            if path.exists(f) and path.isfile(f):
+                os.remove(f)
+            elif path.exists(f) and path.isdir(f):
+                purge_dir(f)
+                os.rmdir(f)
+
+
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test"""
@@ -348,10 +356,3 @@ class TestEvents(object):
 
         rm_nodedirs(self.config)
         rm_configdir()
-
-        for f in self.purge_list:
-            if path.exists(f) and path.isfile(f):
-                os.remove(f)
-            elif path.exists(f) and path.isdir(f):
-                purge_dir(f)
-                os.rmdir(f)
