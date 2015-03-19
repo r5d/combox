@@ -19,6 +19,7 @@
 import pickledb
 
 from os import path
+from threading import Lock
 
 from combox.file import hash_file
 
@@ -38,6 +39,8 @@ class ComboxSilo(object):
         silo = path.join(config['silo_dir'], 'silo.db')
         self.db = pickledb.load(silo, True)
 
+        self.lock = Lock()
+
 
     def update(self, filep):
         """Update filep's info in db
@@ -47,17 +50,17 @@ class ComboxSilo(object):
         filep: path to the file in combox directory.
 
         """
-
-        fhash = hash_file(filep)
-
-        return self.db.set(filep, fhash)
+        with self.lock:
+            fhash = hash_file(filep)
+            return self.db.set(filep, fhash)
 
 
     def keys(self):
         """Returns a list of all keys in db."""
         # this is why Redis or some other key-value DB should be used
         # instead of PickleDB
-        return self.db.db.keys()
+        with self.lock:
+            return self.db.db.keys()
 
 
     def remove(self, filep):
@@ -67,7 +70,8 @@ class ComboxSilo(object):
 
         """
         try:
-            return self.db.rem(filep)
+            with self.lock:
+                return self.db.rem(filep)
         except KeyError, e:
             # means `filep' not present in db.
             return False
@@ -82,10 +86,11 @@ class ComboxSilo(object):
 
         """
 
-        if self.db.get(filep) is None:
-            return False
-        else:
-            return True
+        with self.lock:
+            if self.db.get(filep) is None:
+                return False
+            else:
+                return True
 
 
     def stale(self, filep, fhash=None):
@@ -101,7 +106,8 @@ class ComboxSilo(object):
         if not fhash:
             fhash = hash_file(filep)
 
-        fhash_in_db = self.db.get(filep)
+        with self.lock:
+            fhash_in_db = self.db.get(filep)
 
         if fhash_in_db is None:
             return None
