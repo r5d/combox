@@ -157,6 +157,35 @@ class TestFile(object):
                                         isfile=False)
 
 
+    def test_nodepaths(self):
+        """Tests the node_paths function."""
+        nodes = get_nodedirs(self.config)
+        node_iter = iter(nodes)
+
+        # test for file shards
+        foo = path.join(self.config['combox_dir'], 'foo.txt')
+        foo_rel_path = relative_path(foo, self.config)
+        foo_shards = node_paths(foo, self.config, True)
+
+        shard_no = 0
+        for foo_shard in foo_shards:
+            file_shard = '%s.shard%d' % (foo_rel_path, shard_no)
+            n_path = path.join(node_iter.next(), file_shard)
+            assert_equal(n_path, foo_shard)
+            shard_no += 1
+
+        # test for directory inside node_directories
+        bar = path.join(self.config['combox_dir'], 'bar')
+        bar_rel_path = relative_path(bar, self.config)
+        bar_n_paths = node_paths(bar, self.config, False)
+
+
+        node_iter = iter(nodes)
+        for bar_n_path in bar_n_paths:
+            b_n_path = path.join(node_iter.next(), bar_rel_path)
+            assert_equal(b_n_path, bar_n_path)
+
+
     def test_rmpath(self):
         """Tests rm_path function"""
         new_dir = path.join(self.config['combox_dir'], 'fooius')

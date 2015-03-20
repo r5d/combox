@@ -93,6 +93,34 @@ def node_path(cb_path, config, isfile):
     return file_node_path
 
 
+def node_paths(cb_path, config, isfile):
+    """Returns list of abs. path of file (in node dir.) the cb_path.
+
+    If cb_path is a file, it returns a list of abs. path names of
+    shards of the file in the node directories.
+
+    isfile: True if cb_path is a file
+    """
+
+    n_paths = []
+    nodes = get_nodedirs(config)
+    rel_path = relative_path(cb_path, config)
+
+    if isfile:
+        shard_no = 0
+        for node in nodes:
+            file_shard = '%s.shard%d' % (rel_path, shard_no)
+            n_path = path.join(node, file_shard)
+            n_paths.append(n_path)
+            shard_no += 1
+    else:
+        for node in nodes:
+            n_path = path.join(node, rel_path)
+            n_paths.append(n_path)
+
+    return n_paths
+
+
 def mk_nodedir(directory, config):
     """
     Creates directory `directory' inside the nodes.
