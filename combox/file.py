@@ -72,10 +72,11 @@ def cb_path(node_path, config):
 def node_path(cb_path, config, isfile):
     """Returns abs. path of file (in node dir.) given the cb_path (combox dir. path).
 
-    If cb_path is a file, it returns the path to its first shard in
-    the first node directory.
+    If cb_path is a file, it returns the path to its shard in the
+    first node directory.
 
     isfile: True if cb_path is a file.
+
     """
 
     if isfile:
