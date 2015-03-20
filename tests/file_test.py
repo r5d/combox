@@ -27,7 +27,7 @@ from shutil import copyfile
 from combox.config import get_nodedirs
 from combox.crypto import split_and_encrypt
 from combox.file import *
-from tests.utils import get_config, rm_nodedirs, rm_configdir
+from tests.utils import get_config, rm_nodedirs, rm_configdir, purge
 
 
 class TestFile(object):
@@ -185,6 +185,11 @@ class TestFile(object):
         self.purge_list.append(new_dir)
 
 
+    def teardown(self):
+        """Cleans up things after each test in this class."""
+        purge(self.purge_list)
+
+
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test."""
@@ -192,10 +197,3 @@ class TestFile(object):
         rm_shards(self.TEST_FILE, self.config)
         rm_nodedirs(self.config)
         rm_configdir()
-
-        for f in self.purge_list:
-            if path.exists(f) and path.isfile(f):
-                os.remove(f)
-            elif path.exists(f) and path.isdir(f):
-                purge_dir(f)
-                os.rmdir(f)

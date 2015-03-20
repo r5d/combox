@@ -69,6 +69,16 @@ def rm_nodedirs(config):
             print "Problem deleting", node, e
 
 
+def purge(l):
+    """ Purges everything in list `l'"""
+    for f in l:
+        if path.exists(f) and path.isfile(f):
+            remove(f)
+        elif path.exists(f) and path.isdir(f):
+            purge_dir(f)
+            rmdir(f)
+
+
 def purge_nodedirs(config):
     """Purges everything inside node directories."""
     nodes = get_nodedirs(config)

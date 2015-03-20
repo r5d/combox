@@ -39,7 +39,7 @@ from combox.file import (relative_path, purge_dir,
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
                          path_deletedp, rm_nodedirs, rm_configdir,
-                         purge_nodedirs)
+                         purge_nodedirs, purge)
 
 
 class TestEvents(object):
@@ -392,12 +392,7 @@ class TestEvents(object):
         if path.exists(silo_path):
             os.remove(silo_path)
 
-        for f in self.purge_list:
-            if path.exists(f) and path.isfile(f):
-                os.remove(f)
-            elif path.exists(f) and path.isdir(f):
-                purge_dir(f)
-                os.rmdir(f)
+        purge(self.purge_list)
 
 
     @classmethod
