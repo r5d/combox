@@ -23,10 +23,12 @@ from os import path
 
 from watchdog.events import LoggingEventHandler
 
+from combox.config import get_nodedirs
 from combox.crypto import split_and_encrypt, decrypt_and_glue
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir,
-                         cb_path, node_path, hash_file, rm_path)
+                         cb_path, node_path, hash_file, rm_path,
+                         node_paths)
 from combox.silo import ComboxSilo
 
 
@@ -229,6 +231,52 @@ class NodeDirMonitor(LoggingEventHandler):
 
         """
         self.silo_update()
+
+        print "combox node monitor is housekeeping."
+        print "Please don't make any changes to combox directory now."
+        print "Thanks for your patience."
+
+        # Remove files from the combox directory whose shards were
+        # deleted.
+        for fpath in self.silo.keys():
+           fshards = node_paths(fpath, self.config, True)
+
+           for fshard in fshards:
+               if not path.exists(fshard):
+                   # remove the file from combox directory.
+                   rm_path(fpath)
+                   print fpath, "was deleted on another computer. Removing it."
+                   # update silo.
+                   self.silo.remove(fpath)
+                   break
+
+        for root, dirs, files in os.walk(get_nodedirs(self.config)[0]):
+            for f in files:
+                shard = path.join(root, f)
+
+                if not self.shardp(shard):
+                    continue
+
+                file_cb_path = cb_path(shard, self.config)
+                if not self.silo.exists(file_cb_path):
+                    print file_cb_path, "was created remotely. Creating it locally now..."
+                    decrypt_and_glue(file_cb_path, self.config)
+                    self.silo.update(file_cb_path)
+                elif self.silo.exists(file_cb_path):
+                    file_content = decrypt_and_glue(file_cb_path,
+                                                    self.config,
+                                                    write=False)
+                    file_content_hash = hash_file(file_cb_path, file_content)
+
+                    if self.silo.stale(file_cb_path, file_content_hash):
+                        # file modified
+                        print file_cb_path, "modified remotely. Updating local copy."
+                        decrypt_and_glue(file_cb_path, self.config)
+                        self.silo.update(file_cb_path)
+
+
+        print "combox node monitor is done with the drudgery."
+        print "Do what you want to the combox directory."
 
 
     def on_moved(self, event):

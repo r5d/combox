@@ -31,7 +31,7 @@ from watchdog.observers import Observer
 from combox.config import get_nodedirs
 from combox.crypto import decrypt_and_glue, split_and_encrypt
 from combox.events import ComboxDirMonitor, NodeDirMonitor
-from combox.file import (relative_path, purge_dir,
+from combox.file import (relative_path, purge_dir, hash_file,
                          read_file, write_file, move_shards,
                          rm_shards, mk_nodedir, rm_nodedir,
                          move_nodedir)
@@ -185,7 +185,7 @@ class TestEvents(object):
         observer.join()
 
 
-    def test_housekeep(self):
+    def test_CDM_housekeep(self):
         """ComboxDirMonitor's housekeep method test."""
 
         # test file deletion and addition
@@ -371,6 +371,75 @@ class TestEvents(object):
 
         observer.stop()
         observer.join()
+
+
+    def test_NDM_housekeep(self):
+        """Testing NodeDirMonitor's housekeep method."""
+
+        # files for testing deletion.
+        testf1 = path.join(self.FILES_DIR, 'hitchhikers.png')
+        testf2 = path.join(self.FILES_DIR, 'lorem.housekeep')
+        copyfile(self.TEST_FILE, testf1)
+        copyfile(self.lorem, testf2)
+
+        silo = ComboxSilo(self.config)
+        silo.update(testf1)
+        silo.update(testf2)
+
+        ndm = NodeDirMonitor(self.config)
+        ndm.housekeep()
+
+        assert not path.exists(testf1)
+        assert not path.exists(testf2)
+
+        self.purge_list.append(testf1)
+        self.purge_list.append(testf2)
+
+        # test shard creation
+        hmutant = "%s.mutant" % self.TEST_FILE
+        hmutant_content = read_file(self.TEST_FILE)
+
+        split_and_encrypt(hmutant, self.config,
+                          hmutant_content)
+
+        ndm = NodeDirMonitor(self.config)
+        ndm.housekeep()
+
+        assert path.exists(hmutant)
+        assert hmutant_content == read_file(hmutant)
+
+        self.purge_list.append(hmutant)
+
+        # test shard modification
+        lcopy = "%s.copy" % self.lorem
+        copyfile(self.lorem, lcopy)
+        lcopy_content = read_file(lcopy)
+        split_and_encrypt(lcopy, self.config,
+                          lcopy_content)
+
+        silo = ComboxSilo(self.config)
+        silo.update(lcopy)
+        shardedp(lcopy)
+
+        silo = ComboxSilo(self.config)
+        lcopy_hash = silo.db.get(lcopy)
+
+        ipsum_content = read_file(self.ipsum)
+        lcopy_content = "%s\n%s" % (lcopy_content, ipsum_content)
+
+        split_and_encrypt(lcopy, self.config,
+                          lcopy_content)
+
+        ndm = NodeDirMonitor(self.config)
+        ndm.housekeep()
+
+        ## check if the lorem_file_copy's info is updated in silo
+        silo = ComboxSilo(self.config)
+
+        assert lcopy_content == read_file(lcopy)
+        assert hash_file(lcopy, lcopy_content) == silo.db.get(lcopy)
+
+        self.purge_list.append(lcopy)
 
 
     def test_NDM_shardp(self):
