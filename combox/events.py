@@ -219,7 +219,7 @@ class NodeDirMonitor(LoggingEventHandler):
         """Recursively traverses node directory, discovers changes and updates silo and combox directory.
 
         If it detects that a shard was deleted, it purges the
-        corresponding file from the combox director and also removes
+        corresponding file from the combox directory and also removes
         information about the file from the silo.
 
         If it detects new shards, it reconstructs the file and places
