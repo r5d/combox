@@ -1,4 +1,6 @@
 * combox
+** TODO figure out and implement a way to track changes made to shards
+   DEADLINE: <2015-04-03 Fri 09:00>
 ** DONE flesh out housekeep method in combox.events.NodeDirMonitor
    CLOSED: [2015-03-26 Thu 20:29] DEADLINE: <2015-03-27 Fri 23:00>
    - CLOSING NOTE [2015-03-26 Thu 20:29] \\
