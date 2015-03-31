@@ -81,7 +81,10 @@ class ComboxDirMonitor(LoggingEventHandler):
         print "Thanks for your patience."
 
         # Remove information about files that were deleted.
-        for fpath in self.silo.keys():
+        fpath_filter = lambda x: x not in self.silo.nodedicts()
+        fpaths = filter(fpath_filter, self.silo.keys())
+
+        for fpath in fpaths:
             if not path.exists(fpath):
                 # remove this file's info from silo.
                 print fpath, "was deleted. Removing it from DB."
@@ -238,7 +241,11 @@ class NodeDirMonitor(LoggingEventHandler):
 
         # Remove files from the combox directory whose shards were
         # deleted.
-        for fpath in self.silo.keys():
+        # Remove information about files that were deleted.
+        fpath_filter = lambda x: x not in self.silo.nodedicts()
+        fpaths = filter(fpath_filter, self.silo.keys())
+
+        for fpath in fpaths:
            fshards = node_paths(fpath, self.config, True)
 
            for fshard in fshards:

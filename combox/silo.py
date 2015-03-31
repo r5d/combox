@@ -39,6 +39,15 @@ class ComboxSilo(object):
         silo = path.join(config['silo_dir'], 'silo.db')
         self.db = pickledb.load(silo, True)
 
+        ## things we need for housekeep the node directory.
+        self.node_dicts = ['shard_created', 'shard_modified', 'shard_moved',
+                           'shard_deleted']
+
+        # created the dicts if not already created.
+        for ndict in self.node_dicts:
+            if not self.db.get(ndict):
+                self.db.dcreate(ndict)
+
         self.lock = Lock()
 
 
