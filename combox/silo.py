@@ -30,14 +30,14 @@ class ComboxSilo(object):
     """
 
 
-    def __init__(self, config):
+    def __init__(self, config, lock):
         """config: a dictinary which contains combox configuration.
 
         """
         self.config = config
 
-        silo = path.join(config['silo_dir'], 'silo.db')
-        self.db = pickledb.load(silo, True)
+        self.silo_path = path.join(config['silo_dir'], 'silo.db')
+        self.db = pickledb.load(self.silo_path, True)
 
         ## things we need for housekeep the node directory.
         self.node_dicts = ['shard_created', 'shard_modified', 'shard_moved',
@@ -48,7 +48,13 @@ class ComboxSilo(object):
             if not self.db.get(ndict):
                 self.db.dcreate(ndict)
 
-        self.lock = Lock()
+        self.lock = lock
+
+
+    def reload(self):
+        """Re-loads the DB from disk."""
+        with self.lock:
+            self.db = pickledb.load(self.silo_path, True)
 
 
     def update(self, filep):

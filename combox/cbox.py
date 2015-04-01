@@ -25,6 +25,7 @@ import yaml
 from argparse import ArgumentParser
 from os import path
 from sys import exit
+from threading import Lock
 from watchdog.observers import Observer
 
 from combox.config import config_cb
@@ -39,7 +40,8 @@ def run_cb(config):
     Runs combox.
     """
     c_path = path.abspath(config['combox_dir'])
-    event_handler = ComboxDirMonitor(config)
+    db_lock = Lock()
+    event_handler = ComboxDirMonitor(config, db_lock)
 
     observer = Observer()
     observer.schedule(event_handler, c_path, recursive=True)

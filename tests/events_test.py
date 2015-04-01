@@ -24,6 +24,7 @@ from filecmp import cmp
 from glob import glob
 from os import path, remove
 from shutil import copyfile
+from threading import Lock
 
 from nose.tools import *
 from watchdog.observers import Observer
@@ -51,6 +52,7 @@ class TestEvents(object):
     def setup_class(self):
         """Set things up."""
 
+        self.silo_lock = Lock()
         self.config = get_config()
         self.FILES_DIR = self.config['combox_dir']
         self.NODE_DIR = get_nodedirs(self.config)[0]
@@ -70,7 +72,7 @@ class TestEvents(object):
         Tests the ComboxDirMonitor class.
         """
 
-        event_handler = ComboxDirMonitor(self.config)
+        event_handler = ComboxDirMonitor(self.config, self.silo_lock)
         observer = Observer()
         observer.schedule(event_handler, self.FILES_DIR, recursive=True)
         observer.start()
@@ -84,7 +86,7 @@ class TestEvents(object):
         ## check if the shards were created.
         shardedp(self.TEST_FILE_COPY_0)
         ## check if the new file's info is in silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.TEST_FILE_COPY_0)
 
         # Test - File deletion.
@@ -92,7 +94,7 @@ class TestEvents(object):
         time.sleep(1)
         path_deletedp(self.TEST_FILE_COPY_0)
         ## check if the new file's info is removed from silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert not silo.exists(self.TEST_FILE_COPY_0)
 
         # Test - directory creation
@@ -126,7 +128,7 @@ class TestEvents(object):
         renamedp(self.TEST_DIR_1, self.TEST_DIR_1_NEW)
         renamedp(self.TEST_FILE_COPY_1, self.TEST_FILE_COPY_1_NEW)
         ## check if the new file's info is updated in silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert not silo.exists(self.TEST_FILE_COPY_1)
         assert silo.exists(self.TEST_FILE_COPY_1_NEW)
 
@@ -148,7 +150,7 @@ class TestEvents(object):
         time.sleep(1)
         shardedp(self.lorem_file_copy)
         ## check if the lorem_file_copy's info is stored in silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         lorem_file_copy_hash = silo.db.get(self.lorem_file_copy)
 
         self.ipsum_file = path.join(self.FILES_DIR, 'ipsum.txt')
@@ -160,7 +162,7 @@ class TestEvents(object):
         write_file(self.lorem_file_copy, lorem_copy_content)
         time.sleep(1)
         ## check if the lorem_file_copy's info is updated in silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert lorem_file_copy_hash != silo.db.get(self.lorem_file_copy)
 
 
@@ -178,7 +180,7 @@ class TestEvents(object):
         time.sleep(1)
         path_deletedp(self.lorem_file_copy)
         ## check if the lorem_file_copy's info is deleted from silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert not silo.exists(self.lorem_file_copy)
 
         observer.stop()
@@ -191,10 +193,10 @@ class TestEvents(object):
         # test file deletion and addition
         os.rename(self.lorem, self.lorem_moved)
 
-        cdm = ComboxDirMonitor(self.config)
+        cdm = ComboxDirMonitor(self.config, self.silo_lock)
         cdm.housekeep()
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert not silo.exists(self.lorem)
         assert silo.exists(self.lorem_moved)
         shardedp(self.lorem_moved)
@@ -208,10 +210,10 @@ class TestEvents(object):
         copyfile(self.lorem, self.lorem_ipsum)
         assert path.exists(self.lorem_ipsum)
 
-        cdm = ComboxDirMonitor(self.config)
+        cdm = ComboxDirMonitor(self.config, self.silo_lock)
         cdm.housekeep()
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.lorem_ipsum)
 
         ipsum_content = read_file(self.ipsum)
@@ -222,7 +224,7 @@ class TestEvents(object):
 
         cdm.housekeep()
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert not silo.stale(self.lorem_ipsum)
 
 
@@ -231,7 +233,7 @@ class TestEvents(object):
         Tests the NodeDirMonitor class.
         """
 
-        event_handler = NodeDirMonitor(self.config)
+        event_handler = NodeDirMonitor(self.config, self.silo_lock)
         observer = Observer()
         observer.schedule(event_handler, self.NODE_DIR, recursive=True)
         observer.start()
@@ -248,7 +250,7 @@ class TestEvents(object):
         time.sleep(1)
         assert fmutant_content == read_file(self.TEST_FILE_MUTANT)
         ## check if the new file's info is in silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.TEST_FILE_MUTANT)
 
         # Test - directory creation
@@ -272,7 +274,7 @@ class TestEvents(object):
         assert not path.exists(self.TEST_FILE_MUTANT)
 
         ## check if the new file's info is removed from silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert not silo.exists(self.TEST_FILE_MUTANT)
 
         # Test - directory deletion inside node directory
@@ -289,11 +291,11 @@ class TestEvents(object):
         split_and_encrypt(self.lorem_file_copy, self.config,
                           lorem_content)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.update(self.lorem_file_copy)
         shardedp(self.lorem_file_copy)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         lorem_file_copy_hash = silo.db.get(self.lorem_file_copy)
 
         self.ipsum_file = path.join(self.FILES_DIR, 'ipsum.txt')
@@ -304,7 +306,7 @@ class TestEvents(object):
                           lorem_copy_content)
         time.sleep(1)
         ## check if the lorem_file_copy's info is updated in silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
 
         assert lorem_copy_content == read_file(self.lorem_file_copy)
         assert lorem_file_copy_hash != silo.db.get(self.lorem_file_copy)
@@ -318,7 +320,7 @@ class TestEvents(object):
     def test_NDM_onmoved(self):
         """Testing on_moved method in NodeDirMonitor"""
 
-        event_handler = NodeDirMonitor(self.config)
+        event_handler = NodeDirMonitor(self.config, self.silo_lock)
         observer = Observer()
         observer.schedule(event_handler, self.NODE_DIR, recursive=True)
         observer.start()
@@ -326,7 +328,7 @@ class TestEvents(object):
         self.testf = "%s.onm" % self.TEST_FILE
         copyfile(self.TEST_FILE, self.testf)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.update(self.testf)
 
         split_and_encrypt(self.testf, self.config)
@@ -339,7 +341,7 @@ class TestEvents(object):
         time.sleep(1)
         assert path.isfile(self.testf_moved)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.testf_moved)
 
         # test directory move/rename
@@ -352,7 +354,7 @@ class TestEvents(object):
         split_and_encrypt(dirt_lorem, self.config)
         time.sleep(1)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.update(dirt_lorem)
 
         dirt_m = path.join(self.FILES_DIR, "mof")
@@ -363,7 +365,7 @@ class TestEvents(object):
         assert path.isdir(dirt_m)
         assert path.isfile(dirt_m_lorem)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(dirt_m_lorem)
 
         self.purge_list.append(self.testf_moved)
@@ -382,11 +384,11 @@ class TestEvents(object):
         copyfile(self.TEST_FILE, testf1)
         copyfile(self.lorem, testf2)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.update(testf1)
         silo.update(testf2)
 
-        ndm = NodeDirMonitor(self.config)
+        ndm = NodeDirMonitor(self.config, self.silo_lock)
         ndm.housekeep()
 
         assert not path.exists(testf1)
@@ -402,7 +404,7 @@ class TestEvents(object):
         split_and_encrypt(hmutant, self.config,
                           hmutant_content)
 
-        ndm = NodeDirMonitor(self.config)
+        ndm = NodeDirMonitor(self.config, self.silo_lock)
         ndm.housekeep()
 
         assert path.exists(hmutant)
@@ -417,11 +419,11 @@ class TestEvents(object):
         split_and_encrypt(lcopy, self.config,
                           lcopy_content)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.update(lcopy)
         shardedp(lcopy)
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         lcopy_hash = silo.db.get(lcopy)
 
         ipsum_content = read_file(self.ipsum)
@@ -430,11 +432,11 @@ class TestEvents(object):
         split_and_encrypt(lcopy, self.config,
                           lcopy_content)
 
-        ndm = NodeDirMonitor(self.config)
+        ndm = NodeDirMonitor(self.config, self.silo_lock)
         ndm.housekeep()
 
         ## check if the lorem_file_copy's info is updated in silo
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
 
         assert lcopy_content == read_file(lcopy)
         assert hash_file(lcopy, lcopy_content) == silo.db.get(lcopy)
@@ -446,7 +448,7 @@ class TestEvents(object):
         """Testing shardp method in NodeDirMonitor class"""
         shard = 'some.shard0'
         not_shard = 'some.extension'
-        ndm = NodeDirMonitor(self.config)
+        ndm = NodeDirMonitor(self.config, self.silo_lock)
 
         assert_equal(True, ndm.shardp(shard))
         assert_equal(False, ndm.shardp(not_shard))

@@ -20,6 +20,7 @@ import os
 import logging
 
 from os import path
+from threading import Lock
 
 from watchdog.events import LoggingEventHandler
 
@@ -37,7 +38,7 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     """
 
-    def __init__(self, config):
+    def __init__(self, config, dblock):
         """
         config: a dictinary which contains combox configuration.
         """
@@ -48,7 +49,7 @@ class ComboxDirMonitor(LoggingEventHandler):
                             datefmt='%Y-%m-%d %H:%M:%S')
 
         self.config = config
-        self.silo = ComboxSilo(self.config)
+        self.silo = ComboxSilo(self.config, dblock)
 
         self.housekeep()
 
@@ -57,7 +58,7 @@ class ComboxDirMonitor(LoggingEventHandler):
         """
         Re-reads the silo from disk.
         """
-        self.silo = ComboxSilo(self.config)
+        self.silo.reload()
 
 
     def housekeep(self):
@@ -186,7 +187,7 @@ class NodeDirMonitor(LoggingEventHandler):
 
     """
 
-    def __init__(self, config):
+    def __init__(self, config, dblock):
         """
         config: a dictinary which contains combox configuration.
         """
@@ -197,14 +198,14 @@ class NodeDirMonitor(LoggingEventHandler):
                             datefmt='%Y-%m-%d %H:%M:%S')
 
         self.config = config
-        self.silo = ComboxSilo(self.config)
+        self.silo = ComboxSilo(self.config, dblock)
 
 
     def silo_update(self):
         """
         Re-reads the silo from disk.
         """
-        self.silo = ComboxSilo(self.config)
+        self.silo.reload()
 
 
     def shardp(self, path):

@@ -20,6 +20,7 @@ import yaml
 
 from shutil import copyfile
 from os import path, remove
+from threading import Lock
 
 from combox.silo import ComboxSilo
 from combox.file import read_file, write_file, hash_file
@@ -37,6 +38,7 @@ class TestSilo(object):
     def setup_class(self):
         """Set things up."""
 
+        self.silo_lock = Lock()
         self.config = get_config()
         self.FILES_DIR = self.config['combox_dir']
 
@@ -49,7 +51,7 @@ class TestSilo(object):
         """
         Tests the ComboxSilo class.
         """
-        csilo = ComboxSilo(self.config)
+        csilo = ComboxSilo(self.config, self.silo_lock)
 
         # Test - update
         csilo.update(self.LOREM)
@@ -100,7 +102,7 @@ class TestSilo(object):
         node directories are created.
 
         """
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         keys = silo.db.db.keys()
 
         node_dicts = ['shard_created', 'shard_modified', 'shard_moved',
@@ -113,7 +115,7 @@ class TestSilo(object):
         """Tests node_set method, in ComboxSilo class, when type is 'shard_created'.
         """
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.node_set('shard_created', self.LOREM)
         silo.node_set('shard_created', self.LOREM)
         silo.node_set('shard_created', self.LOREM)
@@ -132,7 +134,7 @@ class TestSilo(object):
         """Tests node_set method, in ComboxSilo class, when type is 'shard_modified'.
         """
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.node_set('shard_modified', self.LOREM)
         silo.node_set('shard_modified', self.LOREM)
         silo.node_set('shard_modified', self.LOREM)
@@ -151,7 +153,7 @@ class TestSilo(object):
         """Tests node_set method, in ComboxSilo class, when type is 'shard_moved'.
         """
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.node_set('shard_moved', self.LOREM)
         silo.node_set('shard_moved', self.LOREM)
         silo.node_set('shard_moved', self.LOREM)
@@ -170,7 +172,7 @@ class TestSilo(object):
         """Tests node_set method in ComboxSilo class, when type is 'shard_deleted'.
         """
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.node_set('shard_deleted', self.LOREM)
         silo.node_set('shard_deleted', self.LOREM)
         silo.node_set('shard_deleted', self.LOREM)
@@ -188,7 +190,7 @@ class TestSilo(object):
     def test_csilo_nodeget(self):
         """Tests node_get method in ComboxSilo class
         """
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         assert_equal(None, silo.node_get('shard_created', self.LOREM))
 
         silo.node_set('shard_created', self.LOREM)
@@ -199,14 +201,14 @@ class TestSilo(object):
     def teardown(self):
         """Cleans up things after each test in this class"""
 
-        silo = ComboxSilo(self.config)
+        silo = ComboxSilo(self.config, self.silo_lock)
         silo.db.deldb()
 
 
     @classmethod
     def teardown_class(self):
         """Purge the mess created by this test"""
-        csilo = ComboxSilo(self.config)
+        csilo = ComboxSilo(self.config, self.silo_lock)
         csilo.remove(self.LOREM)
         csilo.remove(self.IPSUM)
         rm_nodedirs(self.config)
