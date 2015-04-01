@@ -1,5 +1,8 @@
 * combox
-** TODO ComboxSilo: reload db from disk before reading/writing to it.
+** DONE ComboxSilo: reload db from disk before reading/writing to it.
+   CLOSED: [2015-04-01 Wed 11:13]
+   - CLOSING NOTE [2015-04-01 Wed 11:13] \\
+	 Yeah, done.
 ** DONE modify combox.silo.ComboxSilo so that it uses Locks properly.
    CLOSED: [2015-04-01 Wed 10:37] DEADLINE: <2015-04-03 Fri 09:00>
    - CLOSING NOTE [2015-04-01 Wed 10:37] \\
