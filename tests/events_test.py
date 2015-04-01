@@ -228,6 +228,15 @@ class TestEvents(object):
         assert not silo.stale(self.lorem_ipsum)
 
 
+    def test_NDM_numnodes(self):
+        """Tests whether the NodeDirMonitor's num_nodes variable has the
+        right value.
+
+        """
+        nmonitor = NodeDirMonitor(self.config, self.silo_lock)
+        assert_equal(2, nmonitor.num_nodes)
+
+
     def test_NDM(self):
         """
         Tests the NodeDirMonitor class.

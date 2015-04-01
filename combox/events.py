@@ -188,6 +188,8 @@ class NodeDirMonitor(LoggingEventHandler):
         self.config = config
         self.silo = ComboxSilo(self.config, dblock)
 
+        self.num_nodes = len(get_nodedirs(self.config))
+
 
     def shardp(self, path):
         """Returns True if `path' is a shard
