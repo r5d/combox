@@ -1,6 +1,8 @@
 * combox
-** TODO modify combox.silo.ComboxSilo so that it uses Locks properly.
-   DEADLINE: <2015-04-03 Fri 09:00>
+** DONE modify combox.silo.ComboxSilo so that it uses Locks properly.
+   CLOSED: [2015-04-01 Wed 10:37] DEADLINE: <2015-04-03 Fri 09:00>
+   - CLOSING NOTE [2015-04-01 Wed 10:37] \\
+	 Zarking done.
 ** DONE flesh out housekeep method in combox.events.NodeDirMonitor
    CLOSED: [2015-03-26 Thu 20:29] DEADLINE: <2015-03-27 Fri 23:00>
    - CLOSING NOTE [2015-03-26 Thu 20:29] \\
