@@ -65,6 +65,7 @@ class ComboxSilo(object):
         filep: path to the file in combox directory.
 
         """
+        self.reload()
         with self.lock:
             fhash = hash_file(filep)
             return self.db.set(filep, fhash)
@@ -74,6 +75,7 @@ class ComboxSilo(object):
         """Returns a list of all keys in db."""
         # this is why Redis or some other key-value DB should be used
         # instead of PickleDB
+        self.reload()
         with self.lock:
             return self.db.db.keys()
 
@@ -85,6 +87,7 @@ class ComboxSilo(object):
 
         """
         try:
+            self.reload()
             with self.lock:
                 return self.db.rem(filep)
         except KeyError, e:
@@ -100,7 +103,7 @@ class ComboxSilo(object):
         filep: path to the file in combox directory.
 
         """
-
+        self.reload()
         with self.lock:
             if self.db.get(filep) is None:
                 return False
@@ -121,6 +124,7 @@ class ComboxSilo(object):
         if not fhash:
             fhash = hash_file(filep)
 
+        self.reload()
         with self.lock:
             fhash_in_db = self.db.get(filep)
 
@@ -147,6 +151,7 @@ class ComboxSilo(object):
         file_: path of the file_ in combox directory.
         """
 
+        self.reload()
         with self.lock:
             try:
                 num = self.db.dget(type_, file_)
@@ -164,8 +169,10 @@ class ComboxSilo(object):
         type_: 'shard_created', 'shard_modified', 'shard_moved', 'shard_deleted'
         file_: path of the file_ in combox directory.
         """
-        try:
-            return self.db.dget(type_, file_)
-        except KeyError, e:
-            # file_ info not there under type_ dict.
-            return None
+        self.reload()
+        with self.lock:
+            try:
+                return self.db.dget(type_, file_)
+            except KeyError, e:
+                # file_ info not there under type_ dict.
+                return None
