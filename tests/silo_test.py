@@ -105,97 +105,97 @@ class TestSilo(object):
         silo = ComboxSilo(self.config, self.silo_lock)
         keys = silo.db.db.keys()
 
-        node_dicts = ['shard_created', 'shard_modified', 'shard_moved',
-                      'shard_deleted']
+        node_dicts = ['file_created', 'file_modified', 'file_moved',
+                      'file_deleted']
         for ndict in node_dicts:
             assert ndict in keys
 
 
     def test_csilo_nodset_create(self):
-        """Tests node_set method, in ComboxSilo class, when type is 'shard_created'.
+        """Tests node_set method, in ComboxSilo class, when type is 'file_created'.
         """
 
         silo = ComboxSilo(self.config, self.silo_lock)
-        silo.node_set('shard_created', self.LOREM)
-        silo.node_set('shard_created', self.LOREM)
-        silo.node_set('shard_created', self.LOREM)
+        silo.node_set('file_created', self.LOREM)
+        silo.node_set('file_created', self.LOREM)
+        silo.node_set('file_created', self.LOREM)
 
-        silo.node_set('shard_created', self.IPSUM)
-        silo.node_set('shard_created', self.IPSUM)
-        silo.node_set('shard_created', self.IPSUM)
-        silo.node_set('shard_created', self.IPSUM)
+        silo.node_set('file_created', self.IPSUM)
+        silo.node_set('file_created', self.IPSUM)
+        silo.node_set('file_created', self.IPSUM)
+        silo.node_set('file_created', self.IPSUM)
 
-        dict_shard_created = silo.db.get('shard_created')
-        assert_equal(3, dict_shard_created[self.LOREM])
-        assert_equal(4, dict_shard_created[self.IPSUM])
+        dict_file_created = silo.db.get('file_created')
+        assert_equal(3, dict_file_created[self.LOREM])
+        assert_equal(4, dict_file_created[self.IPSUM])
 
 
     def test_csilo_nodset_modified(self):
-        """Tests node_set method, in ComboxSilo class, when type is 'shard_modified'.
+        """Tests node_set method, in ComboxSilo class, when type is 'file_modified'.
         """
 
         silo = ComboxSilo(self.config, self.silo_lock)
-        silo.node_set('shard_modified', self.LOREM)
-        silo.node_set('shard_modified', self.LOREM)
-        silo.node_set('shard_modified', self.LOREM)
+        silo.node_set('file_modified', self.LOREM)
+        silo.node_set('file_modified', self.LOREM)
+        silo.node_set('file_modified', self.LOREM)
 
-        silo.node_set('shard_modified', self.IPSUM)
-        silo.node_set('shard_modified', self.IPSUM)
-        silo.node_set('shard_modified', self.IPSUM)
-        silo.node_set('shard_modified', self.IPSUM)
+        silo.node_set('file_modified', self.IPSUM)
+        silo.node_set('file_modified', self.IPSUM)
+        silo.node_set('file_modified', self.IPSUM)
+        silo.node_set('file_modified', self.IPSUM)
 
-        dict_shard_modified = silo.db.get('shard_modified')
-        assert_equal(3, dict_shard_modified[self.LOREM])
-        assert_equal(4, dict_shard_modified[self.IPSUM])
+        dict_file_modified = silo.db.get('file_modified')
+        assert_equal(3, dict_file_modified[self.LOREM])
+        assert_equal(4, dict_file_modified[self.IPSUM])
 
 
     def test_csilo_nodset_moved(self):
-        """Tests node_set method, in ComboxSilo class, when type is 'shard_moved'.
+        """Tests node_set method, in ComboxSilo class, when type is 'file_moved'.
         """
 
         silo = ComboxSilo(self.config, self.silo_lock)
-        silo.node_set('shard_moved', self.LOREM)
-        silo.node_set('shard_moved', self.LOREM)
-        silo.node_set('shard_moved', self.LOREM)
+        silo.node_set('file_moved', self.LOREM)
+        silo.node_set('file_moved', self.LOREM)
+        silo.node_set('file_moved', self.LOREM)
 
-        silo.node_set('shard_moved', self.IPSUM)
-        silo.node_set('shard_moved', self.IPSUM)
-        silo.node_set('shard_moved', self.IPSUM)
-        silo.node_set('shard_moved', self.IPSUM)
+        silo.node_set('file_moved', self.IPSUM)
+        silo.node_set('file_moved', self.IPSUM)
+        silo.node_set('file_moved', self.IPSUM)
+        silo.node_set('file_moved', self.IPSUM)
 
-        dict_shard_moved = silo.db.get('shard_moved')
-        assert_equal(3, dict_shard_moved[self.LOREM])
-        assert_equal(4, dict_shard_moved[self.IPSUM])
+        dict_file_moved = silo.db.get('file_moved')
+        assert_equal(3, dict_file_moved[self.LOREM])
+        assert_equal(4, dict_file_moved[self.IPSUM])
 
 
-    def test_csilo_nodset_shard_deleted(self):
-        """Tests node_set method in ComboxSilo class, when type is 'shard_deleted'.
+    def test_csilo_nodset_file_deleted(self):
+        """Tests node_set method in ComboxSilo class, when type is 'file_deleted'.
         """
 
         silo = ComboxSilo(self.config, self.silo_lock)
-        silo.node_set('shard_deleted', self.LOREM)
-        silo.node_set('shard_deleted', self.LOREM)
-        silo.node_set('shard_deleted', self.LOREM)
+        silo.node_set('file_deleted', self.LOREM)
+        silo.node_set('file_deleted', self.LOREM)
+        silo.node_set('file_deleted', self.LOREM)
 
-        silo.node_set('shard_deleted', self.IPSUM)
-        silo.node_set('shard_deleted', self.IPSUM)
-        silo.node_set('shard_deleted', self.IPSUM)
-        silo.node_set('shard_deleted', self.IPSUM)
+        silo.node_set('file_deleted', self.IPSUM)
+        silo.node_set('file_deleted', self.IPSUM)
+        silo.node_set('file_deleted', self.IPSUM)
+        silo.node_set('file_deleted', self.IPSUM)
 
-        dict_shard_deleted = silo.db.get('shard_deleted')
-        assert_equal(3, dict_shard_deleted[self.LOREM])
-        assert_equal(4, dict_shard_deleted[self.IPSUM])
+        dict_file_deleted = silo.db.get('file_deleted')
+        assert_equal(3, dict_file_deleted[self.LOREM])
+        assert_equal(4, dict_file_deleted[self.IPSUM])
 
 
     def test_csilo_nodeget(self):
         """Tests node_get method in ComboxSilo class
         """
         silo = ComboxSilo(self.config, self.silo_lock)
-        assert_equal(None, silo.node_get('shard_created', self.LOREM))
+        assert_equal(None, silo.node_get('file_created', self.LOREM))
 
-        silo.node_set('shard_created', self.LOREM)
-        silo.node_set('shard_created', self.LOREM)
-        assert_equal(2, silo.node_get('shard_created', self.LOREM))
+        silo.node_set('file_created', self.LOREM)
+        silo.node_set('file_created', self.LOREM)
+        assert_equal(2, silo.node_get('file_created', self.LOREM))
 
 
     def teardown(self):

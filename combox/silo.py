@@ -40,8 +40,8 @@ class ComboxSilo(object):
         self.db = pickledb.load(self.silo_path, True)
 
         ## things we need for housekeep the node directory.
-        self.node_dicts = ['shard_created', 'shard_modified', 'shard_moved',
-                           'shard_deleted']
+        self.node_dicts = ['file_created', 'file_modified', 'file_moved',
+                           'file_deleted']
 
         # created the dicts if not already created.
         for ndict in self.node_dicts:
@@ -147,7 +147,7 @@ class ComboxSilo(object):
         """
         Update information about the shard of `file_'.
 
-        type_: 'shard_created', 'shard_modified', 'shard_moved', 'shard_deleted'
+        type_: 'file_created', 'file_modified', 'file_moved', 'file_deleted'
         file_: path of the file_ in combox directory.
         """
 
@@ -166,7 +166,7 @@ class ComboxSilo(object):
         """
         Returns a number denoting the number of node directories in which the file_'s shard was created/modified/moved/deleted.
 
-        type_: 'shard_created', 'shard_modified', 'shard_moved', 'shard_deleted'
+        type_: 'file_created', 'file_modified', 'file_moved', 'file_deleted'
         file_: path of the file_ in combox directory.
         """
         self.reload()
