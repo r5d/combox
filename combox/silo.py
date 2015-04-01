@@ -124,3 +124,42 @@ class ComboxSilo(object):
             return False
         else:
             return True
+
+
+    def nodedicts(self):
+        """
+        Returns a list containing the dicts related the the node directories.
+        """
+        return self.node_dicts
+
+
+    def node_set(self, type_, file_):
+        """
+        Update information about the shard of `file_'.
+
+        type_: 'shard_created', 'shard_modified', 'shard_moved', 'shard_deleted'
+        file_: path of the file_ in combox directory.
+        """
+
+        with self.lock:
+            try:
+                num = self.db.dget(type_, file_)
+                num += 1
+            except KeyError, e:
+                # means file_ is not already there, so:
+                num = 1
+            self.db.dadd(type_, (file_, num))
+
+
+    def node_get(self, type_, file_):
+        """
+        Returns a number denoting the number of node directories in which the file_'s shard was created/modified/moved/deleted.
+
+        type_: 'shard_created', 'shard_modified', 'shard_moved', 'shard_deleted'
+        file_: path of the file_ in combox directory.
+        """
+        try:
+            return self.db.dget(type_, file_)
+        except KeyError, e:
+            # file_ info not there under type_ dict.
+            return None
