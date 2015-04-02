@@ -114,10 +114,14 @@ class TestFile(object):
         test_file_shard_0 = '%s.shard.0' % test_file_basename
         test_file_shard_0_abspath = path.join(get_nodedirs(self.config)[0],
                                               test_file_shard_0)
+        test_file_shard_1 = '%s.shard.1' % test_file_basename
+        test_file_shard_1_abspath = path.join(get_nodedirs(self.config)[1],
+                                              test_file_shard_1)
 
         assert test_file_shard_0 == relative_path(test_file_shard_0_abspath,
                                                   self.config, False)
-
+        assert test_file_shard_1 == relative_path(test_file_shard_1_abspath,
+                                                  self.config, False)
 
     def test_cbpath(self):
         """Tests the cb_path function"""
@@ -125,8 +129,12 @@ class TestFile(object):
         test_file_shard_0 = '%s.shard0' % path.basename(self.TEST_FILE)
         test_file_shard_0_abspath = path.join(get_nodedirs(self.config)[0],
                                               test_file_shard_0)
-
+        test_file_shard_1 = '%s.shard1' % path.basename(self.TEST_FILE)
+        test_file_shard_1_abspath = path.join(get_nodedirs(self.config)[1],
+                                              test_file_shard_1)
         assert self.TEST_FILE == cb_path(test_file_shard_0_abspath,
+                                            self.config)
+        assert self.TEST_FILE == cb_path(test_file_shard_1_abspath,
                                             self.config)
 
         # a directory inside combox dir.

@@ -41,10 +41,17 @@ def relative_path(p, config, comboxd=True):
     combox.
 
     """
+    directory = None
     if comboxd:
         directory = '%s/' % config['combox_dir']
     else:
-        directory = '%s/' % get_nodedirs(config)[0]
+        for node in get_nodedirs(config):
+            if p.startswith(node):
+                directory = '%s/' % node
+
+    if directory is None:
+        err_msg = "invalid path %s" % p
+        raise ValueError, err_msg
 
     return p.partition(directory)[2]
 
