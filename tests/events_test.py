@@ -53,7 +53,10 @@ class TestEvents(object):
         """Set things up."""
 
         self.silo_lock = Lock()
+        self.nodem_lock = Lock()
         self.config = get_config()
+        self.silo = ComboxSilo(self.config, self.silo_lock)
+
         self.FILES_DIR = self.config['combox_dir']
         self.NODE_DIR = get_nodedirs(self.config)[0]
         self.TEST_FILE = path.join(self.FILES_DIR, 'thgttg-21st.png')
@@ -233,20 +236,62 @@ class TestEvents(object):
         right value.
 
         """
-        nmonitor = NodeDirMonitor(self.config, self.silo_lock)
+        nmonitor = NodeDirMonitor(self.config, self.silo_lock,
+                                  self.nodem_lock)
         assert_equal(2, nmonitor.num_nodes)
 
 
-    def test_NDM(self):
+    def test_NDM_oncreate(self):
+        """Testing on_create method in NodeDirMonitor"""
+        nodes =  get_nodedirs(self.config)
+        num_nodes =  len(get_nodedirs(self.config))
+
+        nmonitors = []
+        observers = []
+
+        # create an observer for each node directory and make it
+        # monitor them.
+        for node in nodes:
+            nmonitor = NodeDirMonitor(self.config, self.silo_lock,
+                                      self.nodem_lock)
+            observer = Observer()
+            observer.schedule(nmonitor, node, recursive=True)
+            observer.start()
+
+            nmonitors.append(nmonitor)
+            observers.append(observer)
+
+        # Test - new file addition, when shard is created in node_dirs
+        self.TEST_FILE_MUTANT = "%s.mutant" % self.TEST_FILE
+
+        fmutant_content = read_file(self.TEST_FILE)
+
+        split_and_encrypt(self.TEST_FILE_MUTANT, self.config,
+                          fmutant_content)
+        ## wait for NodeDirMonitor to reconstruct the shards and put
+        ## it in combox directory
+        time.sleep(1)
+        assert fmutant_content == read_file(self.TEST_FILE_MUTANT)
+        ## check if the new file's info is in silo
+        assert self.silo.exists(self.TEST_FILE_MUTANT)
+
+        for i in range(num_nodes):
+            observers[i].stop()
+            observers[i].join()
+
+
+    def untest_NDM(self):
         """
         Tests the NodeDirMonitor class.
         """
 
-        event_handler = NodeDirMonitor(self.config, self.silo_lock)
+        event_handler = NodeDirMonitor(self.config, self.silo_lock,
+                                       self.nodem_lock)
         observer = Observer()
         observer.schedule(event_handler, self.NODE_DIR, recursive=True)
         observer.start()
 
+        ####
         # Test - new file addition, when shard is created in node_dirs
         self.TEST_FILE_MUTANT = "%s.mutant" % self.TEST_FILE
 
@@ -261,6 +306,7 @@ class TestEvents(object):
         ## check if the new file's info is in silo
         silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.TEST_FILE_MUTANT)
+        ####
 
         # Test - directory creation
         self.FOO_DIR = path.join(self.FILES_DIR, 'foo')
@@ -329,7 +375,8 @@ class TestEvents(object):
     def test_NDM_onmoved(self):
         """Testing on_moved method in NodeDirMonitor"""
 
-        event_handler = NodeDirMonitor(self.config, self.silo_lock)
+        event_handler = NodeDirMonitor(self.config, self.silo_lock,
+                                       self.nodem_lock)
         observer = Observer()
         observer.schedule(event_handler, self.NODE_DIR, recursive=True)
         observer.start()
@@ -397,7 +444,8 @@ class TestEvents(object):
         silo.update(testf1)
         silo.update(testf2)
 
-        ndm = NodeDirMonitor(self.config, self.silo_lock)
+        ndm = NodeDirMonitor(self.config, self.silo_lock,
+                             self.nodem_lock)
         ndm.housekeep()
 
         assert not path.exists(testf1)
@@ -413,7 +461,8 @@ class TestEvents(object):
         split_and_encrypt(hmutant, self.config,
                           hmutant_content)
 
-        ndm = NodeDirMonitor(self.config, self.silo_lock)
+        ndm = NodeDirMonitor(self.config, self.silo_lock,
+                             self.nodem_lock)
         ndm.housekeep()
 
         assert path.exists(hmutant)
@@ -441,7 +490,8 @@ class TestEvents(object):
         split_and_encrypt(lcopy, self.config,
                           lcopy_content)
 
-        ndm = NodeDirMonitor(self.config, self.silo_lock)
+        ndm = NodeDirMonitor(self.config, self.silo_lock,
+                             self.nodem_lock)
         ndm.housekeep()
 
         ## check if the lorem_file_copy's info is updated in silo
@@ -457,7 +507,8 @@ class TestEvents(object):
         """Testing shardp method in NodeDirMonitor class"""
         shard = 'some.shard0'
         not_shard = 'some.extension'
-        ndm = NodeDirMonitor(self.config, self.silo_lock)
+        ndm = NodeDirMonitor(self.config, self.silo_lock,
+                             self.nodem_lock)
 
         assert_equal(True, ndm.shardp(shard))
         assert_equal(False, ndm.shardp(not_shard))

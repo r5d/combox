@@ -175,12 +175,15 @@ class NodeDirMonitor(LoggingEventHandler):
 
     """
 
-    def __init__(self, config, dblock):
+    def __init__(self, config, dblock, nodem_lock):
         """
         config: a dictinary which contains combox configuration.
+        dblock: Lock for the ComboxSilo.
+        nodem_lock: Lock for NodeDirMonitors.
         """
         super(NodeDirMonitor, self).__init__()
 
+        self.lock = nodem_lock
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s - %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S')
@@ -302,16 +305,25 @@ class NodeDirMonitor(LoggingEventHandler):
             # means, the directory was created on another computer
             # (also running combox). so, create this directory
             # under the combox directory
-            os.mkdir(file_cb_path)
+            with self.lock:
+                self.silo.node_set('file_created', file_cb_path)
+                num = self.silo.node_get('file_created', file_cb_path)
+
+                if num == self.num_nodes:
+                    os.mkdir(file_cb_path)
         elif (not event.is_directory) and (not path.exists(file_cb_path)):
             # shard created.
 
             # means, file was created on another computer (also
             # running combox). so, reconstruct the file and put it
             # in the combox directory.
-            decrypt_and_glue(file_cb_path, self.config)
-            # update db.
-            self.silo.update(file_cb_path)
+            with self.lock:
+                self.silo.node_set('file_created', file_cb_path)
+                num = self.silo.node_get('file_created', file_cb_path)
+                if num == self.num_nodes:
+                    decrypt_and_glue(file_cb_path, self.config)
+                    # update db.
+                    self.silo.update(file_cb_path)
 
 
     def on_deleted(self, event):
