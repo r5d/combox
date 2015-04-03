@@ -516,13 +516,9 @@ class TestEvents(object):
 
     def teardown(self):
         """Cleans up things after each test in this class"""
+
         purge_nodedirs(self.config)
-
-        silo_path = path.join(self.config['silo_dir'], 'silo.db')
-
-        if path.exists(silo_path):
-            os.remove(silo_path)
-
+        self.silo.db.deldb()
         purge(self.purge_list)
 
 
