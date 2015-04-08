@@ -275,6 +275,21 @@ class TestEvents(object):
         ## check if the new file's info is in silo
         assert self.silo.exists(self.TEST_FILE_MUTANT)
 
+        # Test - directory creation
+        self.FOO_DIR = path.join(self.FILES_DIR, 'foo')
+        mk_nodedir(self.FOO_DIR, self.config)
+        time.sleep(1)
+        ## check if FOO_DIR is created under the combox directory
+        assert path.isdir(self.FOO_DIR)
+
+        self.BAR_DIR = path.join(self.FOO_DIR, 'bar')
+        mk_nodedir(self.BAR_DIR, self.config)
+        time.sleep(1)
+        ## check if BAR_DIR is created under the combox directory.
+        assert path.isdir(self.BAR_DIR)
+
+        self.purge_list.append(self.FOO_DIR)
+
         for i in range(num_nodes):
             observers[i].stop()
             observers[i].join()
@@ -307,21 +322,6 @@ class TestEvents(object):
         silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.TEST_FILE_MUTANT)
         ####
-
-        # Test - directory creation
-        self.FOO_DIR = path.join(self.FILES_DIR, 'foo')
-        mk_nodedir(self.FOO_DIR, self.config)
-        time.sleep(1)
-        ## check if FOO_DIR is created under the combox directory
-        assert path.isdir(self.FOO_DIR)
-
-        self.BAR_DIR = path.join(self.FOO_DIR, 'bar')
-        mk_nodedir(self.BAR_DIR, self.config)
-        time.sleep(1)
-        ## check if BAR_DIR is created under the combox directory.
-        assert path.isdir(self.BAR_DIR)
-
-        self.purge_list.append(self.FOO_DIR)
 
         # Test - Shard deletion.
         rm_shards(self.TEST_FILE_MUTANT, self.config)
