@@ -275,6 +275,8 @@ class TestEvents(object):
         ## check if the new file's info is in silo
         assert self.silo.exists(self.TEST_FILE_MUTANT)
 
+        self.purge_list.append(self.TEST_FILE_MUTANT)
+
         # Test - directory creation
         self.FOO_DIR = path.join(self.FILES_DIR, 'foo')
         mk_nodedir(self.FOO_DIR, self.config)
@@ -290,6 +292,7 @@ class TestEvents(object):
 
         self.purge_list.append(self.FOO_DIR)
 
+        # stop the zarking observers.
         for i in range(num_nodes):
             observers[i].stop()
             observers[i].join()
