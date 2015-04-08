@@ -176,3 +176,21 @@ class ComboxSilo(object):
             except KeyError, e:
                 # file_ info not there under type_ dict.
                 return None
+
+
+    def node_rem(self, type_, file_):
+        """
+        Removes information about the shard of `file_'.
+
+        type_: 'file_created', 'file_modified', 'file_moved', 'file_deleted'
+        file_: path of the file_ in combox directory.
+        """
+
+        self.reload()
+        with self.lock:
+            try:
+                return self.db.dpop(type_, file_)
+            except KeyError, e:
+                # means file_'s info was already removed.
+                # do nothing
+                pass

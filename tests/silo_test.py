@@ -198,6 +198,21 @@ class TestSilo(object):
         assert_equal(2, silo.node_get('file_created', self.LOREM))
 
 
+    def test_csilo_noderem(self):
+        """Tests node_rem method in ComboxSilo class
+        """
+        silo = ComboxSilo(self.config, self.silo_lock)
+
+        silo.node_set('file_created', self.LOREM)
+        silo.node_set('file_created', self.LOREM)
+        silo.node_set('file_created', self.LOREM)
+        silo.node_set('file_created', self.LOREM)
+        assert_equal(4, silo.node_get('file_created', self.LOREM))
+
+        removed = silo.node_rem('file_created', self.LOREM)
+        assert_equal(True, removed)
+        assert_equal(None, silo.node_get('file_created', self.LOREM))
+
     def teardown(self):
         """Cleans up things after each test in this class"""
 
