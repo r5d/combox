@@ -241,8 +241,8 @@ class TestEvents(object):
         assert_equal(2, nmonitor.num_nodes)
 
 
-    def test_NDM_oncreate(self):
-        """Testing on_create method in NodeDirMonitor"""
+    def test_NDM_oncreated(self):
+        """Testing on_created method in NodeDirMonitor"""
         nodes =  get_nodedirs(self.config)
         num_nodes =  len(get_nodedirs(self.config))
 
