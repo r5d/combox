@@ -274,6 +274,8 @@ class TestEvents(object):
         assert fmutant_content == read_file(self.TEST_FILE_MUTANT)
         ## check if the new file's info is in silo
         assert self.silo.exists(self.TEST_FILE_MUTANT)
+        assert_equal(None, self.silo.node_get('file_created',
+                                              self.TEST_FILE_MUTANT))
 
         self.purge_list.append(self.TEST_FILE_MUTANT)
 
@@ -283,12 +285,15 @@ class TestEvents(object):
         time.sleep(1)
         ## check if FOO_DIR is created under the combox directory
         assert path.isdir(self.FOO_DIR)
-
+        assert_equal(None, self.silo.node_get('file_created',
+                                              self.FOO_DIR))
         self.BAR_DIR = path.join(self.FOO_DIR, 'bar')
         mk_nodedir(self.BAR_DIR, self.config)
         time.sleep(1)
         ## check if BAR_DIR is created under the combox directory.
         assert path.isdir(self.BAR_DIR)
+        assert_equal(None, self.silo.node_get('file_created',
+                                              self.BAR_DIR))
 
         self.purge_list.append(self.FOO_DIR)
 

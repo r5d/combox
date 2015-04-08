@@ -311,6 +311,7 @@ class NodeDirMonitor(LoggingEventHandler):
 
                 if num == self.num_nodes:
                     os.mkdir(file_cb_path)
+                    self.silo.node_rem('file_created', file_cb_path)
         elif (not event.is_directory) and (not path.exists(file_cb_path)):
             # shard created.
 
@@ -324,6 +325,7 @@ class NodeDirMonitor(LoggingEventHandler):
                     decrypt_and_glue(file_cb_path, self.config)
                     # update db.
                     self.silo.update(file_cb_path)
+                    self.silo.node_rem('file_created', file_cb_path)
 
 
     def on_deleted(self, event):
