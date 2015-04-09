@@ -5,8 +5,12 @@
 	 Done.
 ** TODO rewrite combox.events.NodeDirMonitor.on_moved method
 ** TODO rewrite combox.events.NodeDirMonitor.on_deleted method
-   DEADLINE: <2015-04-10 Fri 23:00>
-** TODO rewrite combox.events.NodeDirMonitor.on_modified method
+** DONE rewrite combox.events.NodeDirMonitor.on_modified method
+   CLOSED: [2015-04-08 Wed 20:58] DEADLINE: <2015-04-10 Fri 23:00>
+   - CLOSING NOTE [2015-04-08 Wed 20:58] \\
+	 Done.
+
+	 Part of it was done while listening to Avril's "Complicated".
 ** TODO rewrite combox.events.NodeDirMonitor.housekeep method
 ** TODO change combox.cbox to initialize a node monitor for each node  directory.
 ** DONE ComboxSilo: reload db from disk before reading/writing to it.
