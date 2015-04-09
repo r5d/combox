@@ -1,7 +1,7 @@
 * combox
-** bugs
-*** platform specific
-**** TODO use os.path.expanduser to get user's home directory
+** bugs :bugs:
+*** platform specific :platform-specific:
+**** TODO use os.path.expanduser to get user's home directory :#1:
 	 At present os.getenv('HOME') is used to get the user's home
 	 directory; This does not seem to work on Windows[1].
 
