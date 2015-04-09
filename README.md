@@ -71,6 +71,10 @@ The `combox` logo (`graphics/logo/combox-logo.svg`) is under [Public Domain][pd]
 [gpl]: https://gnu.org/licenses/gpl-3.0.txt
 [pd]: https://creativecommons.org/publicdomain/zero/1.0/
 
+# canonical repo
+
+    $ git clone http://rsiddharth.ninth.su/git/cb.git
+
 # contact
 
 siddharth ravikumar <sravik@bgsu.edu> (gpg id: `0x00B252AF`)
