@@ -373,6 +373,11 @@ class NodeDirMonitor(LoggingEventHandler):
                 # means, file was modified on another computer (also
                 # running combox). so, reconstruct the file and put it
                 # in the combox directory.
-                decrypt_and_glue(file_cb_path, self.config)
-                # update db.
-                self.silo.update(file_cb_path)
+                with self.lock:
+                    self.silo.node_set('file_modified', file_cb_path)
+                    num = self.silo.node_get('file_modified', file_cb_path)
+                    if num == self.num_nodes:
+                        decrypt_and_glue(file_cb_path, self.config)
+                        # update db.
+                        self.silo.update(file_cb_path)
+                        self.silo.node_rem('file_modified', file_cb_path)

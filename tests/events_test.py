@@ -303,6 +303,64 @@ class TestEvents(object):
             observers[i].join()
 
 
+    def test_NDM_onmodified(self):
+        """Testing on_modified method in NodeDirMonitor"""
+        nodes =  get_nodedirs(self.config)
+        num_nodes =  len(get_nodedirs(self.config))
+
+        nmonitors = []
+        observers = []
+
+        # create an observer for each node directory and make it
+        # monitor them.
+        for node in nodes:
+            nmonitor = NodeDirMonitor(self.config, self.silo_lock,
+                                      self.nodem_lock)
+            observer = Observer()
+            observer.schedule(nmonitor, node, recursive=True)
+            observer.start()
+
+            nmonitors.append(nmonitor)
+            observers.append(observer)
+
+        # Test - shard modification
+        self.lorem_file = path.join(self.FILES_DIR, 'lorem.txt')
+        lorem_content = read_file(self.lorem_file)
+        self.lorem_file_copy = "%s.copy" % self.lorem_file
+
+        copyfile(self.lorem_file, self.lorem_file_copy)
+        split_and_encrypt(self.lorem_file_copy, self.config,
+                          lorem_content)
+
+        self.silo.update(self.lorem_file_copy)
+        shardedp(self.lorem_file_copy)
+
+        self.silo.reload()
+        lorem_file_copy_hash = self.silo.db.get(self.lorem_file_copy)
+
+        self.ipsum_file = path.join(self.FILES_DIR, 'ipsum.txt')
+        ipsum_content = read_file(self.ipsum_file)
+        lorem_copy_content = "%s\n%s" % (lorem_content, ipsum_content)
+
+        split_and_encrypt(self.lorem_file_copy, self.config,
+                          lorem_copy_content)
+        time.sleep(1)
+        assert lorem_copy_content == read_file(self.lorem_file_copy)
+
+        ## check if the lorem_file_copy's info is updated in silo
+        self.silo.reload()
+        assert lorem_file_copy_hash != self.silo.db.get(self.lorem_file_copy)
+        assert_equal(None, self.silo.node_get('file_modified',
+                                              self.lorem_file_copy))
+
+        self.purge_list.append(self.lorem_file_copy)
+
+        # stop the zarking observers.
+        for i in range(num_nodes):
+            observers[i].stop()
+            observers[i].join()
+
+
     def untest_NDM(self):
         """
         Tests the NodeDirMonitor class.
