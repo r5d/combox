@@ -19,7 +19,7 @@ pronounced as "combo box".
 
 # status
 
-Core functionality is being written at the moment.
+Core functionality is being written at the moment. See `TODO.org`.
 
 # requirements
 
