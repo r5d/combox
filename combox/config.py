@@ -1,3 +1,4 @@
+
 #    Copyright (C) 2015 Combox author(s). See AUTHORS.
 #
 #    This file is part of Combox.
@@ -48,6 +49,7 @@ import sys
 import stat
 
 from os import path
+from os.path import expanduser
 
 def get_secret():
     "Gets the pass phrase from std. input."
@@ -62,7 +64,7 @@ def get_stdin(prompt):
     return raw_input(prompt)
 
 
-def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
+def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
               pass_func = get_secret,
               input_func = get_stdin,
               write=True):
@@ -77,10 +79,10 @@ def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
     config_info = {}
 
     config_info['combox_name'] = input_func('name of this combox')
-    config_info['combox_dir'] = path.abspath(input_func('path to combox directory'))
+    config_info['combox_dir'] = path.abspath(expanduser(input_func('path to combox directory')))
 
     silo_help_txt = 'silo directory (default: %s)' % (config_dir)
-    silo_dir = input_func(silo_help_txt)
+    silo_dir = expanduser(input_func(silo_help_txt))
 
     if silo_dir:
         config_info['silo_dir'] = path.abspath(silo_dir)
@@ -94,7 +96,7 @@ def config_cb(config_dir = path.join(os.getenv('HOME'),'.combox/'),
     for i in range(no_nodes):
         node_name = input_func('node %d name' % i)
         nodes[node_name] = {}
-        nodes[node_name]['path'] = path.abspath(input_func('node %d path' % i))
+        nodes[node_name]['path'] = path.abspath(expanduser(input_func('node %d path' % i)))
         nodes[node_name]['size'] = input_func('node %d size (in mega bytes)' % i)
         nodes[node_name]['available'] = nodes[node_name]['size']
 

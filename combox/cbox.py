@@ -24,6 +24,7 @@ import yaml
 
 from argparse import ArgumentParser
 from os import path
+from os.path import expanduser
 from sys import exit
 from threading import Lock
 from watchdog.observers import Observer
@@ -67,7 +68,7 @@ def main():
     if args.test:
         CONFIG_DIR = path.join('tests', 'test-config')
     else:
-        CONFIG_DIR = path.join(os.getenv('HOME'),'.combox/')
+        CONFIG_DIR = path.join(expanduser("~"),'.combox')
 
     config_file = path.join(CONFIG_DIR, 'config.yaml')
 
