@@ -10,6 +10,8 @@ The ideas for this program is based on [`combobox`][1].
 
 [1]: https://bitbucket.org/bgsucodeloverslab/combobox
 
+Criticism is welcome here.
+
 # etymology
 
 `combox` is a lazy contraction of the word "combo box". `combox` is
