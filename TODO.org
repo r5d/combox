@@ -1,81 +1,91 @@
 * combox
-** DONE rewrite combox.events.NodeDirMonitor.on_created method
-   CLOSED: [2015-04-01 Wed 23:06]
-   - CLOSING NOTE [2015-04-01 Wed 23:06] \\
-	 Done.
-** TODO rewrite combox.events.NodeDirMonitor.on_moved method
-** TODO rewrite combox.events.NodeDirMonitor.on_deleted method
-** DONE rewrite combox.events.NodeDirMonitor.on_modified method
-   CLOSED: [2015-04-08 Wed 20:58] DEADLINE: <2015-04-10 Fri 23:00>
-   - CLOSING NOTE [2015-04-08 Wed 20:58] \\
-	 Done.
+** bugs
+*** platform specific
+**** TODO use os.path.expanduser to get user's home directory
+	 At present os.getenv('HOME') is used to get the user's home
+	 directory; This does not seem to work on Windows[1].
 
-	 Part of it was done while listening to Avril's "Complicated".
-** TODO rewrite combox.events.NodeDirMonitor.housekeep method
-** TODO change combox.cbox to initialize a node monitor for each node  directory.
-** DONE ComboxSilo: reload db from disk before reading/writing to it.
-   CLOSED: [2015-04-01 Wed 11:13]
-   - CLOSING NOTE [2015-04-01 Wed 11:13] \\
-	 Yeah, done.
-** DONE modify combox.silo.ComboxSilo so that it uses Locks properly.
-   CLOSED: [2015-04-01 Wed 10:37] DEADLINE: <2015-04-03 Fri 09:00>
-   - CLOSING NOTE [2015-04-01 Wed 10:37] \\
-	 Zarking done.
-** DONE flesh out housekeep method in combox.events.NodeDirMonitor
-   CLOSED: [2015-03-26 Thu 20:29] DEADLINE: <2015-03-27 Fri 23:00>
-   - CLOSING NOTE [2015-03-26 Thu 20:29] \\
-	 First version done + corresponding tests have been written.
-	 
-	 Now, we got to work on making the NodeDirMonitor behave more
-	 realistically taking into account the beautiful imperfections of this
-	 zarking world.
-** DONE fix the silo bug in ComboxDirMonitor and NodeDirMonitor
-   CLOSED: [2015-03-04 Wed 20:12] DEADLINE: <2015-03-06 Fri 09:00>
-   - CLOSING NOTE [2015-03-04 Wed 20:12] \\
-	 Done.
-** DONE flesh out on_delete method (NodeDirMonitor)
-   CLOSED: [2015-03-04 Wed 23:06] DEADLINE: <2015-03-06 Fri 09:00>
-   - CLOSING NOTE [2015-03-04 Wed 23:06] \\
-	 Done.
-** DONE write on_moved method (NodeDirMonitor)
-   CLOSED: [2015-03-18 Wed 21:53] DEADLINE: <2015-03-22 Fri 09:00>
-   - CLOSING NOTE [2015-03-18 Wed 21:53] \\
-	 zarking done.
-** DONE flesh out another method in NodeDirMonitor
-	CLOSED: [2015-02-26 Thu 22:58] DEADLINE: <2015-02-26 Thu 23:00>
-	- CLOSING NOTE [2015-02-26 Thu 22:58] \\
-	  Done. Fleshed out on_modified method + wrote tests for it.
-** DONE fix the on_create method in ComboxDirMonitor
-	CLOSED: [2015-02-26 Thu 02:46] DEADLINE: <2015-02-26 Thu 23:00>
-	- CLOSING NOTE [2015-02-26 Thu 02:46] \\
+	 Thanks to Dr. Green for finding this.
+
+	 [1]: http://stackoverflow.com/questions/4028904/how-to-get-the-home-directory-in-python
+** functionlity
+*** DONE rewrite combox.events.NodeDirMonitor.on_created method
+	CLOSED: [2015-04-01 Wed 23:06]
+	- CLOSING NOTE [2015-04-01 Wed 23:06] \\
 	  Done.
-** DONE start thinking about how to write the node monitor.
-	CLOSED: [2015-02-13 Fri 09:40] DEADLINE: <2015-02-13 Fri 09:00>
-	- CLOSING NOTE [2015-02-13 Fri 09:40] \\
-	  Thought about during times of idleness. But haven't started writing
-	  the code for it yet.
+*** TODO rewrite combox.events.NodeDirMonitor.on_moved method
+*** TODO rewrite combox.events.NodeDirMonitor.on_deleted method
+*** DONE rewrite combox.events.NodeDirMonitor.on_modified method
+	CLOSED: [2015-04-08 Wed 20:58] DEADLINE: <2015-04-10 Fri 23:00>
+	- CLOSING NOTE [2015-04-08 Wed 20:58] \\
+	  Done.
 
-	  Must positively start working on it during the week to come.
-** DONE try to rewrite the tests.
-	CLOSED: [2015-02-13 Fri 09:38] DEADLINE: <2015-02-13 Fri 09:00>
-	- CLOSING NOTE [2015-02-13 Fri 09:38] \\
-	  Re-wrote all of the tests. Now tests have have proper setup and
-	  teardown methods.
+	  Part of it was done while listening to Avril's "Complicated".
+*** TODO rewrite combox.events.NodeDirMonitor.housekeep method
+*** TODO change combox.cbox to initialize a node monitor for each node  directory.
+*** DONE ComboxSilo: reload db from disk before reading/writing to it.
+	CLOSED: [2015-04-01 Wed 11:13]
+	- CLOSING NOTE [2015-04-01 Wed 11:13] \\
+	  Yeah, done.
+*** DONE modify combox.silo.ComboxSilo so that it uses Locks properly.
+	CLOSED: [2015-04-01 Wed 10:37] DEADLINE: <2015-04-03 Fri 09:00>
+	- CLOSING NOTE [2015-04-01 Wed 10:37] \\
+	  Zarking done.
+*** DONE flesh out housekeep method in combox.events.NodeDirMonitor
+	CLOSED: [2015-03-26 Thu 20:29] DEADLINE: <2015-03-27 Fri 23:00>
+	- CLOSING NOTE [2015-03-26 Thu 20:29] \\
+	  First version done + corresponding tests have been written.
 
-	  Still some work has to be done to remove files produced by the
-	  tests. Will work on it during the week to come.
-** DONE integrate config into cbox script.
-	CLOSED: [2015-02-08 Sun 21:22] DEADLINE: <2015-02-08 Sun 23:00>
-	- CLOSING NOTE [2015-02-08 Sun 21:22] \\
-	  This was already done before. Neverthless, when testing the cbox
-	  script, I found a bug and fixed it.
-** DONE redis - Read redis py README file.
-	DEADLINE: <2015-02-03 Tue 23:59>
-** DONE put cbox script in bin/
-	CLOSED: [2015-02-05 Thu 21:30] DEADLINE: <2015-02-06 Fri 09:00>
-	- CLOSING NOTE [2015-02-05 Thu 21:30] \\
-	  Did this using 'entry_points' thingy.
-	  See: https://pythonhosted.org/setuptools/setuptools.html#automatic-script-creation
-   must do it through setup.py
-** DONE Write the combox monitor startup thingy
-	DEADLINE: <2015-01-29 Thu>
+	  Now, we got to work on making the NodeDirMonitor behave more
+	  realistically taking into account the beautiful imperfections of this
+	  zarking world.
+*** DONE fix the silo bug in ComboxDirMonitor and NodeDirMonitor
+	CLOSED: [2015-03-04 Wed 20:12] DEADLINE: <2015-03-06 Fri 09:00>
+	- CLOSING NOTE [2015-03-04 Wed 20:12] \\
+	  Done.
+*** DONE flesh out on_delete method (NodeDirMonitor)
+	CLOSED: [2015-03-04 Wed 23:06] DEADLINE: <2015-03-06 Fri 09:00>
+	- CLOSING NOTE [2015-03-04 Wed 23:06] \\
+	  Done.
+*** DONE write on_moved method (NodeDirMonitor)
+	CLOSED: [2015-03-18 Wed 21:53] DEADLINE: <2015-03-22 Fri 09:00>
+	- CLOSING NOTE [2015-03-18 Wed 21:53] \\
+	  zarking done.
+*** DONE flesh out another method in NodeDirMonitor
+	 CLOSED: [2015-02-26 Thu 22:58] DEADLINE: <2015-02-26 Thu 23:00>
+	 - CLOSING NOTE [2015-02-26 Thu 22:58] \\
+	   Done. Fleshed out on_modified method + wrote tests for it.
+*** DONE fix the on_create method in ComboxDirMonitor
+	 CLOSED: [2015-02-26 Thu 02:46] DEADLINE: <2015-02-26 Thu 23:00>
+	 - CLOSING NOTE [2015-02-26 Thu 02:46] \\
+	   Done.
+*** DONE start thinking about how to write the node monitor.
+	 CLOSED: [2015-02-13 Fri 09:40] DEADLINE: <2015-02-13 Fri 09:00>
+	 - CLOSING NOTE [2015-02-13 Fri 09:40] \\
+	   Thought about during times of idleness. But haven't started writing
+	   the code for it yet.
+
+	   Must positively start working on it during the week to come.
+*** DONE try to rewrite the tests.
+	 CLOSED: [2015-02-13 Fri 09:38] DEADLINE: <2015-02-13 Fri 09:00>
+	 - CLOSING NOTE [2015-02-13 Fri 09:38] \\
+	   Re-wrote all of the tests. Now tests have have proper setup and
+	   teardown methods.
+
+	   Still some work has to be done to remove files produced by the
+	   tests. Will work on it during the week to come.
+*** DONE integrate config into cbox script.
+	 CLOSED: [2015-02-08 Sun 21:22] DEADLINE: <2015-02-08 Sun 23:00>
+	 - CLOSING NOTE [2015-02-08 Sun 21:22] \\
+	   This was already done before. Neverthless, when testing the cbox
+	   script, I found a bug and fixed it.
+*** DONE redis - Read redis py README file.
+	 DEADLINE: <2015-02-03 Tue 23:59>
+*** DONE put cbox script in bin/
+	 CLOSED: [2015-02-05 Thu 21:30] DEADLINE: <2015-02-06 Fri 09:00>
+	 - CLOSING NOTE [2015-02-05 Thu 21:30] \\
+	   Did this using 'entry_points' thingy.
+	   See: https://pythonhosted.org/setuptools/setuptools.html#automatic-script-creation
+	must do it through setup.py
+*** DONE Write the combox monitor startup thingy
+	 DEADLINE: <2015-01-29 Thu>
