@@ -18,6 +18,7 @@
 	  Done.
 *** TODO rewrite combox.events.NodeDirMonitor.on_moved method
 *** TODO rewrite combox.events.NodeDirMonitor.on_deleted method
+	 DEADLINE: <2015-04-17 Fri 08:00>
 *** DONE rewrite combox.events.NodeDirMonitor.on_modified method
 	CLOSED: [2015-04-08 Wed 20:58] DEADLINE: <2015-04-10 Fri 23:00>
 	- CLOSING NOTE [2015-04-08 Wed 20:58] \\
