@@ -157,7 +157,10 @@ class ComboxSilo(object):
                 num = self.db.dget(type_, file_)
                 num += 1
             except KeyError, e:
-                # means file_ is not already there, so:
+                # I don't think this is the right way to do this. :|
+                #
+                # If we are here it means file_ is not already there,
+                # so:
                 num = 1
             self.db.dadd(type_, (file_, num))
 
