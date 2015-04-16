@@ -361,6 +361,61 @@ class TestEvents(object):
             observers[i].join()
 
 
+    def test_NDM_ondeleted(self):
+        """Testing on_modified method in NodeDirMonitor"""
+        nodes =  get_nodedirs(self.config)
+        num_nodes =  len(get_nodedirs(self.config))
+
+        nmonitors = []
+        observers = []
+
+        # create an observer for each node directory and make it
+        # monitor them.
+        for node in nodes:
+            nmonitor = NodeDirMonitor(self.config, self.silo_lock,
+                                      self.nodem_lock)
+            observer = Observer()
+            observer.schedule(nmonitor, node, recursive=True)
+            observer.start()
+
+            nmonitors.append(nmonitor)
+            observers.append(observer)
+
+        BAR_DIR = path.join(self.FILES_DIR, 'bar')
+        mk_nodedir(BAR_DIR, self.config)
+        # wait for the `bar' directory to be created inside combox
+        # directory.
+        time.sleep(1)
+
+        # Test - directory deletion inside node directory.
+        rm_nodedir(BAR_DIR, self.config)
+        time.sleep(1)
+        assert not path.exists(BAR_DIR)
+
+        the_guide = path.join(self.FILES_DIR, 'the.guide')
+        split_and_encrypt(the_guide, self.config,
+                          read_file(self.TEST_FILE))
+        time.sleep(1)
+        assert path.exists(the_guide)
+
+        # Test - Shard deletion.
+        rm_shards(the_guide, self.config)
+        time.sleep(1)
+        assert not path.exists(the_guide)
+
+        ## check if the new file's info is removed from silo
+        silo = ComboxSilo(self.config, self.silo_lock)
+        assert not silo.exists(the_guide)
+
+        self.purge_list.append(BAR_DIR)
+        self.purge_list.append(the_guide)
+
+        # stop the zarking observers.
+        for i in range(num_nodes):
+            observers[i].stop()
+            observers[i].join()
+
+
     def untest_NDM(self):
         """
         Tests the NodeDirMonitor class.

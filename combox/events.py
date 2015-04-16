@@ -339,13 +339,27 @@ class NodeDirMonitor(LoggingEventHandler):
         file_cb_path = cb_path(event.src_path, self.config)
 
         if event.is_directory:
-            # Delete corresponding directory under the combox directory.
-            rm_path(file_cb_path)
+            with self.lock:
+                self.silo.node_set('file_deleted', file_cb_path)
+                num = self.silo.node_get('file_deleted', file_cb_path)
+
+                if num == self.num_nodes:
+                    # Delete corresponding directory under the combox
+                    # directory.
+                    rm_path(file_cb_path)
+                    self.silo.node_rem('file_deleted', file_cb_path)
         elif not event.is_directory and path.exists(file_cb_path):
-            # remove the corresponding file under the combox directory.
-            rm_path(file_cb_path)
-            # remove file info from silo.
-            self.silo.remove(file_cb_path)
+            with self.lock:
+                self.silo.node_set('file_deleted', file_cb_path)
+                num = self.silo.node_get('file_deleted', file_cb_path)
+
+                if num == self.num_nodes:
+                    # remove the corresponding file under the combox
+                    # directory.
+                    rm_path(file_cb_path)
+                    # remove file info from silo.
+                    self.silo.remove(file_cb_path)
+                    self.silo.node_rem('file_deleted', file_cb_path)
 
 
     def on_modified(self, event):
