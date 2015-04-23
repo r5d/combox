@@ -496,11 +496,29 @@ class TestEvents(object):
     def test_NDM_onmoved(self):
         """Testing on_moved method in NodeDirMonitor"""
 
-        event_handler = NodeDirMonitor(self.config, self.silo_lock,
-                                       self.nodem_lock)
-        observer = Observer()
-        observer.schedule(event_handler, self.NODE_DIR, recursive=True)
-        observer.start()
+        nodes =  get_nodedirs(self.config)
+        num_nodes =  len(get_nodedirs(self.config))
+
+        nmonitors = []
+        observers = []
+
+        # create an observer for each node directory and make it
+        # monitor them.
+        for node in nodes:
+            nmonitor = NodeDirMonitor(self.config, self.silo_lock,
+                                      self.nodem_lock)
+            observer = Observer()
+            observer.schedule(nmonitor, node, recursive=True)
+            observer.start()
+
+            nmonitors.append(nmonitor)
+            observers.append(observer)
+
+        # event_handler = NodeDirMonitor(self.config, self.silo_lock,
+        #                                self.nodem_lock)
+        # observer = Observer()
+        # observer.schedule(event_handler, self.NODE_DIR, recursive=True)
+        # observer.start()
 
         self.testf = "%s.onm" % self.TEST_FILE
         copyfile(self.TEST_FILE, self.testf)
@@ -517,9 +535,8 @@ class TestEvents(object):
         move_shards(self.testf, self.testf_moved, self.config)
         time.sleep(1)
         assert path.isfile(self.testf_moved)
-
-        silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.testf_moved)
+        assert not silo.exists(self.testf)
 
         # test directory move/rename
         dirt = path.join(self.FILES_DIR, "fom")
@@ -531,7 +548,6 @@ class TestEvents(object):
         split_and_encrypt(dirt_lorem, self.config)
         time.sleep(1)
 
-        silo = ComboxSilo(self.config, self.silo_lock)
         silo.update(dirt_lorem)
 
         dirt_m = path.join(self.FILES_DIR, "mof")
@@ -541,15 +557,19 @@ class TestEvents(object):
 
         assert path.isdir(dirt_m)
         assert path.isfile(dirt_m_lorem)
+        assert not path.isdir(dirt)
+        assert not path.isdir(dirt_lorem)
 
-        silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(dirt_m_lorem)
+        assert not silo.exists(dirt_lorem)
 
         self.purge_list.append(self.testf_moved)
         self.purge_list.append(dirt_m)
 
-        observer.stop()
-        observer.join()
+        # stop the zarking observers.
+        for i in range(num_nodes):
+            observers[i].stop()
+            observers[i].join()
 
 
     def test_NDM_housekeep(self):
