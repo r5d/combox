@@ -129,6 +129,10 @@ class TestSilo(object):
         assert_equal(3, dict_file_created[self.LOREM])
         assert_equal(4, dict_file_created[self.IPSUM])
 
+        silo.node_set('file_created', self.LOREM, 15)
+        dict_file_created = silo.db.get('file_created')
+        assert_equal(15, dict_file_created[self.LOREM])
+
 
     def test_csilo_nodset_modified(self):
         """Tests node_set method, in ComboxSilo class, when type is 'file_modified'.
@@ -147,6 +151,10 @@ class TestSilo(object):
         dict_file_modified = silo.db.get('file_modified')
         assert_equal(3, dict_file_modified[self.LOREM])
         assert_equal(4, dict_file_modified[self.IPSUM])
+
+        silo.node_set('file_modified', self.LOREM, 15)
+        dict_file_modified = silo.db.get('file_modified')
+        assert_equal(15, dict_file_modified[self.LOREM])
 
 
     def test_csilo_nodset_moved(self):
@@ -167,6 +175,9 @@ class TestSilo(object):
         assert_equal(3, dict_file_moved[self.LOREM])
         assert_equal(4, dict_file_moved[self.IPSUM])
 
+        silo.node_set('file_moved', self.LOREM, 15)
+        dict_file_moved = silo.db.get('file_moved')
+        assert_equal(15, dict_file_moved[self.LOREM])
 
     def test_csilo_nodset_file_deleted(self):
         """Tests node_set method in ComboxSilo class, when type is 'file_deleted'.
@@ -185,6 +196,10 @@ class TestSilo(object):
         dict_file_deleted = silo.db.get('file_deleted')
         assert_equal(3, dict_file_deleted[self.LOREM])
         assert_equal(4, dict_file_deleted[self.IPSUM])
+
+        silo.node_set('file_deleted', self.LOREM, 15)
+        dict_file_deleted = silo.db.get('file_deleted')
+        assert_equal(15, dict_file_deleted[self.LOREM])
 
 
     def test_csilo_nodeget(self):

@@ -143,16 +143,20 @@ class ComboxSilo(object):
         return self.node_dicts
 
 
-    def node_set(self, type_, file_):
+    def node_set(self, type_, file_, num=-1):
         """
         Update information about the shard of `file_'.
 
         type_: 'file_created', 'file_modified', 'file_moved', 'file_deleted'
         file_: path of the file_ in combox directory.
+        num: (optional) integer associated with the `file_'.
         """
 
         self.reload()
         with self.lock:
+            if num != -1:
+                self.db.dadd(type_, (file_, num))
+                return
             try:
                 num = self.db.dget(type_, file_)
                 num += 1
