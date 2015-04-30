@@ -232,16 +232,22 @@ class NodeDirMonitor(LoggingEventHandler):
         fpaths = filter(fpath_filter, self.silo.keys())
 
         for fpath in fpaths:
-           fshards = node_paths(fpath, self.config, True)
+            del_num = 0
+            fshards = node_paths(fpath, self.config, True)
 
-           for fshard in fshards:
-               if not path.exists(fshard):
-                   # remove the file from combox directory.
-                   rm_path(fpath)
-                   print fpath, "was deleted on another computer. Removing it."
-                   # update silo.
-                   self.silo.remove(fpath)
-                   break
+            for fshard in fshards:
+                if not path.exists(fshard):
+                    del_num += 1
+
+            if del_num == self.num_nodes:
+                # remove the file from combox directory.
+                rm_path(fpath)
+                print fpath, "was deleted on another computer. Removing it."
+                # update silo.
+                self.silo.remove(fpath)
+                self.silo.node_rem('file_deleted', fpath)
+            elif del_num > 0:
+                self.silo.node_set('file_deleted', fpath, del_num)
 
         for root, dirs, files in os.walk(get_nodedirs(self.config)[0]):
             for f in files:

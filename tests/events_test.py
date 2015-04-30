@@ -35,7 +35,7 @@ from combox.events import ComboxDirMonitor, NodeDirMonitor
 from combox.file import (relative_path, purge_dir, hash_file,
                          read_file, write_file, move_shards,
                          rm_shards, mk_nodedir, rm_nodedir,
-                         move_nodedir)
+                         move_nodedir, node_paths)
 
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
@@ -572,7 +572,34 @@ class TestEvents(object):
             observers[i].join()
 
 
-    def test_NDM_housekeep(self):
+    def test_NDM_housekeep_delete(self):
+        """Testing NodeDirMonitor's housekeep method's delete functionality."""
+        # files for testing deletion.
+        testf1 = path.join(self.FILES_DIR, 'hitchhikers.png')
+        testf2 = path.join(self.FILES_DIR, 'lorem.housekeep')
+        copyfile(self.TEST_FILE, testf1)
+        copyfile(self.lorem, testf2)
+
+        split_and_encrypt(testf2, self.config)
+        testf2_shard0 = node_paths(testf2, self.config, True)[0]
+        remove(testf2_shard0)
+
+        silo = ComboxSilo(self.config, self.silo_lock)
+        silo.update(testf1)
+        silo.update(testf2)
+
+        ndm = NodeDirMonitor(self.config, self.silo_lock,
+                             self.nodem_lock)
+        ndm.housekeep()
+
+        assert not path.exists(testf1)
+        assert path.exists(testf2)
+
+        self.purge_list.append(testf1)
+        self.purge_list.append(testf2)
+
+
+    def untest_NDM_housekeep(self):
         """Testing NodeDirMonitor's housekeep method."""
 
         # files for testing deletion.
