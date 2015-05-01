@@ -247,6 +247,9 @@ class NodeDirMonitor(LoggingEventHandler):
                 self.silo.remove(fpath)
                 self.silo.node_rem('file_deleted', fpath)
             elif del_num > 0:
+                # means, all the shards of the file have not been
+                # deleted yet, so, we store the no. of shards was
+                # deleted in the 'file_deleted' dict inside the silo.
                 self.silo.node_set('file_deleted', fpath, del_num)
 
         for root, dirs, files in os.walk(get_nodedirs(self.config)[0]):
