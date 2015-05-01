@@ -599,6 +599,36 @@ class TestEvents(object):
         self.purge_list.append(testf2)
 
 
+    def test_NDM_housekeep_create(self):
+        """Testing NodeDirMonitor's housekeep method's delete functionality."""
+
+        # test shard creation
+        hmutant = "%s.mutant" % self.TEST_FILE
+        hmutant_content = read_file(self.TEST_FILE)
+        split_and_encrypt(hmutant, self.config,
+                          hmutant_content)
+
+        lorem_c = "%s.c" % self.lorem
+        split_and_encrypt(lorem_c, self.config,
+                          read_file(self.lorem))
+        # delete lorem_c's shard0
+        remove(node_paths(lorem_c, self.config, True)[0])
+
+        ndm = NodeDirMonitor(self.config, self.silo_lock,
+                             self.nodem_lock)
+        ndm.housekeep()
+
+        assert path.exists(hmutant)
+        assert hmutant_content == read_file(hmutant)
+
+        assert not path.exists(lorem_c)
+        assert_equal(len(get_nodedirs(self.config))-1,
+                         self.silo.node_get('file_created', lorem_c))
+
+        self.purge_list.append(hmutant)
+        self.purge_list.append(lorem_c)
+
+
     def untest_NDM_housekeep(self):
         """Testing NodeDirMonitor's housekeep method."""
 

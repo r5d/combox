@@ -252,30 +252,39 @@ class NodeDirMonitor(LoggingEventHandler):
                 # deleted in the 'file_deleted' dict inside the silo.
                 self.silo.node_set('file_deleted', fpath, del_num)
 
-        for root, dirs, files in os.walk(get_nodedirs(self.config)[0]):
-            for f in files:
-                shard = path.join(root, f)
+        # Re-construct files created on another computer when combox
+        # was switched off. Only files who's all the shards have made
+        # it to the combox directory are re-constructed.
 
-                if not self.shardp(shard):
-                    continue
+        # Dict that keeps track of the files that were created.
+        files_created = {}
+        for node_dir in get_nodedirs(self.config):
+            for root, dirs, files in os.walk(node_dir):
+                for f in files:
+                    shard = path.join(root, f)
 
-                file_cb_path = cb_path(shard, self.config)
-                if not self.silo.exists(file_cb_path):
-                    print file_cb_path, "was created remotely. Creating it locally now..."
-                    decrypt_and_glue(file_cb_path, self.config)
-                    self.silo.update(file_cb_path)
-                elif self.silo.exists(file_cb_path):
-                    file_content = decrypt_and_glue(file_cb_path,
-                                                    self.config,
-                                                    write=False)
-                    file_content_hash = hash_file(file_cb_path, file_content)
+                    if not self.shardp(shard):
+                        continue
 
-                    if self.silo.stale(file_cb_path, file_content_hash):
-                        # file modified
-                        print file_cb_path, "modified remotely. Updating local copy."
-                        decrypt_and_glue(file_cb_path, self.config)
-                        self.silo.update(file_cb_path)
+                    file_cb_path = cb_path(shard, self.config)
+                    if not self.silo.exists(file_cb_path):
+                        if not files_created.get(file_cb_path):
+                            files_created[file_cb_path] = 1
+                        else:
+                            files_created[file_cb_path] += 1
 
+        for f_cb_path, crt_num in files_created.items():
+            if crt_num == self.num_nodes:
+                print f_cb_path, "was created remotely. Creating it locally now..."
+                decrypt_and_glue(f_cb_path, self.config)
+                # update silo.
+                self.silo.update(f_cb_path)
+                self.silo.node_rem('file_created', f_cb_path)
+            elif crt_num > 0:
+                # means, all the shards of the file have not arrived
+                # yet, so, we store the no. of shards that did arrive
+                # in the 'file_created' dict inside the silo.
+                self.silo.node_set('file_created', f_cb_path, crt_num)
 
         print "combox node monitor is done with the drudgery."
         print "Do what you want to the combox directory."
