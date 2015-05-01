@@ -30,7 +30,20 @@
 	  Done.
 
 	  Part of it was done while listening to Avril's "Complicated".
-*** TODO rewrite combox.events.NodeDirMonitor.housekeep method
+*** DONE rewrite combox.events.NodeDirMonitor.housekeep method's 'delete file' functionality
+	 CLOSED: [2015-05-01 Fri 09:43]
+	 - CLOSING NOTE [2015-05-01 Fri 09:43] \\
+	   Done.
+*** DONE rewrite combox.events.NodeDirMonitor.housekeep method's 're-construct created file' functionality
+	 CLOSED: [2015-05-01 Fri 09:43]
+	 - CLOSING NOTE [2015-05-01 Fri 09:43] \\
+	   Done.
+*** TODO rewrite combox.events.NodeDirMonitor.housekeep method's 're-construct modified file' functionality
+	- This is not release critical. So, I'm going not going to focus
+      on this now.
+	- To do this, we got to store information about the the names of
+      the shards that are getting created/modified/deleted/moved in
+      the node directories.
 *** TODO change combox.cbox to initialize a node monitor for each node  directory.
 *** DONE ComboxSilo: reload db from disk before reading/writing to it.
 	CLOSED: [2015-04-01 Wed 11:13]
