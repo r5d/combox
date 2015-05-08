@@ -29,8 +29,8 @@ from sys import exit
 from threading import Lock
 from watchdog.observers import Observer
 
-from combox.config import config_cb
-from combox.events import ComboxDirMonitor
+from combox.config import config_cb, get_nodedirs
+from combox.events import ComboxDirMonitor, NodeDirMonitor
 
 
 ## Function adapted from Watchdog's docs:
@@ -40,21 +40,46 @@ def run_cb(config):
     """
     Runs combox.
     """
-    c_path = path.abspath(config['combox_dir'])
     db_lock = Lock()
-    event_handler = ComboxDirMonitor(config, db_lock)
+    nodem_lock = Lock()
 
-    observer = Observer()
-    observer.schedule(event_handler, c_path, recursive=True)
-    observer.start()
+    # start combox directory (cd) monitor (cdm)
+    combox_dir = path.abspath(config['combox_dir'])
+    cd_monitor = ComboxDirMonitor(config, db_lock)
+
+    cd_observer = Observer()
+    cd_observer.schedule(cd_monitor, combox_dir, recursive=True)
+    cd_observer.start()
+
+    # start a node directory monitor for each of the node directories.
+    node_dirs =  get_nodedirs(config)
+    num_nodes =  len(get_nodedirs(config))
+
+    nd_monitors = []
+    nd_observers = []
+
+    for node in node_dirs:
+        nd_monitor = NodeDirMonitor(config, db_lock,
+                                    nodem_lock)
+        nd_observer = Observer()
+        nd_observer.schedule(nd_monitor, node, recursive=True)
+        nd_observer.start()
+
+        nd_monitors.append(nd_monitor)
+        nd_observers.append(nd_observer)
+
     print "Hit Ctrl-C to quit."
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
+        cd_observer.stop()
+        for i in range(num_nodes):
+            nd_observers[i].stop()
+            nd_observers[i].join()
+    cd_observer.join()
 
+    print "combox exiting. Bye!"
 
 def main():
     """
