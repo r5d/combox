@@ -37,7 +37,7 @@ def get_input_func():
     node_dir_1 = path.join('tests', 'shard-dir-1')
 
     # sample config info.
-    config_info = ['testbox', combox_dir, config_dir, '2',
+    config_info = ['testbox', combox_dir, '', '2',
                    'node-0', node_dir_0, '1024',
                    'node-1', node_dir_1, '1024']
 

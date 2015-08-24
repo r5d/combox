@@ -87,7 +87,7 @@ def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
     if silo_dir:
         config_info['silo_dir'] = path.abspath(silo_dir)
     else:
-        config_info['silo_dir'] = config_dir
+        config_info['silo_dir'] = path.abspath(config_dir)
 
     config_info['topsecret'] = pass_func()
 
