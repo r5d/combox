@@ -32,7 +32,7 @@ config = {
     'author_email': 'sravik@bgsu.edu',
     'version': '0.0.0',
     'install_requires': ['nose', 'watchdog', 'PyYAML', 'pycrypto',
-                         'pickledb'],
+                         'simplejson', 'pickledb'],
     'packages': ['combox'],
     'scripts': [],
     'entry_points': {

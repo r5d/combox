@@ -32,6 +32,7 @@ Core functionality is being written at the moment. See `TODO.org`.
 * argparse v1.2.x or later
 * nose v1.3.x
 * pycrypto v2.6.1
+* simplejson v3.8.0
 * pickledb v0.3
 * PyYAML v3.x
 * watchdog v0.8.2
