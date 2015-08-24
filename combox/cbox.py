@@ -68,6 +68,9 @@ def run_cb(config):
         nd_monitors.append(nd_monitor)
         nd_observers.append(nd_observer)
 
+    # Make the first node monitor do the housekeeping.
+    nd_monitors[0].housekeep()
+
     print "Hit Ctrl-C to quit."
     try:
         while True:
