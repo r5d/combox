@@ -297,7 +297,7 @@ class NodeDirMonitor(LoggingEventHandler):
         dest_cb_path = cb_path(event.dest_path, self.config)
 
         if not path.exists(dest_cb_path):
-            # means this path was move on another computer that is
+            # means this path was moved on another computer that is
             # running combox.
             with self.lock:
                 self.silo.node_set('file_moved', src_cb_path)
