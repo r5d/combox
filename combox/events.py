@@ -293,7 +293,11 @@ class NodeDirMonitor(LoggingEventHandler):
     def on_moved(self, event):
         super(NodeDirMonitor, self).on_moved(event)
 
+        src_cb_path = cb_path(event.src_path, self.config)
+        dest_cb_path = cb_path(event.dest_path, self.config)
+
         silo_node_dict = 'file_moved'
+        cb_filename = src_cb_path
 
         if (not self.shardp(event.src_path) and
             not self.shardp(event.dest_path) and
@@ -309,6 +313,7 @@ class NodeDirMonitor(LoggingEventHandler):
             # the shard appears in this node directory -- it is
             # created.
             silo_node_dict = 'file_created'
+            cb_filename = dest_cb_path
         elif (self.shardp(event.src_path) and
               self.shardp(event.dest_path) and
               '.dropbox_cache' in event.dest_path and
@@ -320,17 +325,29 @@ class NodeDirMonitor(LoggingEventHandler):
             # this treat as a file delete.
             silo_node_dict = 'file_deleted'
 
-        src_cb_path = cb_path(event.src_path, self.config)
-        dest_cb_path = cb_path(event.dest_path, self.config)
-
         if not path.exists(dest_cb_path):
             # means this path was moved on another computer that is
             # running combox.
             with self.lock:
-                self.silo.node_set(silo_node_dict, src_cb_path)
-                num = self.silo.node_get(silo_node_dict, src_cb_path)
+                self.silo.node_set(silo_node_dict, cb_filename)
+                num = self.silo.node_get(silo_node_dict, cb_filename)
                 if num != self.num_nodes:
                     return
+                elif silo_node_dict == 'file_created':
+                    # This is Dropbox specific :|
+                    # create file in cb directory.
+                    decrypt_and_glue(cb_filename, self.config)
+                    # update db.
+                    self.silo.update(cb_filename)
+                    self.silo.node_rem('file_created', cb_filename)
+                elif silo_node_dict == 'file_deleted':
+                    # This is Dropbox specify :|
+                    # remove the corresponding file under the combox
+                    # directory.
+                    rm_path(cb_filename)
+                    # remove file info from silo.
+                    self.silo.remove(cb_filename)
+                    self.silo.node_rem('file_deleted', cb_filename)
                 else:
                     try:
                         os.rename(src_cb_path, dest_cb_path)
