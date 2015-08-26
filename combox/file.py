@@ -420,3 +420,19 @@ def read_shards(directories, shard_basename):
         shards.append(shard_content)
 
     return shards
+
+
+def no_of_shards(cb_path, config):
+    """Returns the no. of shards that exists for `cb_path' in node directories.
+
+    cb_path: path to file in combox directory.
+    """
+
+    no_shards_there = 0
+    shard_paths = node_paths(cb_path, config, isfile=True)
+
+    for shard in shard_paths:
+        if path.isfile(shard):
+            no_shards_there += 1
+
+    return no_shards_there

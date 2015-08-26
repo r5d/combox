@@ -222,6 +222,36 @@ class TestFile(object):
         self.purge_list.append(new_dir)
 
 
+    def test_noofshards(self):
+        """Tests the node_paths function."""
+        nodes = get_nodedirs(self.config)
+        node_iter = iter(nodes)
+        lorem = path.join(self.config['combox_dir'], 'lorem.txt')
+
+        # get the shards on the node directories
+        split_and_encrypt(lorem, self.config)
+
+        # no. of shards must be equal to no. of node directories.
+        assert_equal(no_of_shards(lorem, self.config),
+                     len(nodes))
+
+        n_paths = node_paths(lorem, self.config, isfile=True)
+
+        # now remove first shard
+        rm_path(n_paths[0])
+        # no. of shards must be equal to one less than the no. of node
+        # directories.
+        assert_equal(no_of_shards(lorem, self.config),
+                     len(nodes) - 1)
+
+        # now remove second shard
+        rm_path(n_paths[1])
+        # no. of shards must be equal to two less than the no. of node
+        # directories.
+        assert_equal(no_of_shards(lorem, self.config),
+                     len(nodes) - 2)
+
+
     def teardown(self):
         """Cleans up things after each test in this class."""
         purge(self.purge_list)
