@@ -119,3 +119,5 @@
 	must do it through setup.py
 *** DONE Write the combox monitor startup thingy
 	 DEADLINE: <2015-01-29 Thu>
+** unit tests
+*** TODO unit test the NodeDirMonitor.on_modified method for the special Dropbox thing.

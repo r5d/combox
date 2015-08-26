@@ -293,6 +293,24 @@ class NodeDirMonitor(LoggingEventHandler):
     def on_moved(self, event):
         super(NodeDirMonitor, self).on_moved(event)
 
+        silo_node_dict = 'file_moved'
+
+        if (not self.shardp(event.src_path) and
+            not self.shardp(event.dest_path) and
+            not event.is_directory):
+            # The file moved is of no importance.
+            return
+        if (not self.shardp(event.src_path) and
+            self.shardp(event.dest_path) and
+            not event.is_directory):
+            # This is Dropbox specific.
+            #
+            # The file is renamed to a shard; so this the first time
+            # the shard appears in this node directory -- it is
+            # created.
+
+            silo_node_dict = 'file_created'
+
         src_cb_path = cb_path(event.src_path, self.config)
         dest_cb_path = cb_path(event.dest_path, self.config)
 
@@ -300,8 +318,8 @@ class NodeDirMonitor(LoggingEventHandler):
             # means this path was moved on another computer that is
             # running combox.
             with self.lock:
-                self.silo.node_set('file_moved', src_cb_path)
-                num = self.silo.node_get('file_moved', src_cb_path)
+                self.silo.node_set(silo_node_dict, src_cb_path)
+                num = self.silo.node_get(silo_node_dict, src_cb_path)
                 if num != self.num_nodes:
                     return
                 else:
@@ -309,7 +327,7 @@ class NodeDirMonitor(LoggingEventHandler):
                         os.rename(src_cb_path, dest_cb_path)
                     except OSError, e:
                         print "Jeez, failed to rename path.", e
-                    self.silo.node_rem('file_moved', src_cb_path)
+                    self.silo.node_rem(silo_node_dict, src_cb_path)
 
         if not event.is_directory:
             self.silo.remove(src_cb_path)
