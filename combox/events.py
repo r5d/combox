@@ -29,7 +29,7 @@ from combox.crypto import split_and_encrypt, decrypt_and_glue
 from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir,
                          cb_path, node_path, hash_file, rm_path,
-                         node_paths)
+                         node_paths, no_of_shards)
 from combox.silo import ComboxSilo
 
 
@@ -396,6 +396,13 @@ class NodeDirMonitor(LoggingEventHandler):
             return
 
         file_cb_path = cb_path(event.src_path, self.config)
+
+        # get no. shards available
+        shards_there = no_of_shards(file_cb_path, self.config)
+
+        if shards_there != self.num_nodes:
+            # got to wait for other shards to arrive!
+            return
 
         if event.is_directory:
             # do nothing

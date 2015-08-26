@@ -1,7 +1,7 @@
 * combox
 ** bugs :bugs:
 *** platform specific :platform-specific:
-**** DONE use os.path.expanduser to get user's home directory			 :#1:
+**** DONE use os.path.expanduser to get user's home directory			 :b#1:
 	 CLOSED: [2015-04-09 Thu 17:21]
 	 - CLOSING NOTE [2015-04-09 Thu 17:21] \\
 	   Done. But I'm not sure if fix the issue in Windows though.
@@ -11,6 +11,14 @@
 	 Thanks to Dr. Green for finding this.
 
 	 [1]: http://stackoverflow.com/questions/4028904/how-to-get-the-home-directory-in-python
+**** TODO combox not handling temprorary files created by editors properly :b#2:
+**** TODO config has problems creating nested node directories           :b#3:
+**** DONE NodeDirMonitor.on_modified assums shard 0 is always available :b#4:
+     CLOSED: [2015-08-25 Tue 23:21]
+     - CLOSING NOTE [2015-08-25 Tue 23:21] \\
+       Fixed this. Now it checks if all shards are available before
+       doing decrypt and glue.
+     This is not always the case.
 ** functionlity
 *** DONE rewrite combox.events.NodeDirMonitor.on_created method
 	CLOSED: [2015-04-01 Wed 23:06]
