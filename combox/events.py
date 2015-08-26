@@ -300,16 +300,25 @@ class NodeDirMonitor(LoggingEventHandler):
             not event.is_directory):
             # The file moved is of no importance.
             return
-        if (not self.shardp(event.src_path) and
-            self.shardp(event.dest_path) and
-            not event.is_directory):
+        elif (not self.shardp(event.src_path) and
+              self.shardp(event.dest_path) and
+              not event.is_directory):
             # This is Dropbox specific.
             #
             # The file is renamed to a shard; so this the first time
             # the shard appears in this node directory -- it is
             # created.
-
             silo_node_dict = 'file_created'
+        elif (self.shardp(event.src_path) and
+              self.shardp(event.dest_path) and
+              '.dropbox_cache' in event.dest_path and
+              not event.is_directory):
+            # This is Dropbox specific :|
+            #
+            # The shard is moved to the Dropbox's cache. This is happens
+            # when a shard is deleted in the Dropbox directory; so we must
+            # this treat as a file delete.
+            silo_node_dict = 'file_deleted'
 
         src_cb_path = cb_path(event.src_path, self.config)
         dest_cb_path = cb_path(event.dest_path, self.config)
