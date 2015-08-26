@@ -316,7 +316,7 @@ class NodeDirMonitor(LoggingEventHandler):
             cb_filename = dest_cb_path
         elif (self.shardp(event.src_path) and
               self.shardp(event.dest_path) and
-              '.dropbox_cache' in event.dest_path and
+              '.dropbox.cache' in event.dest_path and
               not event.is_directory):
             # This is Dropbox specific :|
             #
@@ -340,14 +340,16 @@ class NodeDirMonitor(LoggingEventHandler):
                     # update db.
                     self.silo.update(cb_filename)
                     self.silo.node_rem('file_created', cb_filename)
+                    return
                 elif silo_node_dict == 'file_deleted':
-                    # This is Dropbox specify :|
+                    # This is Dropbox specific :|
                     # remove the corresponding file under the combox
                     # directory.
                     rm_path(cb_filename)
                     # remove file info from silo.
                     self.silo.remove(cb_filename)
                     self.silo.node_rem('file_deleted', cb_filename)
+                    return
                 else:
                     try:
                         os.rename(src_cb_path, dest_cb_path)
