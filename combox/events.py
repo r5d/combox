@@ -337,6 +337,7 @@ class NodeDirMonitor(LoggingEventHandler):
             silo_node_dict = 'file_deleted'
             with self.lock:
                 # [1]: Store the assumption in silo.
+                print "Assuming %s (%s) is deleted" % (cb_filename, event.src_path)
                 self.silo.node_set(silo_node_dict, cb_filename)
                 num = self.silo.node_get(silo_node_dict, cb_filename)
                 if num == self.num_nodes:
@@ -359,6 +360,8 @@ class NodeDirMonitor(LoggingEventHandler):
             # the silo.
             cb_filename = dest_cb_path
             with self.lock:
+                print "Okay, %s (%s) was actually modified." % (cb_filename,
+                                                                event.dest_path)
                 self.silo.node_rem('file_deleted', cb_filename)
                 # Next watchdog detects that the shard was modified
                 # and generates calls the on_modified method. So we
