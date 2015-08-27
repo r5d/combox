@@ -263,7 +263,8 @@ class NodeDirMonitor(LoggingEventHandler):
                 for f in files:
                     shard = path.join(root, f)
 
-                    if not self.shardp(shard):
+                    if (not self.shardp(shard) and
+                        '.dropbox.cache' in shard):
                         continue
 
                     file_cb_path = cb_path(shard, self.config)
