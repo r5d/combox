@@ -348,7 +348,7 @@ class NodeDirMonitor(LoggingEventHandler):
                     self.silo.node_rem(silo_node_dict, cb_filename)
             return
         elif (not self.shardp(event.src_path) and
-              self.shardp(event.src_path) and
+              self.shardp(event.dest_path) and
               path.exists(dest_cb_path) and
               not event.is_directory):
             # This is Dropbox specific :|
@@ -357,6 +357,7 @@ class NodeDirMonitor(LoggingEventHandler):
             # being modified, so our previous assumption that it was
             # deleted was wrong, so we remove that information from
             # the silo.
+            cb_filename = dest_cb_path
             with self.lock:
                 self.silo.node_rem('file_deleted', cb_filename)
                 # Next watchdog detects that the shard was modified
