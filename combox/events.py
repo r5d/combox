@@ -306,12 +306,13 @@ class NodeDirMonitor(LoggingEventHandler):
             return
         elif (not self.shardp(event.src_path) and
               self.shardp(event.dest_path) and
+              not path.exists(dest_cb_path) and
               not event.is_directory):
             # This is Dropbox specific.
             #
-            # The file is renamed to a shard; so this the first time
-            # the shard appears in this node directory -- it is
-            # created.
+            # Temp. file inside .dropbox.cache is renamed to a shard;
+            # so this the first time the shard appears in this node
+            # directory -- it is created.
             silo_node_dict = 'file_created'
             cb_filename = dest_cb_path
         elif (self.shardp(event.src_path) and
@@ -320,10 +321,50 @@ class NodeDirMonitor(LoggingEventHandler):
               not event.is_directory):
             # This is Dropbox specific :|
             #
-            # The shard is moved to the Dropbox's cache. This is happens
-            # when a shard is deleted in the Dropbox directory; so we must
-            # this treat as a file delete.
+            # The shard is moved to the Dropbox's cache. This is
+            # happens when a shard is either deleted or modified in
+            # the Dropbox directory.
+            #
+            # When here we cannot tell whether the shard is
+            # deleted/modified. So, first we assume that the file is
+            # deleted and store this assumption in the silo[1].
+            #
+            # If the shard is being modified, then next Dropbox moves
+            # the modified version of the shard from its cache
+            # ('.dropbox.cache/' directory under the Dropox
+            # directory); this we catch in the next 'elif' statement.
             silo_node_dict = 'file_deleted'
+            with self.lock:
+                # [1]: Store the assumption in silo.
+                self.silo.node_set(silo_node_dict, cb_filename)
+                num = self.silo.node_get(silo_node_dict, cb_filename)
+                if num == self.num_nodes:
+                    # If here, then our assumption that the file is
+                    # deleted is true.
+                    rm_path(cb_filename)
+                    # remove file info from silo.
+                    self.silo.remove(cb_filename)
+                    self.silo.node_rem(silo_node_dict, cb_filename)
+            return
+        elif (not self.shardp(event.src_path) and
+              self.shardp(event.src_path) and
+              path.exists(dest_cb_path) and
+              not event.is_directory):
+            # This is Dropbox specific :|
+            #
+            # Okay, if we are here that means the shard was actually
+            # being modified, so our previous assumption that it was
+            # deleted was wrong, so we remove that information from
+            # the silo.
+            with self.lock:
+                self.silo.node_rem('file_deleted', cb_filename)
+                # Next watchdog detects that the shard was modified
+                # and generates calls the on_modified method. So we
+                # don't have to store information in the silo about
+                # this shard being modified; we do that later in the
+                # on_modified method.
+            return
+
 
         if not path.exists(dest_cb_path):
             # means this path was moved on another computer that is
@@ -340,15 +381,6 @@ class NodeDirMonitor(LoggingEventHandler):
                     # update db.
                     self.silo.update(cb_filename)
                     self.silo.node_rem('file_created', cb_filename)
-                    return
-                elif silo_node_dict == 'file_deleted':
-                    # This is Dropbox specific :|
-                    # remove the corresponding file under the combox
-                    # directory.
-                    rm_path(cb_filename)
-                    # remove file info from silo.
-                    self.silo.remove(cb_filename)
-                    self.silo.node_rem('file_deleted', cb_filename)
                     return
                 else:
                     try:
