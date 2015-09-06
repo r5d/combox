@@ -109,6 +109,7 @@ def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
         config_file = open(config_file_path, 'w')
         yaml.dump(config_info, config_file, default_flow_style=False)
         os.chmod(config_file_path,stat.S_IRUSR|stat.S_IWUSR)
+        return config_info
     else:
         return config_info
 
