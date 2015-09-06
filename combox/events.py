@@ -21,6 +21,7 @@ import logging
 
 from os import path
 from threading import Lock
+from threading import Timer
 
 from watchdog.events import LoggingEventHandler
 
@@ -203,6 +204,26 @@ class NodeDirMonitor(LoggingEventHandler):
             return True
         else:
             return False
+
+
+    def delete_later(self, file_cb_path):
+        """`file_cb_path' deleted if it is still under 'file_deleted'.
+
+        This is used by the on_deleted method.
+
+        This is a workaround to make combox predict official Google
+        Drive client's behavior.
+        """
+        with self.lock:
+            num = self.silo.node_get('file_deleted', file_cb_path)
+
+            if num == self.num_nodes:
+                # remove the corresponding file under the combox
+                # directory.
+                rm_path(file_cb_path)
+                # remove file info from silo.
+                self.silo.remove(file_cb_path)
+                self.silo.node_rem('file_deleted', file_cb_path)
 
 
     def housekeep(self):
@@ -420,6 +441,32 @@ class NodeDirMonitor(LoggingEventHandler):
                 if num == self.num_nodes:
                     os.mkdir(file_cb_path)
                     self.silo.node_rem('file_created', file_cb_path)
+        elif (not event.is_directory) and path.exists(file_cb_path):
+            # This can either mean the file was create on this
+            # computer or if this is a Google Drive node directory and
+            # the official Google Drive client is in use this means
+            # the file was modified.
+            #
+            # Google Drive client's behavior when a file (shard) is
+            # modified in the Google Drive node directory:
+            #
+            # - First it deletes the file.
+            # - Creates the latest version the file.
+            with self.lock:
+                num = self.silo.node_get('file_deleted', file_cb_path)
+                if num:
+                    # This means we're in the Google Drive node
+                    # directory and the official Google Drive client
+                    # is in use and the file was actually modified on
+                    # another computer.
+                    self.silo.node_rem('file_deleted', file_cb_path)
+                    self.silo.node_set('file_modified', file_cb_path)
+                    num = self.silo.node_get('file_modified', file_cb_path)
+                    if num == self.num_nodes:
+                        decrypt_and_glue(file_cb_path, self.config)
+                        # update db.
+                        self.silo.update(file_cb_path)
+                        self.silo.node_rem('file_modified', file_cb_path)
         elif (not event.is_directory) and (not path.exists(file_cb_path)):
             # shard created.
 
@@ -460,14 +507,18 @@ class NodeDirMonitor(LoggingEventHandler):
             with self.lock:
                 self.silo.node_set('file_deleted', file_cb_path)
                 num = self.silo.node_get('file_deleted', file_cb_path)
-
-                if num == self.num_nodes:
-                    # remove the corresponding file under the combox
-                    # directory.
-                    rm_path(file_cb_path)
-                    # remove file info from silo.
-                    self.silo.remove(file_cb_path)
-                    self.silo.node_rem('file_deleted', file_cb_path)
+                # If we are in a Google Drive node directory and
+                # the official Google Drive client is in use, at
+                # this point we cannot tell if the file was
+                # deleted; it can be a file modification or rename
+                # or deletion.
+                #
+                # Therefore, wait for 2secs and then delete the
+                # file_cb_path iff the file_cb_path was really
+                # removed on the another computer.
+                delayed_thread = Timer(3, self.delete_later,
+                                       [file_cb_path])
+                delayed_thread.start()
 
 
     def on_modified(self, event):

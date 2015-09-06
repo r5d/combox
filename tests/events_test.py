@@ -30,12 +30,14 @@ from nose.tools import *
 from watchdog.observers import Observer
 
 from combox.config import get_nodedirs
-from combox.crypto import decrypt_and_glue, split_and_encrypt
+from combox.crypto import (decrypt_and_glue, split_and_encrypt,
+                           encrypt_shards)
 from combox.events import ComboxDirMonitor, NodeDirMonitor
 from combox.file import (relative_path, purge_dir, hash_file,
                          read_file, write_file, move_shards,
                          rm_shards, mk_nodedir, rm_nodedir,
-                         move_nodedir, node_paths)
+                         move_nodedir, node_paths, rm_path,
+                         split_data, write_shards)
 
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
@@ -400,7 +402,7 @@ class TestEvents(object):
 
         # Test - Shard deletion.
         rm_shards(the_guide, self.config)
-        time.sleep(1)
+        time.sleep(4)
         assert not path.exists(the_guide)
 
         ## check if the new file's info is removed from silo
@@ -409,6 +411,99 @@ class TestEvents(object):
 
         self.purge_list.append(BAR_DIR)
         self.purge_list.append(the_guide)
+
+        # stop the zarking observers.
+        for i in range(num_nodes):
+            observers[i].stop()
+            observers[i].join()
+
+
+    def test_GoogleDrive_file_modify(self):
+        """Simulates Google Drive client's file modification behavior and
+        checks if combox is interpreting it properly.
+        """
+
+        nodes =  get_nodedirs(self.config)
+        num_nodes =  len(get_nodedirs(self.config))
+
+        nmonitors = []
+        observers = []
+
+        # create an observer for each node directory and make it
+        # monitor them.
+        for node in nodes:
+            nmonitor = NodeDirMonitor(self.config, self.silo_lock,
+                                      self.nodem_lock)
+            observer = Observer()
+            observer.schedule(nmonitor, node, recursive=True)
+            observer.start()
+
+            nmonitors.append(nmonitor)
+            observers.append(observer)
+
+        # Test - shard modification
+        lorem_content = read_file(self.lorem)
+        self.lorem_copy = "%s.copy" % self.lorem
+
+        copyfile(self.lorem, self.lorem_copy)
+        split_and_encrypt(self.lorem_copy, self.config,
+                          lorem_content)
+        self.silo.update(self.lorem_copy)
+        shardedp(self.lorem_copy)
+
+        lorem_copy_hash = self.silo.db.get(self.lorem_copy)
+
+        ipsum_content = read_file(self.ipsum)
+        lorem_copy_content = "%s\n%s" % (lorem_content, ipsum_content)
+
+        time.sleep(2)
+
+        # Modify shards in the first n-1 node directories in the usual
+        # way. For the nth node directory simulate Google Drive
+        # official client's way of modifiying the shard.
+
+        rel_path = relative_path(self.lorem_copy, self.config)
+
+        # no. of shards = no. of nodes.
+        SHARDS = len(self.config['nodes_info'].keys())
+
+        f_shards = split_data(lorem_copy_content, SHARDS)
+
+        # encrypt shards
+        ciphered_shards = encrypt_shards(f_shards, self.config['topsecret'])
+
+        # write ciphered shards to disk
+        f_basename =  rel_path
+        # gets the list of node' directories.
+        nodes = get_nodedirs(self.config)
+        last_node_index = len(nodes) - 1
+
+        nodes_subset = nodes[:last_node_index]
+        last_node = nodes[last_node_index]
+
+        # write n-1 shards to the first n-1 node directories
+        write_shards(ciphered_shards, nodes_subset, f_basename)
+
+
+        # now for the nth shard, simulate Google Drive's client
+        # behavior.
+        last_shard_path = "%s.shard%d" % (path.join(last_node, f_basename),
+                                          last_node_index)
+        # remove the shard first
+        rm_path(last_shard_path)
+        # write the latest version of the shard
+        write_file(last_shard_path, ciphered_shards[last_node_index])
+        time.sleep(3)
+
+        self.silo.reload()
+        assert lorem_copy_content == read_file(self.lorem_copy)
+
+        ## check if the lorem_copy's info is updated in silo
+        assert lorem_copy_hash != self.silo.db.get(self.lorem_copy)
+        assert_equal(None, self.silo.node_get('file_modified',
+                                                  self.lorem_copy))
+
+        self.purge_list.append(self.lorem_copy)
 
         # stop the zarking observers.
         for i in range(num_nodes):
@@ -725,9 +820,6 @@ class TestEvents(object):
         """Purge the mess created by this test"""
 
         rm_shards(self.TEST_FILE, self.config)
-
-        os.remove(self.lorem_ipsum)
-        rm_shards(self.lorem_ipsum, self.config)
 
         rm_shards(self.lorem, self.config)
 
