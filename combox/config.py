@@ -102,7 +102,7 @@ def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
 
         # create node path, if it doesn't exists yet.
         if not path.exists(nodes[node_name]['path']):
-            os.mkdir(nodes[node_name]['path'])
+            os.makedirs(nodes[node_name]['path'])
 
     config_info['nodes_info'] = nodes
     if write:
