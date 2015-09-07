@@ -335,6 +335,7 @@ class NodeDirMonitor(LoggingEventHandler):
             # Temp. file inside .dropbox.cache is renamed to a shard;
             # so this the first time the shard appears in this node
             # directory -- it is created.
+            print "Got it!", event.src_path, "is was created."
             silo_node_dict = 'file_created'
             cb_filename = dest_cb_path
         elif (self.shardp(event.src_path) and
@@ -403,6 +404,7 @@ class NodeDirMonitor(LoggingEventHandler):
                 elif silo_node_dict == 'file_created':
                     # This is Dropbox specific :|
                     # create file in cb directory.
+                    print "Creating", cb_filename, "..."
                     decrypt_and_glue(cb_filename, self.config)
                     # update db.
                     self.silo.update(cb_filename)
@@ -455,6 +457,7 @@ class NodeDirMonitor(LoggingEventHandler):
             with self.lock:
                 num = self.silo.node_get('file_deleted', file_cb_path)
                 if num:
+                    print "Looks like", event.src_path, "was actually modified!"
                     # This means we're in the Google Drive node
                     # directory and the official Google Drive client
                     # is in use and the file was actually modified on
@@ -463,6 +466,7 @@ class NodeDirMonitor(LoggingEventHandler):
                     self.silo.node_set('file_modified', file_cb_path)
                     num = self.silo.node_get('file_modified', file_cb_path)
                     if num == self.num_nodes:
+                        print "Updating", file_cb_path, "..."
                         decrypt_and_glue(file_cb_path, self.config)
                         # update db.
                         self.silo.update(file_cb_path)
@@ -504,6 +508,7 @@ class NodeDirMonitor(LoggingEventHandler):
                     rm_path(file_cb_path)
                     self.silo.node_rem('file_deleted', file_cb_path)
         elif not event.is_directory and path.exists(file_cb_path):
+            print event.src_path, "must have been deleted on another computer."
             with self.lock:
                 self.silo.node_set('file_deleted', file_cb_path)
                 num = self.silo.node_get('file_deleted', file_cb_path)
@@ -516,6 +521,7 @@ class NodeDirMonitor(LoggingEventHandler):
                 # Therefore, wait for 2secs and then delete the
                 # file_cb_path iff the file_cb_path was really
                 # removed on the another computer.
+                print "Marking", file_cb_path, "for later deletion."
                 delayed_thread = Timer(3, self.delete_later,
                                        [file_cb_path])
                 delayed_thread.start()
@@ -542,12 +548,14 @@ class NodeDirMonitor(LoggingEventHandler):
             # do nothing
             pass
         elif (not event.is_directory):
+            print event.src_path, "modified."
             file_content = decrypt_and_glue(file_cb_path,
                                             self.config,
                                             write=False)
             file_content_hash = hash_file(file_cb_path, file_content)
 
-            if self.silo.stale(file_cb_path, file_content_hash):
+            if self.silo.stale(file_cb_path, file_content_hash) == True:
+                print "Found", file_cb_path, "stale."
                 # shard modified
 
                 # means, file was modified on another computer (also
