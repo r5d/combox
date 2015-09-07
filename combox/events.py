@@ -218,6 +218,7 @@ class NodeDirMonitor(LoggingEventHandler):
             num = self.silo.node_get('file_deleted', file_cb_path)
 
             if num == self.num_nodes:
+                print "Deleting", file_cb_path, "..."
                 # remove the corresponding file under the combox
                 # directory.
                 rm_path(file_cb_path)
@@ -335,7 +336,7 @@ class NodeDirMonitor(LoggingEventHandler):
             # Temp. file inside .dropbox.cache is renamed to a shard;
             # so this the first time the shard appears in this node
             # directory -- it is created.
-            print "Got it!", event.src_path, "is was created."
+            print "Got it!", event.dest_path, "is was created."
             silo_node_dict = 'file_created'
             cb_filename = dest_cb_path
         elif (self.shardp(event.src_path) and
