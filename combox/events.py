@@ -386,11 +386,14 @@ class NodeDirMonitor(LoggingEventHandler):
                 print "Okay, %s (%s) was actually modified." % (cb_filename,
                                                                 event.dest_path)
                 self.silo.node_rem('file_deleted', cb_filename)
-                # Next watchdog detects that the shard was modified
-                # and generates calls the on_modified method. So we
-                # don't have to store information in the silo about
-                # this shard being modified; we do that later in the
-                # on_modified method.
+                with self.lock:
+                    self.silo.node_set('file_modified', file_cb_path)
+                    num = self.silo.node_get('file_modified', file_cb_path)
+                    if num == self.num_nodes:
+                        decrypt_and_glue(file_cb_path, self.config)
+                        # update db.
+                        self.silo.update(file_cb_path)
+                        self.silo.node_rem('file_modified', file_cb_path)
             return
 
 
