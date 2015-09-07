@@ -820,10 +820,10 @@ class TestEvents(object):
         """Purge the mess created by this test"""
 
         rm_shards(self.TEST_FILE, self.config)
-
         rm_shards(self.lorem, self.config)
-
         rm_shards(self.ipsum, self.config)
+
+        rm_path(self.lorem_ipsum)
 
         rm_nodedirs(self.config)
         rm_configdir()
