@@ -17,6 +17,7 @@
 #   <http://www.gnu.org/licenses/>.
 
 import os
+import platform
 import logging
 
 from os import path
@@ -386,13 +387,25 @@ class NodeDirMonitor(LoggingEventHandler):
                 print "Okay, %s (%s) was actually modified." % (cb_filename,
                                                                 event.dest_path)
                 self.silo.node_rem('file_deleted', cb_filename)
-                self.silo.node_set('file_modified', cb_filename)
-                num = self.silo.node_get('file_modified', cb_filename)
-                if num == self.num_nodes:
-                    decrypt_and_glue(cb_filename, self.config)
-                    # update db.
-                    self.silo.update(cb_filename)
-                    self.silo.node_rem('file_modified', cb_filename)
+                # Next, if we're on GNU/Linux, watchdog detects that
+                # the shard was modified and generates calls the
+                # on_modified method. So we don't have to store
+                # information in the silo about this shard being
+                # modified; we do that later in the on_modified
+                # method.
+                #
+                # But, on OS X (a.k.a Darwin), watchdog detect the
+                # shard is modified and does not generate a call to
+                # the on_modified method. So we store the information
+                # about the modified shard here itself.
+                if platform.system() == 'Darwin':
+                    self.silo.node_set('file_modified', cb_filename)
+                    num = self.silo.node_get('file_modified', cb_filename)
+                    if num == self.num_nodes:
+                        decrypt_and_glue(cb_filename, self.config)
+                        # update db.
+                        self.silo.update(cb_filename)
+                        self.silo.node_rem('file_modified', cb_filename)
             return
 
 
