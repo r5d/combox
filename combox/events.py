@@ -386,14 +386,13 @@ class NodeDirMonitor(LoggingEventHandler):
                 print "Okay, %s (%s) was actually modified." % (cb_filename,
                                                                 event.dest_path)
                 self.silo.node_rem('file_deleted', cb_filename)
-                with self.lock:
-                    self.silo.node_set('file_modified', file_cb_path)
-                    num = self.silo.node_get('file_modified', file_cb_path)
-                    if num == self.num_nodes:
-                        decrypt_and_glue(file_cb_path, self.config)
-                        # update db.
-                        self.silo.update(file_cb_path)
-                        self.silo.node_rem('file_modified', file_cb_path)
+                self.silo.node_set('file_modified', file_cb_path)
+                num = self.silo.node_get('file_modified', file_cb_path)
+                if num == self.num_nodes:
+                    decrypt_and_glue(file_cb_path, self.config)
+                    # update db.
+                    self.silo.update(file_cb_path)
+                    self.silo.node_rem('file_modified', file_cb_path)
             return
 
 
