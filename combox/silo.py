@@ -41,7 +41,7 @@ class ComboxSilo(object):
 
         ## things we need for housekeep the node directory.
         self.node_dicts = ['file_created', 'file_modified', 'file_moved',
-                           'file_deleted']
+                           'file_deleted', 'file_moved_info']
 
         # created the dicts if not already created.
         for ndict in self.node_dicts:
@@ -167,6 +167,19 @@ class ComboxSilo(object):
                 # so:
                 num = 1
             self.db.dadd(type_, (file_, num))
+
+
+    def node_store_moved_info(self, src_path, dest_path):
+        """
+        Update/create about file move.
+
+        type_: expected type is 'file_moved_info'.
+        src_path: usually the source path of the file being moved.
+        dest_path: usually the destination path of the file being moved.
+        """
+        self.reload()
+        with self.lock:
+            self.db.dadd('file_moved_info', (src_path, dest_path))
 
 
     def node_get(self, type_, file_):

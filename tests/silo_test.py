@@ -106,7 +106,7 @@ class TestSilo(object):
         keys = silo.db.db.keys()
 
         node_dicts = ['file_created', 'file_modified', 'file_moved',
-                      'file_deleted']
+                      'file_deleted', 'file_moved_info']
         for ndict in node_dicts:
             assert ndict in keys
 
@@ -200,6 +200,18 @@ class TestSilo(object):
         silo.node_set('file_deleted', self.LOREM, 15)
         dict_file_deleted = silo.db.get('file_deleted')
         assert_equal(15, dict_file_deleted[self.LOREM])
+
+
+    def test_csilo_node_store_moved_info(self):
+        """Tests node_store_moved_info method in ComboxSilo class.
+        """
+        silo = ComboxSilo(self.config, self.silo_lock)
+
+        src_path  = self.LOREM
+        dest_path = self.LOREM_IPSUM
+        silo.node_store_moved_info(src_path, dest_path)
+
+        assert_equal(dest_path, silo.node_get('file_moved_info', src_path))
 
 
     def test_csilo_nodeget(self):
