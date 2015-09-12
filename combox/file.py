@@ -247,11 +247,6 @@ def move_shards(src, dest, config):
     config: a dictionary containing configuration info about combox.
     """
 
-    if path.basename(src) == path.basename(dest):
-        # this means the parent directory was rename, no the file
-        # itself! So we don't have to do anything.
-        return
-
     nodes = get_nodedirs(config)
 
     src_rel_path = relative_path(src, config)
@@ -259,9 +254,13 @@ def move_shards(src, dest, config):
 
     for node in nodes:
         src_shard_glob = "%s.shard*" % path.join(node, src_rel_path)
-        # there's always only one shard in each node directory. So,
-        # the glob() will alawys return a list of size 1.
-        src_shard = glob(src_shard_glob)[0]
+        # there's always only one shard in each node directory.
+        glob_list = glob(src_shard_glob)
+        if glob_list:
+            src_shard = glob_list[0]
+        else:
+            # shards are not there!, so we return.
+            return
 
         # get shard number
         shard_no = src_shard.partition('.shard')[2]
