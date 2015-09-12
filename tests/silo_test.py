@@ -237,7 +237,7 @@ class TestSilo(object):
         assert_equal(4, silo.node_get('file_created', self.LOREM))
 
         removed = silo.node_rem('file_created', self.LOREM)
-        assert_equal(True, removed)
+        assert_equal(4, removed)
         assert_equal(None, silo.node_get('file_created', self.LOREM))
 
     def teardown(self):
