@@ -26,12 +26,17 @@
      CLOSED: [2015-09-12 Sat 20:18]
      - CLOSING NOTE [2015-09-12 Sat 20:18] \\
        Done.
-**** TODO directory rename does not delete old directory on remote computer. :b#6:
+**** DONE directory rename does not delete old directory on remote computer. :b#6:
      This is happending because the files inside the directory are
      going through a delayed deletion.
+     CLOSED: [2015-09-12 Sat 22:20]
+     - CLOSING NOTE [2015-09-12 Sat 22:20] \\
+       Done.
 
      The solution will be to do a delayed deletion of the old directory path.
-**** TODO combox.file.rm_path fails when a non-existent file is given   :b#7:
+**** DONE combox.file.rm_path fails when a non-existent file is given   :b#7:
+     CLOSED: [2015-09-12 Sat 22:20]
+     - CLOSING NOTE [2015-09-12 Sat 22:20]
 
 ** functionlity
 *** DONE rewrite combox.events.NodeDirMonitor.on_created method
