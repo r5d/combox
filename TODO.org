@@ -20,7 +20,10 @@
        doing decrypt and glue.
      This is not always the case.
 *** functionality
-**** TODO combox does not move shards properly                          :b#5:
+**** DONE combox does not move shards properly                          :b#5:
+     CLOSED: [2015-09-12 Sat 20:18]
+     - CLOSING NOTE [2015-09-12 Sat 20:18] \\
+       Done.
      When a file is moved/renamed to a place in different directory,
      combox does not corresponding move/rename shards.
 ** functionlity
