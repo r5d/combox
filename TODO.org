@@ -31,6 +31,7 @@
      going through a delayed deletion.
 
      The solution will be to do a delayed deletion of the old directory path.
+**** TODO combox.file.rm_path fails when a non-existent file is given   :b#7:
 
 ** functionlity
 *** DONE rewrite combox.events.NodeDirMonitor.on_created method
