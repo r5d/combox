@@ -21,11 +21,17 @@
      This is not always the case.
 *** functionality
 **** DONE combox does not move shards properly                          :b#5:
+     When a file is moved/renamed to a place in different directory,
+     combox does not corresponding move/rename shards.
      CLOSED: [2015-09-12 Sat 20:18]
      - CLOSING NOTE [2015-09-12 Sat 20:18] \\
        Done.
-     When a file is moved/renamed to a place in different directory,
-     combox does not corresponding move/rename shards.
+**** TODO directory rename does not delete old directory on remote computer. :b#6:
+     This is happending because the files inside the directory are
+     going through a delayed deletion.
+
+     The solution will be to do a delayed deletion of the old directory path.
+
 ** functionlity
 *** DONE rewrite combox.events.NodeDirMonitor.on_created method
 	CLOSED: [2015-04-01 Wed 23:06]
