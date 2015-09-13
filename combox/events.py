@@ -513,7 +513,9 @@ class NodeDirMonitor(LoggingEventHandler):
 
         file_cb_path = cb_path(event.src_path, self.config)
 
-        if event.is_directory:
+        if event.is_directory and path.exists(file_cb_path):
+            # This means the directory was deleted on a remote
+            # computer.
             with self.lock:
                 self.silo.node_set('file_deleted', file_cb_path)
                 num = self.silo.node_get('file_deleted', file_cb_path)
