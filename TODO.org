@@ -37,6 +37,7 @@
 **** DONE combox.file.rm_path fails when a non-existent file is given   :b#7:
      CLOSED: [2015-09-12 Sat 22:20]
      - CLOSING NOTE [2015-09-12 Sat 22:20]
+**** TODO combox does not differentiate between local and remote directory delete. :b#8:
 
 ** functionlity
 *** DONE rewrite combox.events.NodeDirMonitor.on_created method
