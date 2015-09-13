@@ -176,7 +176,7 @@ def rm_path(fpath):
     try:
         if path.isfile(fpath):
             os.remove(fpath)
-        else:
+        elif path.isdir(fpath):
             os.rmdir(fpath)
     except OSError, e:
         print e, "Something wrong. report bug to sravik@bgsu.edu"
