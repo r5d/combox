@@ -521,8 +521,17 @@ class NodeDirMonitor(LoggingEventHandler):
                 if num == self.num_nodes:
                     # Delete corresponding directory under the combox
                     # directory.
-                    rm_path(file_cb_path)
-                    self.silo.node_rem('file_deleted', file_cb_path)
+                    if os.listdir(file_cb_path):
+                        # There are files under this directory that
+                        # are not deleted yet, so we got to delay
+                        # deletion :|
+                        print "Marking", file_cb_path, "for later deletion."
+                        delayed_thread = Timer(15, self.delete_later,
+                                               [file_cb_path])
+                        delayed_thread.start()
+                    else:
+                        rm_path(file_cb_path)
+                        self.silo.node_rem('file_deleted', file_cb_path)
         elif not event.is_directory and path.exists(file_cb_path):
             print event.src_path, "must have been deleted on another computer."
             with self.lock:
