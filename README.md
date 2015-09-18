@@ -1,71 +1,88 @@
-<!-- -*- mode: markdown; -*- -->
-
 # combox
 
-Encrypts files and scatters them across storage provided by
-proprietary online file storage providers like Google Drive, Dropbox,
-etc.
+Encrypts files and scatters them across storage provided by Google
+Drive and Dropbox.
 
 The ideas for this program is based on [`combobox`][1].
 
 [1]: https://bitbucket.org/bgsucodeloverslab/combobox
-
-Criticism is welcome here.
 
 # etymology
 
 `combox` is a lazy contraction of the word "combo box". `combox` is
 pronounced as "combo box".
 
-# status
+# runs on
 
-Core functionality is being written at the moment. See `TODO.org`.
+ - GNU/Linux
+ - OS X
 
-# requirements
+# using combox
 
-* setuptools v5.5.x
-* virtualenv v1.9.x or later
-* python v2.7.x
+## on GNU/Linux
 
-# dependencies
+Install `virtualenv` and python dev. package.
 
-* argparse v1.2.x or later
-* nose v1.3.x
-* pycrypto v2.6.1
-* simplejson v3.8.0
-* pickledb v0.3
-* PyYAML v3.x
-* watchdog v0.8.2
+On a Debian based distribution, do:
 
-# platform
+    # aptitude install virtualenv python-dev
 
-At the moment `combox` is written and tested on a GNU/Linux based
-operating system.
+## on OS X
 
-# setting up the environment
+First install [Hombrew][brew.sh]:
 
-Install `virtualenv` and python's `setuptools` packages.
+    $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-From the same directory as this README file, do:
+Then do:
 
+    $ brew update
+    $ brew doctor
+
+[brew.sh]: http://brew.sh/
+
+Next, install python from Hombrew:
+
+    $ brew install python
+
+This will also install `pip`.
+
+Lastly do:
+
+    $ pip install virtualenv
+
+## set up combox
+
+Get the latest copy of combox:
+
+    $ git clone http://rsiddharth.ninth.su/git/cb.git combox
+
+Setup virtual environment:
+
+    $ cd combox
     $ virtualenv .
 
 Activate the virtual environment:
 
     $ source bin/activate
 
-Install dependencies by simply installing combox:
+Install combox:
 
     $ python setup.py install
 
-# running tests
+Run combox:
 
-    $ nosetests -s
+    $ combox
+
+Always make sure that the virtual environment is activated before
+running combox. To activate virtual environment, do:
+
+    $ cd path/to/combox
+    $ source bin/activate
 
 # license
 
-The source code of `combox` is licensed under the [GNU General Public
-License version 3 or later][gpl]. See COPYING.
+`combox` is licensed under the
+[GNU General Public License version 3 or later][gpl]. See COPYING.
 
 The `combox` logo (`graphics/logo/combox-logo.svg`) is under [Public Domain][pd].
 
