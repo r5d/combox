@@ -56,6 +56,20 @@ class ComboxDirMonitor(LoggingEventHandler):
         self.housekeep()
 
 
+    def tmp_file(self, file_path):
+        """Returns True if `file_path` is a tmp file."""
+
+        if file_path.endswith("~"):
+            return True
+        elif file_path.startswith(".#"):
+            return True
+        elif (file_path.startswith("#") and
+              file_path.endswith("#")):
+            return True
+        else:
+            return False
+
+
     def housekeep(self):
         """Recursively traverses combox directory, discovers changes and updates silo and node directories.
 
@@ -100,7 +114,8 @@ class ComboxDirMonitor(LoggingEventHandler):
                     print fpath, "was modified. Updating DB and shards..."
                     split_and_encrypt(fpath, self.config)
                     self.silo.update(fpath)
-                elif not self.silo.exists(fpath):
+                elif (not self.silo.exists(fpath)
+                      and not self.tmp_file(fpath)):
                     # new file
                     print 'Adding new file', fpath, '...'
                     split_and_encrypt(fpath, self.config)
@@ -127,6 +142,11 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     def on_created(self, event):
         super(ComboxDirMonitor, self).on_created(event)
+
+        if self.tmp_file(event.src_path):
+            # ignore tmp files.
+            print "Created tmp file", event.src_path, "...ignoring"
+            return
 
         file_node_path = node_path(event.src_path, self.config,
                                    not event.is_directory)
@@ -161,6 +181,11 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     def on_modified(self, event):
         super(ComboxDirMonitor, self).on_modified(event)
+
+        if self.tmp_file(event.src_path):
+            # ignore tmp files.
+            print "Modified tmp file", event.src_path, "...ignoring"
+            return
 
         if event.is_directory:
             # do nothing

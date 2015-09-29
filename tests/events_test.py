@@ -42,7 +42,7 @@ from combox.file import (relative_path, purge_dir, hash_file,
 from combox.silo import ComboxSilo
 from tests.utils import (get_config, shardedp, dirp, renamedp,
                          path_deletedp, rm_nodedirs, rm_configdir,
-                         purge_nodedirs, purge)
+                         purge_nodedirs, purge, not_shardedp)
 
 
 class TestEvents(object):
@@ -93,6 +93,19 @@ class TestEvents(object):
         ## check if the new file's info is in silo
         silo = ComboxSilo(self.config, self.silo_lock)
         assert silo.exists(self.TEST_FILE_COPY_0)
+
+        # Test - tmp file creation.
+        # combox must ignore it.
+        self.TEST_TMP_FILE = "%s~" % self.TEST_FILE
+        copyfile(self.TEST_FILE, self.TEST_TMP_FILE)
+        # wait for a second.
+        time.sleep(1)
+        ## confirm that shards were not created.
+        not_shardedp(self.TEST_TMP_FILE)
+        ## confirm that it did not get registered in the silo.
+        assert not silo.exists(self.TEST_TMP_FILE)
+        # purge it later.
+        self.purge_list.append(self.TEST_TMP_FILE)
 
         # Test - File deletion.
         remove(self.TEST_FILE_COPY_0)

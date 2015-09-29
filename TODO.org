@@ -11,7 +11,10 @@
 	 Thanks to Dr. Green for finding this.
 
 	 [1]: http://stackoverflow.com/questions/4028904/how-to-get-the-home-directory-in-python
-**** TODO combox not handling temprorary files created by editors properly :b#2:
+**** DONE combox not handling temprorary files created by editors properly :b#2:
+     CLOSED: [2015-09-29 Tue 14:15]
+     - CLOSING NOTE [2015-09-29 Tue 14:15] \\
+       Done.
 **** TODO config has problems creating nested node directories           :b#3:
 **** DONE NodeDirMonitor.on_modified assums shard 0 is always available :b#4:
      CLOSED: [2015-08-25 Tue 23:21]

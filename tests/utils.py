@@ -109,6 +109,18 @@ def shardedp(f):
         assert path.exists(shard) and path.isfile(shard)
 
 
+def not_shardedp(f):
+    """Checks if file's shards does not exists in the node directories"""
+    config = get_config()
+    nodes = get_nodedirs(config)
+    i = 0
+    for node in nodes:
+        rel_path = relative_path(f, config)
+        shard = "%s.shard%s" % (path.join(node, rel_path), i)
+        i += 1
+        assert not path.exists(shard) and not path.isfile(shard)
+
+
 def dirp(d):
     """
     Checks if the directory was created under node directories
