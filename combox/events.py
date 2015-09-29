@@ -61,9 +61,9 @@ class ComboxDirMonitor(LoggingEventHandler):
 
         if file_path.endswith("~"):
             return True
-        elif file_path.startswith(".#"):
+        elif path.basename(file_path).startswith(".#"):
             return True
-        elif (file_path.startswith("#") and
+        elif (path.basename(file_path).startswith("#") and
               file_path.endswith("#")):
             return True
         else:
