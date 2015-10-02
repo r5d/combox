@@ -28,13 +28,11 @@ config = {
     'url': 'http://rsiddharth.ninth.su/git/cb.git/',
     'download_url': 'http://rsiddharth.ninth.su/git/cb.git/',
     'license': 'GNU General Public License v3.0 or later',
-    'platform': 'GNU/Linux',
     'author_email': 'sravik@bgsu.edu',
-    'version': '0.0.0',
+    'version': '0.1.1',
     'install_requires': ['nose', 'watchdog', 'PyYAML', 'pycrypto',
                          'simplejson', 'pickledb'],
     'packages': ['combox'],
-    'scripts': [],
     'entry_points': {
         'console_scripts': ['combox = combox.cbox:main']
     },
