@@ -9,3 +9,6 @@ man/
 bin/
 include/
 trash/
+
+# OS X
+.Python
