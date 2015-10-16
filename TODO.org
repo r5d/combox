@@ -44,7 +44,7 @@
      CLOSED: [2015-09-12 Sat 23:29]
      - CLOSING NOTE [2015-09-12 Sat 23:29] \\
        Fixed.
-
+**** TODO read_file and write_file functions in combox.file must call close() on file objects :b#9:
 ** functionlity
 *** DONE rewrite combox.events.NodeDirMonitor.on_created method
 	CLOSED: [2015-04-01 Wed 23:06]
