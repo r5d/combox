@@ -350,7 +350,10 @@ def read_file(filename):
         print "ERROR: opening %s" % (filename)
         exit(1)
 
-    return file_.read()
+    content = file_.read()
+    file_.close()
+
+    return content
 
 
 def hash_file(filename, file_content=None):
@@ -378,6 +381,7 @@ def write_file(filename, filecontent):
     try:
       file_   = open(filename, 'wb')
       file_.write(filecontent)
+      file_.close()
     except IOError:
         print "ERROR: creating and writing content to %s" % (filename)
         exit(1)
