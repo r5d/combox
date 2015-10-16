@@ -26,8 +26,10 @@ from combox.file import (read_file, write_file,
                          read_shards, write_shards,
                          split_data, glue_data,
                          relative_path)
+from combox.log import log_i
 
 from Crypto.Cipher import AES
+from datetime import datetime
 from os import path
 
 BLOCK_SIZE = 32
@@ -103,6 +105,8 @@ def split_and_encrypt(fpath, config, fcontent=None):
     the file.
     """
 
+    start = datetime.now()
+
     rel_path = relative_path(fpath, config)
 
     # no. of shards = no. of nodes.
@@ -125,6 +129,11 @@ def split_and_encrypt(fpath, config, fcontent=None):
     nodes = get_nodedirs(config)
 
     write_shards(ciphered_shards, nodes, f_basename)
+
+    end = datetime.now()
+    duration = (end - start).total_seconds() * pow(10, 3)
+    log_i('Took %f ms  to split and encrypt %s' % (duration, fpath))
+
 
 
 def decrypt_and_glue(fpath, config, write=True):
