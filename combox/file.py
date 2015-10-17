@@ -344,14 +344,11 @@ def read_file(filename):
     filename: Absolute pathname of the file.
     """
     file_ = None
-    try:
-      file_   = open(filename, 'rb')
-    except IOError:
-        print "ERROR: opening %s" % (filename)
-        exit(1)
+    content = ''
 
-    content = file_.read()
-    file_.close()
+    with open(filename, 'rb') as f:
+        for line in f:
+            content = content + line
 
     return content
 
