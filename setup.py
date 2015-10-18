@@ -25,8 +25,8 @@ except ImportError:
 config = {
     'description': 'Splits encrypted files between online file storage providers',
     'author': 'Siddharth Ravikumar',
-    'url': 'http://rsiddharth.ninth.su/git/cb.git/',
-    'download_url': 'http://rsiddharth.ninth.su/git/cb.git/',
+    'url': 'https://ricketyspace.net/combox/',
+    'download_url': 'git://ricketyspace.net/combox.git',
     'license': 'GNU General Public License v3.0 or later',
     'author_email': 'sravik@bgsu.edu',
     'version': '0.1.1',
