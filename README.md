@@ -91,7 +91,7 @@ The `combox` logo (`graphics/logo/combox-logo.svg`) is under [Public Domain][pd]
 
 # canonical repo
 
-    $ git clone http://rsiddharth.ninth.su/git/cb.git
+    $ git clone git://ricketyspace.net/combox.git
 
 # contact
 
