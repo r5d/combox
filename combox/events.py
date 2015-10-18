@@ -32,6 +32,7 @@ from combox.file import (mk_nodedir, rm_nodedir, rm_shards,
                          relative_path, move_shards, move_nodedir,
                          cb_path, node_path, hash_file, rm_path,
                          node_paths, no_of_shards)
+from combox.log import log_i, log_e
 from combox.silo import ComboxSilo
 
 
@@ -85,9 +86,8 @@ class ComboxDirMonitor(LoggingEventHandler):
         updated and the file's shards are updated.
 
         """
-        print "combox is housekeeping."
-        print "Please don't make any changes to combox directory now."
-        print "Thanks for your patience."
+        log_i("combox monitor is housekeeping")
+        log_i("Please don't make any changes to combox directory now")
 
         # Remove information about files that were deleted.
         fpath_filter = lambda x: x not in self.silo.nodedicts()
@@ -96,7 +96,7 @@ class ComboxDirMonitor(LoggingEventHandler):
         for fpath in fpaths:
             if not path.exists(fpath):
                 # remove this file's info from silo.
-                print fpath, "was deleted. Removing it from DB."
+                log_i("%s was deleted. Removing it from DB" % fpath)
                 self.silo.remove(fpath)
                 # also purge the file's shards in node directories.
                 rm_shards(fpath, self.config)
@@ -111,19 +111,19 @@ class ComboxDirMonitor(LoggingEventHandler):
                 if (self.silo.exists(fpath) and
                     self.silo.stale(fpath)):
                     # file was modified
-                    print fpath, "was modified. Updating DB and shards..."
+                    log_i("%s was modified. Updating DB and shards..." % fpath)
                     split_and_encrypt(fpath, self.config)
                     self.silo.update(fpath)
                 elif (not self.silo.exists(fpath)
                       and not self.tmp_file(fpath)):
                     # new file
-                    print 'Adding new file', fpath, '...'
+                    log_i("Adding new file %s..." % fpath)
                     split_and_encrypt(fpath, self.config)
                     self.silo.update(fpath)
 
 
-        print "combox is done with the drudgery."
-        print "Do what you want to the combox directory."
+        log_i("combox monitor is done with housekeeping")
+        log_i("Do what you want to the combox directory")
 
 
     def on_moved(self, event):
@@ -145,7 +145,8 @@ class ComboxDirMonitor(LoggingEventHandler):
 
         if self.tmp_file(event.src_path):
             # ignore tmp files.
-            print "Created tmp file", event.src_path, "...ignoring"
+            log_i("Created tmp file %s...ignoring" %
+                  event.src_path)
             return
 
         file_node_path = node_path(event.src_path, self.config,
@@ -184,7 +185,8 @@ class ComboxDirMonitor(LoggingEventHandler):
 
         if self.tmp_file(event.src_path):
             # ignore tmp files.
-            print "Modified tmp file", event.src_path, "...ignoring"
+            log_i("Modified tmp file %s...ignoring" %
+                  event.src_path)
             return
 
         if event.is_directory:
@@ -244,7 +246,7 @@ class NodeDirMonitor(LoggingEventHandler):
             num = self.silo.node_get('file_deleted', file_cb_path)
 
             if num == self.num_nodes:
-                print "Deleting", file_cb_path, "..."
+                log_i("Deleting %s..." % file_cb_path)
                 # remove the corresponding file under the combox
                 # directory.
                 rm_path(file_cb_path)
@@ -269,9 +271,8 @@ class NodeDirMonitor(LoggingEventHandler):
 
         """
 
-        print "combox node monitor is housekeeping."
-        print "Please don't make any changes to combox directory now."
-        print "Thanks for your patience."
+        log_i("combox node monitor is housekeeping")
+        log_i("Please don't make any changes to combox directory now")
 
         # Remove files from the combox directory whose shards were
         # deleted.
@@ -290,7 +291,8 @@ class NodeDirMonitor(LoggingEventHandler):
             if del_num == self.num_nodes:
                 # remove the file from combox directory.
                 rm_path(fpath)
-                print fpath, "was deleted on another computer. Removing it."
+                log_i("%s was deleted on another computer. Removing it" %
+                      fpath)
                 # update silo.
                 self.silo.remove(fpath)
                 self.silo.node_rem('file_deleted', fpath)
@@ -324,7 +326,8 @@ class NodeDirMonitor(LoggingEventHandler):
 
         for f_cb_path, crt_num in files_created.items():
             if crt_num == self.num_nodes:
-                print f_cb_path, "was created remotely. Creating it locally now..."
+                log_i("%s was created remotely. Creating it locally now..." %
+                      f_cb_path)
                 decrypt_and_glue(f_cb_path, self.config)
                 # update silo.
                 self.silo.update(f_cb_path)
@@ -335,8 +338,8 @@ class NodeDirMonitor(LoggingEventHandler):
                 # in the 'file_created' dict inside the silo.
                 self.silo.node_set('file_created', f_cb_path, crt_num)
 
-        print "combox node monitor is done with the drudgery."
-        print "Do what you want to the combox directory."
+        log_i("combox node monitor with housekeeping")
+        log_i("Do what you want to the combox directory")
 
 
     def on_moved(self, event):
@@ -362,7 +365,7 @@ class NodeDirMonitor(LoggingEventHandler):
             # Temp. file inside .dropbox.cache is renamed to a shard;
             # so this the first time the shard appears in this node
             # directory -- it is created.
-            print "Got it!", event.dest_path, "is was created."
+            log_i("Got it! %s was created" % event.dest_path)
             silo_node_dict = 'file_created'
             cb_filename = dest_cb_path
         elif (self.shardp(event.src_path) and
@@ -386,7 +389,8 @@ class NodeDirMonitor(LoggingEventHandler):
             silo_node_dict = 'file_deleted'
             with self.lock:
                 # [1]: Store the assumption in silo.
-                print "Assuming %s (%s) is deleted" % (cb_filename, event.src_path)
+                log_i("Assuming %s (%s) is deleted" %
+                      (cb_filename, event.src_path))
                 self.silo.node_set(silo_node_dict, cb_filename)
                 num = self.silo.node_get(silo_node_dict, cb_filename)
                 if num == self.num_nodes:
@@ -409,8 +413,8 @@ class NodeDirMonitor(LoggingEventHandler):
             # the silo.
             cb_filename = dest_cb_path
             with self.lock:
-                print "Okay, %s (%s) was actually modified." % (cb_filename,
-                                                                event.dest_path)
+                log_i("Okay, %s (%s) was actually modified" %
+                      (cb_filename, event.dest_path))
                 self.silo.node_rem('file_deleted', cb_filename)
                 # Next, if we're on GNU/Linux, watchdog detects that
                 # the shard was modified and generates calls the
@@ -445,7 +449,7 @@ class NodeDirMonitor(LoggingEventHandler):
                 elif silo_node_dict == 'file_created':
                     # This is Dropbox specific :|
                     # create file in cb directory.
-                    print "Creating", cb_filename, "..."
+                    log_i("Creating %s..." % cb_filename)
                     decrypt_and_glue(cb_filename, self.config)
                     # update db.
                     self.silo.update(cb_filename)
@@ -455,7 +459,7 @@ class NodeDirMonitor(LoggingEventHandler):
                     try:
                         os.rename(src_cb_path, dest_cb_path)
                     except OSError, e:
-                        print "Jeez, failed to rename path.", e
+                        log_e("Jeez, failed to rename path. %r" % e)
                     self.silo.node_rem(silo_node_dict, src_cb_path)
 
         if not event.is_directory:
@@ -498,7 +502,8 @@ class NodeDirMonitor(LoggingEventHandler):
             with self.lock:
                 num = self.silo.node_get('file_deleted', file_cb_path)
                 if num:
-                    print "Looks like", event.src_path, "was actually modified!"
+                    log_i("Looks like %s was actually modified!" %
+                          event.src_path)
                     # This means we're in the Google Drive node
                     # directory and the official Google Drive client
                     # is in use and the file was actually modified on
@@ -507,7 +512,7 @@ class NodeDirMonitor(LoggingEventHandler):
                     self.silo.node_set('file_modified', file_cb_path)
                     num = self.silo.node_get('file_modified', file_cb_path)
                     if num == self.num_nodes:
-                        print "Updating", file_cb_path, "..."
+                        log_i("Updating %s ...." % file_cb_path)
                         decrypt_and_glue(file_cb_path, self.config)
                         # update db.
                         self.silo.update(file_cb_path)
@@ -552,7 +557,7 @@ class NodeDirMonitor(LoggingEventHandler):
                         # There are files under this directory that
                         # are not deleted yet, so we got to delay
                         # deletion :|
-                        print "Marking", file_cb_path, "for later deletion."
+                        log_i("Marking %s for later deletion" % file_cb_path)
                         delayed_thread = Timer(15, self.delete_later,
                                                [file_cb_path])
                         delayed_thread.start()
@@ -560,7 +565,8 @@ class NodeDirMonitor(LoggingEventHandler):
                         rm_path(file_cb_path)
                         self.silo.node_rem('file_deleted', file_cb_path)
         elif not event.is_directory and path.exists(file_cb_path):
-            print event.src_path, "must have been deleted on another computer."
+            log_i("%s must have been deleted on another computer" %
+                  event.src_path)
             with self.lock:
                 self.silo.node_set('file_deleted', file_cb_path)
                 num = self.silo.node_get('file_deleted', file_cb_path)
@@ -573,7 +579,7 @@ class NodeDirMonitor(LoggingEventHandler):
                 # Therefore, wait for 2secs and then delete the
                 # file_cb_path iff the file_cb_path was really
                 # removed on the another computer.
-                print "Marking", file_cb_path, "for later deletion."
+                log_i("Marking %s for later deletion" % file_cb_path)
                 delayed_thread = Timer(3, self.delete_later,
                                        [file_cb_path])
                 delayed_thread.start()
@@ -600,14 +606,14 @@ class NodeDirMonitor(LoggingEventHandler):
             # do nothing
             pass
         elif (not event.is_directory):
-            print event.src_path, "modified."
+            log_i("%s modified" % event.src_path)
             file_content = decrypt_and_glue(file_cb_path,
                                             self.config,
                                             write=False)
             file_content_hash = hash_file(file_cb_path, file_content)
 
             if self.silo.stale(file_cb_path, file_content_hash) == True:
-                print "Found", file_cb_path, "stale."
+                log_i("Found %s stale" % file_cb_path)
                 # shard modified
 
                 # means, file was modified on another computer (also

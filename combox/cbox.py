@@ -31,7 +31,7 @@ from watchdog.observers import Observer
 
 from combox.config import config_cb, get_nodedirs
 from combox.events import ComboxDirMonitor, NodeDirMonitor
-
+from combox.log import log_i, log_e
 
 ## Function adapted from Watchdog's docs:
 ## http://pythonhosted.org/watchdog/quickstart.html#quickstart
@@ -71,7 +71,7 @@ def run_cb(config):
     # Make the first node monitor do the housekeeping.
     nd_monitors[0].housekeep()
 
-    print "Hit Ctrl-C to quit."
+    log_i("Hit Ctrl-C to quit")
     try:
         while True:
             time.sleep(1)
@@ -82,7 +82,7 @@ def run_cb(config):
             nd_observers[i].join()
     cd_observer.join()
 
-    print "combox exiting. Bye!"
+    log_i("combox exiting. Bye!")
 
 def main():
     """
@@ -100,7 +100,7 @@ def main():
 
     config_file = path.join(CONFIG_DIR, 'config.yaml')
 
-    print CONFIG_DIR
+    log_i(CONFIG_DIR)
 
     if not path.exists(CONFIG_DIR):
         # combox not configured.
@@ -108,7 +108,7 @@ def main():
     try:
         config = yaml.load(file(config_file, 'r'))
     except yaml.YAMLError, exc:
-        print "Error opening configuration file:", exc
+        log_e("Error opening configuration file: %r" % exc)
         exit(1)
 
     # run combox.

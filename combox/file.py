@@ -24,7 +24,7 @@ from sys import exit
 from glob import glob
 
 from combox.config import get_nodedirs
-
+from combox.log import log_e
 
 def relative_path(p, config, comboxd=True):
     """Returns the relative path to the `p' w. r. t combox or node directory.
@@ -149,7 +149,7 @@ def mk_dir(directory):
     try:
         os.mkdir(directory)
     except OSError, e:
-        print e, "Something wrong. report bug to sravik@bgsu.edu"
+        log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
 
 
 def rm_nodedir(directory, config):
@@ -179,7 +179,7 @@ def rm_path(fpath):
         elif path.isdir(fpath):
             os.rmdir(fpath)
     except OSError, e:
-        print e, "Something wrong. report bug to sravik@bgsu.edu"
+        log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
 
 
 def move_nodedir(src, dest, config):
@@ -202,7 +202,7 @@ def move_nodedir(src, dest, config):
         try:
             os.rename(src_dir_path, dest_dir_path)
         except OSError, e:
-            print e, "Something wrong. report bug to sravik@bgsu.edu"
+            log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
 
 
 def rm_shards(fpath, config):
@@ -232,7 +232,7 @@ def rm_shards(fpath, config):
         try:
             os.remove(shard)
         except OSError, e:
-            print e, "Something wrong. report bug to sravik@bgsu.edu"
+            log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
 
 
 def move_shards(src, dest, config):
@@ -269,7 +269,7 @@ def move_shards(src, dest, config):
         try:
             os.rename(src_shard, dest_shard)
         except OSError, e:
-            print e, "Something wrong. report bug to sravik@bgsu.edu"
+            log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
 
 
 def purge_dir(p):
@@ -380,7 +380,7 @@ def write_file(filename, filecontent):
       file_.write(filecontent)
       file_.close()
     except IOError:
-        print "ERROR: creating and writing content to %s" % (filename)
+        log_e("Error creating and writing content to %s" % filename)
         exit(1)
 
 def write_shards(shards, directories, shard_basename):

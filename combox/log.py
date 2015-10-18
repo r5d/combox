@@ -18,11 +18,26 @@
 
 import logging
 
+def log_config(level, format_):
+    """Configures the logging module.
 
-def log_i(msg):
-    """Methdod for logging information.
+    Called by all types of log functions in this module.
     """
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(message)s',
+    logging.basicConfig(level=level,
+                        format=format_,
                         datefmt='%Y-%m-%d %H:%M:%S')
+
+
+def log_i(msg, format_='%(asctime)s - %(message)s'):
+    """Function for logging information.
+    """
+    log_config(logging.INFO, format_=format_)
     logging.info(msg)
+
+
+def log_e(msg, format_='%(asctime)s - %(message)s'):
+    """
+    Function for logging errors.
+    """
+    log_config(logging.ERROR, format_=format_)
+    logging.error(msg)

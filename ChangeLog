@@ -1,3 +1,11 @@
+2015-10-18 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	combox now uses python's logging module instead of `print` to
+	stdout information/errors.
+
+	* combox/log.py: The module used by all other combox modules to
+	log information/errors to stdout.
+
 2015-09-17 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* v0.1.0: initial version of combox
