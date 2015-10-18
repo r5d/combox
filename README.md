@@ -54,7 +54,7 @@ Lastly do:
 
 Get the latest copy of combox:
 
-    $ git clone http://rsiddharth.ninth.su/git/cb.git combox
+    $ git clone git://ricketyspace.net/combox.git
 
 Setup virtual environment:
 
