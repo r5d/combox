@@ -1,3 +1,7 @@
+2015-10-20 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	bumping to v0.1.2
+
 2015-10-18 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	combox now uses python's logging module instead of `print` to

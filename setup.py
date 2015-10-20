@@ -29,7 +29,7 @@ config = {
     'download_url': 'git://ricketyspace.net/combox.git',
     'license': 'GNU General Public License v3.0 or later',
     'author_email': 'sravik@bgsu.edu',
-    'version': '0.1.1',
+    'version': '0.1.2',
     'install_requires': ['nose', 'watchdog', 'PyYAML', 'pycrypto',
                          'simplejson', 'pickledb'],
     'packages': ['combox'],
