@@ -48,6 +48,9 @@
      CLOSED: [2015-10-16 Fri 19:37]
      - CLOSING NOTE [2015-10-16 Fri 19:37] \\
        Fixed it.
+
+**** TODO combox has problems handling large files                     :b#10:
+     Large files (500MiB say) are not getting written properly in combox directory.
 ** functionlity
 *** DONE rewrite combox.events.NodeDirMonitor.on_created method
 	CLOSED: [2015-04-01 Wed 23:06]
