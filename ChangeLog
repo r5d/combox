@@ -1,3 +1,12 @@
+2015-11-2 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	commit 7509f54f5173769eea
+
+	* combox/file.py: Updated the write_file function; a buffer size
+	is explicitly specified when opening a file to write.
+
+	This change is related to bug#10.
+
 2015-10-20 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	bumping to v0.1.2
