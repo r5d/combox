@@ -19,6 +19,7 @@
 import os
 import platform
 import logging
+import time
 
 from os import path
 from threading import Lock
@@ -53,6 +54,9 @@ class ComboxDirMonitor(LoggingEventHandler):
 
         self.config = config
         self.silo = ComboxSilo(self.config, dblock)
+
+        # tracks files that are created during the course of this run.
+        self.just_created = {}
 
         self.housekeep()
 
@@ -149,6 +153,10 @@ class ComboxDirMonitor(LoggingEventHandler):
                   event.src_path)
             return
 
+        # make note of this file creation; will be used when
+        # on_modified is called after this file creatiion.
+        self.just_created[event.src_path] = True
+
         file_node_path = node_path(event.src_path, self.config,
                                    not event.is_directory)
 
@@ -194,6 +202,26 @@ class ComboxDirMonitor(LoggingEventHandler):
             pass
         else:
             # file was modified
+
+            f_size_MiB = path.getsize(event.src_path) / 1048576.0
+            log_i('%s modified %f' % (event.src_path, f_size_MiB))
+
+            # introduce delay to prevent multiple "file modified"
+            # events from being generated.
+            if f_size_MiB >= 30:
+                sleep_time = (f_size_MiB / 30.0)
+                log_i("waiting on_modified combox monitor %f" % sleep_time)
+                time.sleep(sleep_time)
+                log_i("end waiting on_modified combox monitor")
+            else:
+                time.sleep(1)
+
+            if self.just_created[event.src_path]:
+                self.just_created[event.src_path] = False
+                log_i("Just created file %s. So ignoring on_modified call." % (
+                    event.src_path))
+                return
+
             split_and_encrypt(event.src_path, self.config)
             # update file info in silo.
             self.silo.update(event.src_path)
@@ -222,6 +250,8 @@ class NodeDirMonitor(LoggingEventHandler):
 
         self.num_nodes = len(get_nodedirs(self.config))
 
+        # track file shards that are just created during this run.
+        self.just_created = {}
 
     def shardp(self, path):
         """Returns True if `path' is a shard
@@ -475,6 +505,11 @@ class NodeDirMonitor(LoggingEventHandler):
             # a directory.
             return
 
+
+        # make note of this file creation; will be used when
+        # on_modified is called after this file creatiion.
+        self.just_created[event.src_path] = True
+
         file_cb_path = cb_path(event.src_path, self.config)
 
         if event.is_directory and (not path.exists(file_cb_path)):
@@ -606,14 +641,33 @@ class NodeDirMonitor(LoggingEventHandler):
             # do nothing
             pass
         elif (not event.is_directory):
-            log_i("%s modified" % event.src_path)
+            # get file size first
+            f_size_MiB = path.getsize(event.src_path) / 1048576.0
+            log_i('%s modified %f' % (event.src_path, f_size_MiB))
+
+            # introduce delay to prevent multiple "file modified"
+            # events from being generated.
+            if f_size_MiB >= 30:
+                sleep_time = (f_size_MiB / 30.0)
+                log_i("waiting on_modified node monitor %f" % sleep_time)
+                time.sleep(sleep_time)
+                log_i("end waiting on_modified node monitor")
+            else:
+                time.sleep(1)
+
+            if self.just_created[event.src_path]:
+                self.just_created[event.src_path] = False
+                log_i("Just created file %s; ignoring on_modified call." % (
+                    event.src_path))
+                return
+
             file_content = decrypt_and_glue(file_cb_path,
                                             self.config,
                                             write=False)
             file_content_hash = hash_file(file_cb_path, file_content)
 
             if self.silo.stale(file_cb_path, file_content_hash) == True:
-                log_i("Found %s stale" % file_cb_path)
+                log_i("Found %s stale. Updating it..." % file_cb_path)
                 # shard modified
 
                 # means, file was modified on another computer (also
@@ -627,3 +681,5 @@ class NodeDirMonitor(LoggingEventHandler):
                         # update db.
                         self.silo.update(file_cb_path)
                         self.silo.node_rem('file_modified', file_cb_path)
+            else:
+                log_i("Local modification of %s" % file_cb_path)

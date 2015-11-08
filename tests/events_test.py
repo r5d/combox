@@ -87,7 +87,7 @@ class TestEvents(object):
         copyfile(self.TEST_FILE, self.TEST_FILE_COPY_0)
         ## wait for ComboxDirMonitor to split and scatter the file in the
         ## node directories.
-        time.sleep(1)
+        time.sleep(2)
         ## check if the shards were created.
         shardedp(self.TEST_FILE_COPY_0)
         ## check if the new file's info is in silo
@@ -99,7 +99,7 @@ class TestEvents(object):
         self.TEST_TMP_FILE = "%s~" % self.TEST_FILE
         copyfile(self.TEST_FILE, self.TEST_TMP_FILE)
         # wait for a second.
-        time.sleep(1)
+        time.sleep(2)
         ## confirm that shards were not created.
         not_shardedp(self.TEST_TMP_FILE)
         ## confirm that it did not get registered in the silo.
@@ -118,13 +118,13 @@ class TestEvents(object):
         # Test - directory creation
         self.TEST_DIR_0 = path.join(self.FILES_DIR, 'foo')
         os.mkdir(self.TEST_DIR_0)
-        time.sleep(1)
+        time.sleep(2)
         ## check if TEST_DIR_0 is created under node directories.
         dirp(self.TEST_DIR_0)
 
         self.TEST_DIR_1 = path.join(self.TEST_DIR_0, 'bar')
         os.mkdir(self.TEST_DIR_1)
-        time.sleep(1)
+        time.sleep(2)
         ## check if TEST_DIR_1 is created under node directories.
         dirp(self.TEST_DIR_1)
 
@@ -132,7 +132,7 @@ class TestEvents(object):
         self.TEST_FILE_COPY_1 = path.join(self.TEST_DIR_1,
                                           path.basename(self.TEST_FILE))
         copyfile(self.TEST_FILE, self.TEST_FILE_COPY_1)
-        time.sleep(1)
+        time.sleep(2)
         shardedp(self.TEST_FILE_COPY_1)
 
         # Test - dir rename
@@ -142,7 +142,7 @@ class TestEvents(object):
                                          path.basename(self.TEST_FILE))
 
         os.rename(self.TEST_DIR_1, self.TEST_DIR_1_NEW)
-        time.sleep(1)
+        time.sleep(3)
         renamedp(self.TEST_DIR_1, self.TEST_DIR_1_NEW)
         renamedp(self.TEST_FILE_COPY_1, self.TEST_FILE_COPY_1_NEW)
         ## check if the new file's info is updated in silo
@@ -154,7 +154,7 @@ class TestEvents(object):
         purge_dir(self.TEST_DIR_0)
         # remove the directory itself.
         os.rmdir(self.TEST_DIR_0)
-        time.sleep(1)
+        time.sleep(2)
         path_deletedp(self.TEST_FILE_COPY_1_NEW)
         path_deletedp(self.TEST_DIR_1, True)
         path_deletedp(self.TEST_DIR_0, True)
@@ -165,7 +165,7 @@ class TestEvents(object):
         self.lorem_file_copy = "%s.copy" % self.lorem_file
         # this will shard lorem.txt.copy in the node directories.
         copyfile(self.lorem_file, self.lorem_file_copy)
-        time.sleep(1)
+        time.sleep(2)
         shardedp(self.lorem_file_copy)
         ## check if the lorem_file_copy's info is stored in silo
         silo = ComboxSilo(self.config, self.silo_lock)
@@ -178,7 +178,7 @@ class TestEvents(object):
 
         # write lorem's new content to  lorem_file_copy
         write_file(self.lorem_file_copy, lorem_copy_content)
-        time.sleep(1)
+        time.sleep(2)
         ## check if the lorem_file_copy's info is updated in silo
         silo = ComboxSilo(self.config, self.silo_lock)
         assert lorem_file_copy_hash != silo.db.get(self.lorem_file_copy)
@@ -187,7 +187,7 @@ class TestEvents(object):
         # decrypt_and_glue will decrypt the file shards, glues them and
         # writes it to the respective file
         decrypt_and_glue(self.lorem_file_copy, self.config)
-        time.sleep(1)
+        time.sleep(2)
 
         lorem_content_from_disk = read_file(self.lorem_file_copy)
         assert lorem_copy_content == lorem_content_from_disk
@@ -195,7 +195,7 @@ class TestEvents(object):
         # remove lorem_file_copy and confirm that its shards are deleted
         # in the node directories.
         remove(self.lorem_file_copy)
-        time.sleep(1)
+        time.sleep(2)
         path_deletedp(self.lorem_file_copy)
         ## check if the lorem_file_copy's info is deleted from silo
         silo = ComboxSilo(self.config, self.silo_lock)
@@ -285,7 +285,7 @@ class TestEvents(object):
                           fmutant_content)
         ## wait for NodeDirMonitor to reconstruct the shards and put
         ## it in combox directory
-        time.sleep(1)
+        time.sleep(2)
         assert fmutant_content == read_file(self.TEST_FILE_MUTANT)
         ## check if the new file's info is in silo
         assert self.silo.exists(self.TEST_FILE_MUTANT)
@@ -297,14 +297,14 @@ class TestEvents(object):
         # Test - directory creation
         self.FOO_DIR = path.join(self.FILES_DIR, 'foo')
         mk_nodedir(self.FOO_DIR, self.config)
-        time.sleep(1)
+        time.sleep(2)
         ## check if FOO_DIR is created under the combox directory
         assert path.isdir(self.FOO_DIR)
         assert_equal(None, self.silo.node_get('file_created',
                                               self.FOO_DIR))
         self.BAR_DIR = path.join(self.FOO_DIR, 'bar')
         mk_nodedir(self.BAR_DIR, self.config)
-        time.sleep(1)
+        time.sleep(2)
         ## check if BAR_DIR is created under the combox directory.
         assert path.isdir(self.BAR_DIR)
         assert_equal(None, self.silo.node_get('file_created',
@@ -347,6 +347,7 @@ class TestEvents(object):
         split_and_encrypt(self.lorem_file_copy, self.config,
                           lorem_content)
 
+        time.sleep(2)
         self.silo.update(self.lorem_file_copy)
         shardedp(self.lorem_file_copy)
 
@@ -359,7 +360,7 @@ class TestEvents(object):
 
         split_and_encrypt(self.lorem_file_copy, self.config,
                           lorem_copy_content)
-        time.sleep(1)
+        time.sleep(2)
         assert lorem_copy_content == read_file(self.lorem_file_copy)
 
         ## check if the lorem_file_copy's info is updated in silo
@@ -400,22 +401,22 @@ class TestEvents(object):
         mk_nodedir(BAR_DIR, self.config)
         # wait for the `bar' directory to be created inside combox
         # directory.
-        time.sleep(1)
+        time.sleep(2)
 
         # Test - directory deletion inside node directory.
         rm_nodedir(BAR_DIR, self.config)
-        time.sleep(1)
+        time.sleep(2)
         assert not path.exists(BAR_DIR)
 
         the_guide = path.join(self.FILES_DIR, 'the.guide')
         split_and_encrypt(the_guide, self.config,
                           read_file(self.TEST_FILE))
-        time.sleep(1)
+        time.sleep(2)
         assert path.exists(the_guide)
 
         # Test - Shard deletion.
         rm_shards(the_guide, self.config)
-        time.sleep(4)
+        time.sleep(5)
         assert not path.exists(the_guide)
 
         ## check if the new file's info is removed from silo

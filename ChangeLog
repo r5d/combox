@@ -1,4 +1,20 @@
-2015-11-2 Siddharth Ravikumar <sravik@bgsu.edu>
+2015-11-08 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/events.py: ComboxDirMonitor and NodeDirMonitor now keep
+	track of the files that are created during "this" run; this
+	information is used to ignore the on_modified event triggered by
+	watchdog when a file is created.
+
+	Also, a delay proportional to the size of the file is introduced
+	on the on_modified callback methods of the ComboxDirMonitor and
+	NodeDirMonitor to prevent multiple on_modified from being
+	triggered by watchdog.
+
+	These changes are related to bug#10 (See TODO.org).
+
+	* tests/events_test.py: updated correponding tests.
+
+2015-11-02 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	commit 7509f54f5173769eea
 
