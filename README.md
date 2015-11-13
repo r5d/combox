@@ -5,6 +5,9 @@ Drive and Dropbox.
 
 The ideas for this program is based on [`combobox`][1].
 
+Homepage at <https://ricketyspace.net/combox>
+
+
 [1]: https://bitbucket.org/bgsucodeloverslab/combobox
 
 # etymology
@@ -50,6 +53,7 @@ Lastly do:
 
     $ pip install virtualenv
 
+
 ## set up combox
 
 Get the latest copy of combox:
@@ -78,6 +82,14 @@ running combox. To activate virtual environment, do:
 
     $ cd path/to/combox
     $ source bin/activate
+
+
+## combox on Windows
+
+At the moment, combox is not compatible with Windows. If you can make
+combox work on Windows, look at
+<https://ricketyspace.net/combox/windows/> for info on setting up the
+development environment on Windows.
 
 # license
 
