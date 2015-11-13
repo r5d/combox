@@ -15,6 +15,12 @@ Homepage at <https://ricketyspace.net/combox>
 `combox` is a lazy contraction of the word "combo box". `combox` is
 pronounced as "combo box".
 
+
+# canonical repo
+
+    $ git clone git://ricketyspace.net/combox.git
+
+
 # runs on
 
  - GNU/Linux
@@ -101,9 +107,6 @@ The `combox` logo (`graphics/logo/combox-logo.svg`) is under [Public Domain][pd]
 [gpl]: https://gnu.org/licenses/gpl-3.0.txt
 [pd]: https://creativecommons.org/publicdomain/zero/1.0/
 
-# canonical repo
-
-    $ git clone git://ricketyspace.net/combox.git
 
 # contact
 
