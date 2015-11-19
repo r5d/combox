@@ -52,7 +52,8 @@
 **** DONE combox has problems handling large files                     :b#10:
      CLOSED: [2015-11-13 Fri 09:18]
      Large files (500MiB say) are not getting written properly in combox directory.
-**** TODO ComboxDirMonitor does not use Lock                           :b#11:
+**** DONE ComboxDirMonitor does not use Lock                           :b#11:
+     CLOSED: [2015-11-19 Thu 08:36]
      This class must be modified to use the same the Lock that the
      node monitors are using.
 ** functionlity
