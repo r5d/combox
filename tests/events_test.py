@@ -55,7 +55,7 @@ class TestEvents(object):
         """Set things up."""
 
         self.silo_lock = Lock()
-        self.nodem_lock = Lock()
+        self.monitor_lock = Lock()
         self.config = get_config()
         self.silo = ComboxSilo(self.config, self.silo_lock)
 
@@ -77,7 +77,7 @@ class TestEvents(object):
         Tests the ComboxDirMonitor class.
         """
 
-        event_handler = ComboxDirMonitor(self.config, self.silo_lock)
+        event_handler = ComboxDirMonitor(self.config, self.silo_lock, self.monitor_lock)
         observer = Observer()
         observer.schedule(event_handler, self.FILES_DIR, recursive=True)
         observer.start()
@@ -211,7 +211,7 @@ class TestEvents(object):
         # test file deletion and addition
         os.rename(self.lorem, self.lorem_moved)
 
-        cdm = ComboxDirMonitor(self.config, self.silo_lock)
+        cdm = ComboxDirMonitor(self.config, self.silo_lock, self.monitor_lock)
         cdm.housekeep()
 
         silo = ComboxSilo(self.config, self.silo_lock)
@@ -228,7 +228,7 @@ class TestEvents(object):
         copyfile(self.lorem, self.lorem_ipsum)
         assert path.exists(self.lorem_ipsum)
 
-        cdm = ComboxDirMonitor(self.config, self.silo_lock)
+        cdm = ComboxDirMonitor(self.config, self.silo_lock, self.monitor_lock)
         cdm.housekeep()
 
         silo = ComboxSilo(self.config, self.silo_lock)
@@ -252,7 +252,7 @@ class TestEvents(object):
 
         """
         nmonitor = NodeDirMonitor(self.config, self.silo_lock,
-                                  self.nodem_lock)
+                                  self.monitor_lock)
         assert_equal(2, nmonitor.num_nodes)
 
 
@@ -268,7 +268,7 @@ class TestEvents(object):
         # monitor them.
         for node in nodes:
             nmonitor = NodeDirMonitor(self.config, self.silo_lock,
-                                      self.nodem_lock)
+                                      self.monitor_lock)
             observer = Observer()
             observer.schedule(nmonitor, node, recursive=True)
             observer.start()
@@ -330,7 +330,7 @@ class TestEvents(object):
         # monitor them.
         for node in nodes:
             nmonitor = NodeDirMonitor(self.config, self.silo_lock,
-                                      self.nodem_lock)
+                                      self.monitor_lock)
             observer = Observer()
             observer.schedule(nmonitor, node, recursive=True)
             observer.start()
@@ -389,7 +389,7 @@ class TestEvents(object):
         # monitor them.
         for node in nodes:
             nmonitor = NodeDirMonitor(self.config, self.silo_lock,
-                                      self.nodem_lock)
+                                      self.monitor_lock)
             observer = Observer()
             observer.schedule(nmonitor, node, recursive=True)
             observer.start()
@@ -447,7 +447,7 @@ class TestEvents(object):
         # monitor them.
         for node in nodes:
             nmonitor = NodeDirMonitor(self.config, self.silo_lock,
-                                      self.nodem_lock)
+                                      self.monitor_lock)
             observer = Observer()
             observer.schedule(nmonitor, node, recursive=True)
             observer.start()
@@ -531,7 +531,7 @@ class TestEvents(object):
         """
 
         event_handler = NodeDirMonitor(self.config, self.silo_lock,
-                                       self.nodem_lock)
+                                       self.monitor_lock)
         observer = Observer()
         observer.schedule(event_handler, self.NODE_DIR, recursive=True)
         observer.start()
@@ -615,7 +615,7 @@ class TestEvents(object):
         # monitor them.
         for node in nodes:
             nmonitor = NodeDirMonitor(self.config, self.silo_lock,
-                                      self.nodem_lock)
+                                      self.monitor_lock)
             observer = Observer()
             observer.schedule(nmonitor, node, recursive=True)
             observer.start()
@@ -624,7 +624,7 @@ class TestEvents(object):
             observers.append(observer)
 
         # event_handler = NodeDirMonitor(self.config, self.silo_lock,
-        #                                self.nodem_lock)
+        #                                self.monitor_lock)
         # observer = Observer()
         # observer.schedule(event_handler, self.NODE_DIR, recursive=True)
         # observer.start()
@@ -698,7 +698,7 @@ class TestEvents(object):
         silo.update(testf2)
 
         ndm = NodeDirMonitor(self.config, self.silo_lock,
-                             self.nodem_lock)
+                             self.monitor_lock)
         ndm.housekeep()
 
         assert not path.exists(testf1)
@@ -724,7 +724,7 @@ class TestEvents(object):
         remove(node_paths(lorem_c, self.config, True)[0])
 
         ndm = NodeDirMonitor(self.config, self.silo_lock,
-                             self.nodem_lock)
+                             self.monitor_lock)
         ndm.housekeep()
 
         assert path.exists(hmutant)
@@ -752,7 +752,7 @@ class TestEvents(object):
         silo.update(testf2)
 
         ndm = NodeDirMonitor(self.config, self.silo_lock,
-                             self.nodem_lock)
+                             self.monitor_lock)
         ndm.housekeep()
 
         assert not path.exists(testf1)
@@ -769,7 +769,7 @@ class TestEvents(object):
                           hmutant_content)
 
         ndm = NodeDirMonitor(self.config, self.silo_lock,
-                             self.nodem_lock)
+                             self.monitor_lock)
         ndm.housekeep()
 
         assert path.exists(hmutant)
@@ -798,7 +798,7 @@ class TestEvents(object):
                           lcopy_content)
 
         ndm = NodeDirMonitor(self.config, self.silo_lock,
-                             self.nodem_lock)
+                             self.monitor_lock)
         ndm.housekeep()
 
         ## check if the lorem_file_copy's info is updated in silo
@@ -815,7 +815,7 @@ class TestEvents(object):
         shard = 'some.shard0'
         not_shard = 'some.extension'
         ndm = NodeDirMonitor(self.config, self.silo_lock,
-                             self.nodem_lock)
+                             self.monitor_lock)
 
         assert_equal(True, ndm.shardp(shard))
         assert_equal(False, ndm.shardp(not_shard))

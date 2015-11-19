@@ -1,3 +1,12 @@
+2015-11-19 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/events.py: ComboxDirMonitor now uses Lock; now this Lock
+	is shared by both the ComboxDirMonitor and the NodeDirMonitors.
+
+	Files changed because of the change to ComboxDirMonitor: combox/cbox.py
+
+	This changed addresses bug#11 (See TODO.org).
+
 2015-11-13 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	bumping to v0.1.3

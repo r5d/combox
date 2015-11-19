@@ -41,11 +41,11 @@ def run_cb(config):
     Runs combox.
     """
     db_lock = Lock()
-    nodem_lock = Lock()
+    monitor_lock = Lock()
 
     # start combox directory (cd) monitor (cdm)
     combox_dir = path.abspath(config['combox_dir'])
-    cd_monitor = ComboxDirMonitor(config, db_lock)
+    cd_monitor = ComboxDirMonitor(config, db_lock, monitor_lock)
 
     cd_observer = Observer()
     cd_observer.schedule(cd_monitor, combox_dir, recursive=True)
@@ -60,7 +60,7 @@ def run_cb(config):
 
     for node in node_dirs:
         nd_monitor = NodeDirMonitor(config, db_lock,
-                                    nodem_lock)
+                                    monitor_lock)
         nd_observer = Observer()
         nd_observer.schedule(nd_monitor, node, recursive=True)
         nd_observer.start()

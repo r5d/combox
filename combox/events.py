@@ -42,9 +42,11 @@ class ComboxDirMonitor(LoggingEventHandler):
 
     """
 
-    def __init__(self, config, dblock):
+    def __init__(self, config, dblock, monitor_lock):
         """
         config: a dictinary which contains combox configuration.
+        dblock: Lock for ComboxSilo.
+        monitor_lock: Lock for directory monitors.
         """
         super(ComboxDirMonitor, self).__init__()
 
@@ -54,6 +56,7 @@ class ComboxDirMonitor(LoggingEventHandler):
 
         self.config = config
         self.silo = ComboxSilo(self.config, dblock)
+        self.lock = monitor_lock
 
         # tracks files that are created during the course of this run.
         self.just_created = {}
@@ -134,14 +137,16 @@ class ComboxDirMonitor(LoggingEventHandler):
         super(ComboxDirMonitor, self).on_moved(event)
 
         if event.is_directory:
-            # creates a corresponding directory at the node dirs.
-            move_nodedir(event.src_path, event.dest_path, self.config)
+            with self.lock:
+                # creates a corresponding directory at the node dirs.
+                move_nodedir(event.src_path, event.dest_path, self.config)
         else:
-            # file moved
-            move_shards(event.src_path, event.dest_path, self.config)
-            # update file info in silo.
-            self.silo.remove(event.src_path)
-            self.silo.update(event.dest_path)
+            with self.lock:
+                # file moved
+                move_shards(event.src_path, event.dest_path, self.config)
+                # update file info in silo.
+                self.silo.remove(event.src_path)
+                self.silo.update(event.dest_path)
 
 
     def on_created(self, event):
@@ -161,14 +166,16 @@ class ComboxDirMonitor(LoggingEventHandler):
                                    not event.is_directory)
 
         if event.is_directory and (not path.exists(file_node_path)):
-            # creates a corresponding directory at the node dirs.
-            mk_nodedir(event.src_path, self.config)
+            with self.lock:
+                # creates a corresponding directory at the node dirs.
+                mk_nodedir(event.src_path, self.config)
         elif (not event.is_directory) and (not path.exists(
                 file_node_path)):
-            # file was created
-            split_and_encrypt(event.src_path, self.config)
-            # store file info in silo.
-            self.silo.update(event.src_path)
+            with self.lock:
+                # file was created
+                split_and_encrypt(event.src_path, self.config)
+                # store file info in silo.
+                self.silo.update(event.src_path)
 
 
     def on_deleted(self, event):
@@ -179,13 +186,15 @@ class ComboxDirMonitor(LoggingEventHandler):
 
         if event.is_directory and (path.exists(file_node_path)):
             # Delete corresponding directory in the nodes.
-            rm_nodedir(event.src_path, self.config)
+            with self.lock:
+                rm_nodedir(event.src_path, self.config)
         elif(not event.is_directory) and (path.exists(file_node_path)):
-            # remove the corresponding file shards in the node
-            # directories.
-            rm_shards(event.src_path, self.config)
-            # remove file info from silo.
-            self.silo.remove(event.src_path)
+            with self.lock:
+                # remove the corresponding file shards in the node
+                # directories.
+                rm_shards(event.src_path, self.config)
+                # remove file info from silo.
+                self.silo.remove(event.src_path)
 
 
     def on_modified(self, event):
@@ -202,29 +211,29 @@ class ComboxDirMonitor(LoggingEventHandler):
             pass
         else:
             # file was modified
+            with self.lock:
+                f_size_MiB = path.getsize(event.src_path) / 1048576.0
+                log_i('%s modified %f' % (event.src_path, f_size_MiB))
 
-            f_size_MiB = path.getsize(event.src_path) / 1048576.0
-            log_i('%s modified %f' % (event.src_path, f_size_MiB))
+                # introduce delay to prevent multiple "file modified"
+                # events from being generated.
+                if f_size_MiB >= 30:
+                    sleep_time = (f_size_MiB / 30.0)
+                    log_i("waiting on_modified combox monitor %f" % sleep_time)
+                    time.sleep(sleep_time)
+                    log_i("end waiting on_modified combox monitor")
+                else:
+                    time.sleep(1)
 
-            # introduce delay to prevent multiple "file modified"
-            # events from being generated.
-            if f_size_MiB >= 30:
-                sleep_time = (f_size_MiB / 30.0)
-                log_i("waiting on_modified combox monitor %f" % sleep_time)
-                time.sleep(sleep_time)
-                log_i("end waiting on_modified combox monitor")
-            else:
-                time.sleep(1)
+                if self.just_created[event.src_path]:
+                    self.just_created[event.src_path] = False
+                    log_i("Just created file %s. So ignoring on_modified call." % (
+                        event.src_path))
+                    return
 
-            if self.just_created[event.src_path]:
-                self.just_created[event.src_path] = False
-                log_i("Just created file %s. So ignoring on_modified call." % (
-                    event.src_path))
-                return
-
-            split_and_encrypt(event.src_path, self.config)
-            # update file info in silo.
-            self.silo.update(event.src_path)
+                split_and_encrypt(event.src_path, self.config)
+                # update file info in silo.
+                self.silo.update(event.src_path)
 
 
 class NodeDirMonitor(LoggingEventHandler):
@@ -232,15 +241,15 @@ class NodeDirMonitor(LoggingEventHandler):
 
     """
 
-    def __init__(self, config, dblock, nodem_lock):
+    def __init__(self, config, dblock, monitor_lock):
         """
         config: a dictinary which contains combox configuration.
         dblock: Lock for the ComboxSilo.
-        nodem_lock: Lock for NodeDirMonitors.
+        monitor_lock: Lock for directory monitors.
         """
         super(NodeDirMonitor, self).__init__()
 
-        self.lock = nodem_lock
+        self.lock = monitor_lock
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s - %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S')
