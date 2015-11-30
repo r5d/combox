@@ -1,3 +1,8 @@
+2015-11-30 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* added combox/gui.py: contains ComboxConfigDialog, a graphical
+	interface for configuring combox; it rough as zark.
+
 2015-11-19 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* combox/events.py: ComboxDirMonitor now uses Lock; now this Lock
