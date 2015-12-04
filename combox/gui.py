@@ -45,6 +45,7 @@ class ComboxConfigDialog(object):
         self.body_frame.pack(padx=5, pady=5, fill=BOTH)
 
         self.buttonbox()
+        self.statusbar()
 
         # init. lists to store fields related to "node information".
         self.node_path_labels = []
@@ -121,6 +122,42 @@ class ComboxConfigDialog(object):
         return self.cb_name_entry # initial focus
 
 
+    #
+    # status bar methods start
+    #
+    # adapted from:
+    #   http://effbot.org/tkinterbook/tkinter-application-windows.htm
+    def statusbar(self):
+        """
+        Init status bar.
+        """
+        # status bar
+        box = Frame(self.root)
+        box.pack(fill=BOTH)
+
+        self.status_bar = Label(box, bd=1, relief=SUNKEN, anchor=W)
+        self.status_bar.pack(fill=X)
+
+
+    def status_bar_set(self, format, *args):
+        """
+        Set status bar text.
+        """
+        self.status_bar.config(text=format % args)
+        self.status_bar.update_idletasks()
+
+
+    def status_bar_clear(self):
+        """
+        Clear status bar text.
+        """
+        self.status_bar.config(text="")
+        self.status_bar.update_idletasks()
+
+    #
+    # status bar methods end
+
+
     def buttonbox(self):
         # add standard button box. override if you don't want the
         # standard buttons
@@ -144,7 +181,6 @@ class ComboxConfigDialog(object):
     def ok(self, event=None):
 
         if not self.validate():
-            self.root.initial_focus.focus_set() # put focus back
             return
 
         self.root.withdraw()
@@ -175,7 +211,65 @@ class ComboxConfigDialog(object):
 
 
     def validate(self):
-        return 1 # override
+        """
+        Validates the inputs.
+        """
+
+        if not self.cb_name_entry.get():
+            self.status_bar_set("%s", "give this combox a name")
+            self.cb_name_entry.focus_set()
+            return False
+        elif not self.cb_dir_entry.get():
+            self.status_bar_set("%s", "give the path to combox directory")
+            self.cb_dir_entry.focus_set()
+            return False
+        elif not self.validate_passphrase():
+            return False
+        elif self.validate_passphrase():
+            # ok, check if passphrase is empty.
+            if not self.cb_pp_entry.get():
+                self.status_bar_set("%s", "give a passphrase")
+                self.cb_pp_entry.focus_set()
+                return False
+
+        # validate node information
+        try:
+            int(self.cb_no_nodes_entry.get())
+        except ValueError:
+            self.status_bar_set("%s", "Oops! You got to enter a number")
+            self.cb_no_nodes_entry.focus_set()
+            return False
+
+        no_nodes = int(self.cb_no_nodes_entry.get())
+        if no_nodes < 2:
+            self.status_bar_set("%s", "no. of nodes must be > 2")
+            self.cb_no_nodes_entry.focus_set()
+            return False
+
+        # validate node paths
+        for i in xrange(len(self.node_path_entries)):
+            if not self.node_path_entries[i].get():
+                self.status_bar_set("%s %d", "give the path for node", i)
+                self.node_path_entries[i].focus_set()
+                return False
+
+        # validate node sizes
+        for i in xrange(len(self.node_size_entries)):
+            if not self.node_size_entries[i].get():
+                self.status_bar_set("%s %d", "give the size of node", i)
+                self.node_size_entries[i].focus_set()
+                return False
+
+            # check if it is a number.
+            try:
+                int(self.node_size_entries[i].get())
+            except ValueError:
+                self.status_bar_set("%s %d %s", "the size of node", i,
+                                    "must be a number")
+                self.node_size_entries[i].focus_set()
+                return False
+
+        return True
 
 
     def apply(self):
@@ -252,8 +346,12 @@ class ComboxConfigDialog(object):
         try:
             no_nodes = int(no_nodes_str)
         except ValueError:
-            print "Oops! You got to enter a number in here."
+            self.status_bar_set("%s", "Oops! You got to enter a number")
+            self.cb_no_nodes_entry.focus_set()
             return
+
+        # clear status bar
+        self.status_bar_clear()
 
         # last occupied row number in self.body_frame.
         last_occ_row = 4

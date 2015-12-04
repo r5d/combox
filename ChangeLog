@@ -1,5 +1,9 @@
 2015-12-03 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* combox/gui.py: input validation kinda done + added status bar.
+
+2015-12-03 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	commit 952906378f80
 
 	* combox/gui.py: added "re-enter passphrase" field + validation for it.
