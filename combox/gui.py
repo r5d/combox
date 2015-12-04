@@ -92,17 +92,20 @@ class ComboxConfigDialog(object):
         Label(master, text="name of this combox").grid(row=0, sticky=W)
         Label(master, text="path to combox directory").grid(row=1, sticky=W)
         Label(master, text="passphrase").grid(row=2, sticky=W)
-        Label(master, text="no. of nodes").grid(row=3, sticky=W)
+        Label(master, text="re-enter passphrase").grid(row=3, sticky=W)
+        Label(master, text="no. of nodes").grid(row=4, sticky=W)
 
         self.cb_name_entry = Entry(master, width=40)
         self.cb_dir_entry = Entry(master, width=40)
         self.cb_pp_entry = Entry(master, width=40, show='*')
+        self.cb_rpp_entry = Entry(master, width=40, show='*')
         self.cb_no_nodes_entry = Entry(master, width=40)
 
         self.cb_name_entry.grid(row=0, column=1)
         self.cb_dir_entry.grid(row=1, column=1, padx=5)
         self.cb_pp_entry.grid(row=2, column=1)
-        self.cb_no_nodes_entry.grid(row=3, column=1)
+        self.cb_rpp_entry.grid(row=3, column=1)
+        self.cb_no_nodes_entry.grid(row=4, column=1)
 
         self.cb_no_nodes_entry.bind("<KeyRelease>", self.populate_node_fields)
 
@@ -111,6 +114,9 @@ class ComboxConfigDialog(object):
                          e.widget, e.widget.grid_info()['row']))
         self.cb_dir_entry.bind("<FocusOut>",
                     lambda e: self.destroy_askdirectory_button())
+
+        self.cb_rpp_entry.bind("<FocusOut>",
+                               lambda e: self.validate_passphrase())
 
         return self.cb_name_entry # initial focus
 
@@ -155,6 +161,18 @@ class ComboxConfigDialog(object):
 
 
     # command hooks
+    def validate_passphrase(self):
+        """
+        Checks if the passphrase entered in "passphrase" and "re-enter passphrase" are same.
+        """
+        if not (self.cb_pp_entry.get() == self.cb_rpp_entry.get()):
+            self.status_bar_set("%s", "passphrase don't match")
+            self.cb_pp_entry.focus_set()
+            return False
+        else:
+            self.status_bar_clear()
+            return True
+
 
     def validate(self):
         return 1 # override
@@ -238,7 +256,7 @@ class ComboxConfigDialog(object):
             return
 
         # last occupied row number in self.body_frame.
-        last_occ_row = 3
+        last_occ_row = 4
         if self.node_path_labels:
             # means, we've already created fields related to "node
             # information" before; get rid of 'em.
