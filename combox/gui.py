@@ -390,8 +390,7 @@ class ComboxConfigDialog(object):
                     lambda e: self.destroy_askdirectory_button())
 
             last_occ_row = last_occ_row + 2
-            
-            
+
 
 #
 # It is here for testing purposes only, will be removed in the future.
