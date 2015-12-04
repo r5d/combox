@@ -1,3 +1,10 @@
+2015-12-03 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	commit 952906378f80
+
+	* combox/gui.py: added "re-enter passphrase" field + validation for it.
+
+
 2015-11-30 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* added combox/gui.py: contains ComboxConfigDialog, a graphical
