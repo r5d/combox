@@ -23,6 +23,8 @@ import tkFileDialog
 
 from Tkinter import *
 
+from combox.config import config_cb
+
 #
 # Adapted from:
 # http://effbot.org/tkinterbook/tkinter-dialog-windows.htm
@@ -278,13 +280,19 @@ class ComboxConfigDialog(object):
         no_nodes = self.cb_no_nodes_entry.get()
         passp = self.cb_pp_entry.get()
 
-        print combox_name, combox_dir, passp, no_nodes
+        config_info = [combox_name, combox_dir, '',  no_nodes]
 
         # get info about nodes.
         for i in xrange(len(self.node_path_entries)):
-            print "node %d" % i,
-            print self.node_path_entries[i].get(),
-            print self.node_size_entries[i].get()
+            config_info.append("node_%d" % i)
+            config_info.append(self.node_path_entries[i].get())
+            config_info.append(self.node_size_entries[i].get())
+
+        config_info_iter = iter(config_info)
+        def_input = lambda(x): next(config_info_iter)
+        def_pass = lambda: passp
+
+        config_cb(pass_func=def_pass, input_func=def_input)
 
 
     def create_askdirectory_button(self, entry, row):
