@@ -1,4 +1,10 @@
 2015-12-13 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/cbox.py (main): When it has to configure combox, it uses
+	the graphical interface by default, if the '-nw' or '--cli' is
+	provided, it uses the text/commandline interface.
+
+2015-12-13 Siddharth Ravikumar <sravik@bgsu.edu>
 	* combox/gui.py (ComboxConfigDialog.__init__): accepts a new
 	argument called `condig_dir` that allows one to specify the combox
 	configuration directory

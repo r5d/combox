@@ -31,6 +31,7 @@ from watchdog.observers import Observer
 
 from combox.config import config_cb, get_nodedirs
 from combox.events import ComboxDirMonitor, NodeDirMonitor
+from combox.gui import ComboxConfigDialog
 from combox.log import log_i, log_e
 
 ## Function adapted from Watchdog's docs:
@@ -92,6 +93,9 @@ def main():
     parser.add_argument("-t", "--test",
                         help="Use the combox config file in testing area.",
                         action="store_true")
+    parser.add_argument("-nw", "--cli",
+                        help="Use CLI interface only",
+                        action="store_true")
     args = parser.parse_args()
     if args.test:
         CONFIG_DIR = path.join('tests', 'test-config')
@@ -104,7 +108,11 @@ def main():
 
     if not path.exists(CONFIG_DIR):
         # combox not configured.
-        config_cb(CONFIG_DIR)
+        if not args.cli:
+            ComboxConfigDialog("combox configuration", CONFIG_DIR)
+        else:
+            config_cb(CONFIG_DIR)
+
     try:
         config = yaml.load(file(config_file, 'r'))
     except yaml.YAMLError, exc:
