@@ -21,6 +21,9 @@ import os
 
 import tkFileDialog
 
+from os import path
+from os.path import expanduser
+
 from Tkinter import *
 
 from combox.config import config_cb
@@ -34,11 +37,14 @@ class ComboxConfigDialog(object):
 
     """
 
-    def __init__(self, title=None):
+    def __init__(self, title=None,
+                 config_dir=path.join(expanduser("~"), '.combox')):
         self.root = Tk()
 
         if title:
             self.root.title(title)
+
+        self.config_dir = config_dir
 
         self.result = None
 
@@ -292,7 +298,8 @@ class ComboxConfigDialog(object):
         def_input = lambda(x): next(config_info_iter)
         def_pass = lambda: passp
 
-        config_cb(pass_func=def_pass, input_func=def_input)
+        config_cb(config_dir=self.config_dir,
+                  pass_func=def_pass, input_func=def_input)
 
 
     def create_askdirectory_button(self, entry, row):

@@ -1,3 +1,10 @@
+2015-12-13 Siddharth Ravikumar <sravik@bgsu.edu>
+	* combox/gui.py (ComboxConfigDialog.__init__): accepts a new
+	argument called `condig_dir` that allows one to specify the combox
+	configuration directory
+	(ComboxConfigDialog.apply): passes the configuration directory
+	that it accepts in the `__init__` to the `config_cb` function.
+
 2015-12-10 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* combox/gui.py (ComboxConfigDialog.apply): now writes the
