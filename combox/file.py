@@ -149,7 +149,7 @@ def mk_dir(directory):
     try:
         os.mkdir(directory)
     except OSError, e:
-        log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
+        log_e("Error when trying to make directory %s" % directory)
 
 
 def rm_nodedir(directory, config):
@@ -179,7 +179,7 @@ def rm_path(fpath):
         elif path.isdir(fpath):
             os.rmdir(fpath)
     except OSError, e:
-        log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
+        log_e("Error when trying to remove path %s" % fpath)
 
 
 def move_nodedir(src, dest, config):
@@ -202,7 +202,7 @@ def move_nodedir(src, dest, config):
         try:
             os.rename(src_dir_path, dest_dir_path)
         except OSError, e:
-            log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
+            log_e("Error when trying to rename %s -> %s" % (src_dir_path, dest_dir_path))
 
 
 def rm_shards(fpath, config):
@@ -232,7 +232,7 @@ def rm_shards(fpath, config):
         try:
             os.remove(shard)
         except OSError, e:
-            log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
+            log_e("Error when trying to remove shard %s" % shard)
 
 
 def move_shards(src, dest, config):
@@ -269,7 +269,7 @@ def move_shards(src, dest, config):
         try:
             os.rename(src_shard, dest_shard)
         except OSError, e:
-            log_e("%r Something wrong. report bug to sravik@bgsu.edu" % e)
+            log_e("Error when trying to rename shard %s -> %s" % (src_shard, dest_shard))
 
 
 def purge_dir(p):
