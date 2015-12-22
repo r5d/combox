@@ -1,5 +1,28 @@
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* AUTHORS: Deleted
+	* CONTRIBUTORS.rst: Added
+	* Makefile: updated copyright header (authors -> contributors)
+	* combox/_version.py: updated copyright header (authors -> contributors)
+	* combox/cbox.py: updated copyright header (authors -> contributors)
+	* combox/config.py: updated copyright header (authors -> contributors)
+	* combox/crypto.py: updated copyright header (authors -> contributors)
+	* combox/events.py: updated copyright header (authors -> contributors)
+	* combox/file.py: updated copyright header (authors -> contributors)
+	* combox/gui.py: updated copyright header (authors -> contributors)
+	* combox/log.py: updated copyright header (authors -> contributors)
+	* combox/silo.py: updated copyright header (authors -> contributors)
+	* setup.py: updated copyright header (authors -> contributors)
+	* tests/_version_test.py: updated copyright header (authors -> contributors)
+	* tests/config_test.py: updated copyright header (authors -> contributors)
+	* tests/crypto_test.py: updated copyright header (authors -> contributors)
+	* tests/events_test.py: updated copyright header (authors -> contributors)
+	* tests/file_test.py: updated copyright header (authors -> contributors)
+	* tests/silo_test.py: updated copyright header (authors -> contributors)
+	* tests/utils.py: updated copyright header (authors -> contributors)
+
+2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* Makefile: added new targets `clean-dist` and `clean-pyc`.
 
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>

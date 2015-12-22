@@ -2,7 +2,7 @@
 #
 #!/usr/bin/env python
 #
-#    Copyright (C) 2015 Combox author(s). See AUTHORS.
+#    Copyright (C) 2015 Combox contributor(s). See CONTRIBUTORS.rst.
 #
 #    This file is part of Combox.
 #

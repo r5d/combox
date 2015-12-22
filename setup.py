@@ -1,4 +1,6 @@
-#    Copyright (C) 2015 Combox author(s). See AUTHORS.
+# -*- coding: utf-8 -*-
+#
+#    Copyright (C) 2015 Combox contributor(s). See CONTRIBUTORS.rst.
 #
 #    This file is part of Combox.
 #
