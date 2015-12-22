@@ -1,4 +1,5 @@
-
+# -*- coding: utf-8 -*-
+#
 #    Copyright (C) 2015 Combox author(s). See AUTHORS.
 #
 #    This file is part of Combox.

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 #!/usr/bin/env python
 #
 #    Copyright (C) 2015 Combox author(s). See AUTHORS.

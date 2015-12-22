@@ -1,5 +1,9 @@
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	All .py files now have a coding set to utf-8.
+
+2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* combox/_version.py: bumped to version 0.2.0
 	* README.rst: Added "Installation" section.
 
