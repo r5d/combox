@@ -115,8 +115,9 @@ def main():
 
     try:
         config = yaml.load(file(config_file, 'r'))
-    except yaml.YAMLError, exc:
-        log_e("Error opening configuration file: %r" % exc)
+    except (IOError, yaml.YAMLError) as exc:
+        log_e("Unable to open configuration file.")
+        log_e("Looks like combox is not configured yet. Exiting.")
         exit(1)
 
     # run combox.

@@ -1,5 +1,10 @@
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* combox/cbox.py (main): Added `IOError` in the catch block that
+	handles errors when opening the combox configuration file.
+
+2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* README.rst: fixed lint errors.
 
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
