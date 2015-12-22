@@ -225,7 +225,17 @@ class ComboxDirMonitor(LoggingEventHandler):
                 else:
                     time.sleep(1)
 
-                if self.just_created[event.src_path]:
+                # watchdog's weirdness
+                # --------------------
+                #
+                # On GNU/Linux, when a file is created, watchdog
+                # generates a 'file created' and a 'file modified'
+                # event; we're tracking this behaviour and ignoring
+                # the 'file modified' event.
+                #
+                if (self.just_created.has_key(event.src_path) and
+                    self.just_created[event.src_path] and
+                    platform.system() == 'Linux'):
                     self.just_created[event.src_path] = False
                     log_i("Just created file %s. So ignoring on_modified call." % (
                         event.src_path))
@@ -664,7 +674,17 @@ class NodeDirMonitor(LoggingEventHandler):
             else:
                 time.sleep(1)
 
-            if self.just_created[event.src_path]:
+            # watchdog's weirdness
+            # --------------------
+            #
+            # On GNU/Linux, when a file is created, watchdog generates
+            # a 'file created' and 'file modified' event; we're
+            # tracking this behaviour and ignoring the 'file modified'
+            # event.
+            #
+            if (self.just_created.has_key(event.src_path) and
+                self.just_created[event.src_path] and
+                platform.system() == 'Linux'):
                 self.just_created[event.src_path] = False
                 log_i("Just created file %s; ignoring on_modified call." % (
                     event.src_path))
