@@ -200,7 +200,7 @@ def move_nodedir(src, dest, config):
         src_dir_path = path.join(node, src_rel_path)
         dest_dir_path = path.join(node, dest_rel_path)
         try:
-            os.rename(src_dir_path, dest_dir_path)
+            os.renames(src_dir_path, dest_dir_path)
         except OSError, e:
             log_e("Error when trying to rename %s -> %s" % (src_dir_path, dest_dir_path))
 
@@ -267,7 +267,7 @@ def move_shards(src, dest, config):
         dest_shard = "%s.shard%s" % (path.join(node, dest_rel_path),
                                      shard_no)
         try:
-            os.rename(src_shard, dest_shard)
+            os.renames(src_shard, dest_shard)
         except OSError, e:
             log_e("Error when trying to rename shard %s -> %s" % (src_shard, dest_shard))
 

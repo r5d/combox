@@ -506,7 +506,7 @@ class NodeDirMonitor(LoggingEventHandler):
                     return
                 else:
                     try:
-                        os.rename(src_cb_path, dest_cb_path)
+                        os.renames(src_cb_path, dest_cb_path)
                     except OSError, e:
                         log_e("Jeez, failed to rename path. %r" % e)
                     self.silo.node_rem(silo_node_dict, src_cb_path)
