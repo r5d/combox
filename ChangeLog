@@ -1,5 +1,9 @@
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* Makefile: Added
+
+2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* combox/cbox.py (main): Added `IOError` in the catch block that
 	handles errors when opening the combox configuration file.
 
