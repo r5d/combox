@@ -17,7 +17,7 @@ etymology
 is pronounced as "combo box".
 
 
-Installation
+installation
 ------------
 
 Install ``combox`` with ``pip``::
