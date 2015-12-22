@@ -1,6 +1,7 @@
 2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* MANIFEST.in: Added it.
+	* combox/_version.py: Added it.
 
 2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
 

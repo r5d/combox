@@ -19,13 +19,13 @@
 from setuptools import setup, find_packages
 
 from combox.file import read_file
-
+from combox._version import get_version
 
 config = {
     'name': 'combox',
     'description': 'Splits encrypted files between online file storage providers',
     'long_description': read_file('README.rst'),
-    'version': '0.1.3',
+    'version': get_version(),
     'platforms': ['GNU/Linux', 'OS X'],
     'license': 'GNU General Public License version 3 or later',
     'url': 'https://ricketyspace.net/combox/',
@@ -34,7 +34,7 @@ config = {
     'author_email': 'sravik@bgsu.edu',
     'install_requires': ['watchdog', 'PyYAML', 'pycrypto',
                          'simplejson', 'pickledb'],
-    'tests_require': ['nose'],
+    'tests_require': ['nose', 'mock'],
     'test_suite': 'nose.collector',
     'packages': find_packages(exclude=['tests']),
     'entry_points': {
