@@ -40,9 +40,14 @@ upload-docs:
 clean-docs:
 	@$(MAKE) -C docs clean
 
+clean-dist:
+	@rm -rf dist/
+
 clean-build:
 	@rm -rf build/
-	@rm -rf dist/
 	@rm -rf *.egg-info
 
-.PHONY: dist clean-build upload-pypi upload-docs build-dist docs all
+clean-pyc:
+	@find . -name '*.pyc' -exec rm -f {} +
+
+.PHONY: dist clean-build clean-dist clean-pyc upload-pypi upload-docs build-dist docs all
