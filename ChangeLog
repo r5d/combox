@@ -1,5 +1,9 @@
 2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* setup.py: overhauled it.
+
+2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* combox/events.py (NodeDirMonitor.on_moved): Now uses
 	`os.renames` function instead `os.rename` to create intermediate
 	directories if they're non-existent.

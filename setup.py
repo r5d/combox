@@ -1,4 +1,4 @@
-#    Copyright (C) 2014 Combox author(s). See AUTHORS.
+#    Copyright (C) 2015 Combox author(s). See AUTHORS.
 #
 #    This file is part of Combox.
 #
@@ -16,27 +16,45 @@
 #   along with Combox (see COPYING).  If not, see
 #   <http://www.gnu.org/licenses/>.
 
+from setuptools import setup, find_packages
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from combox.file import read_file
+
 
 config = {
+    'name': 'combox',
     'description': 'Splits encrypted files between online file storage providers',
-    'author': 'Siddharth Ravikumar',
+    'long_description': read_file('README.rst'),
+    'version': '0.1.3',
+    'platforms': ['GNU/Linux', 'OS X'],
+    'license': 'GNU General Public License version 3 or later',
     'url': 'https://ricketyspace.net/combox/',
     'download_url': 'git://ricketyspace.net/combox.git',
-    'license': 'GNU General Public License v3.0 or later',
+    'author': 'Siddharth Ravikumar',
     'author_email': 'sravik@bgsu.edu',
-    'version': '0.1.3',
-    'install_requires': ['nose', 'watchdog', 'PyYAML', 'pycrypto',
+    'install_requires': ['watchdog', 'PyYAML', 'pycrypto',
                          'simplejson', 'pickledb'],
-    'packages': ['combox'],
+    'tests_require': ['nose'],
+    'test_suite': 'nose.collector',
+    'packages': find_packages(exclude=['tests']),
     'entry_points': {
         'console_scripts': ['combox = combox.cbox:main']
     },
-    'name': 'combox'
-    }
+    'classifiers': [
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'Environment :: MacOS X',
+        'Intended Audience :: End Users/Desktop',
+        'License :: DFSG approved',
+        'License :: OSI Approved',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 2 :: Only',
+        'Topic :: System :: Archiving :: Backup',
+        'Topic :: Utilities',
+        ]
+}
 
 setup(**config)
