@@ -1,3 +1,7 @@
+2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* docs/: Added it. Uses sphinx.
+
 2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* MANIFEST.in: Added it.

@@ -10,5 +10,8 @@ bin/
 include/
 trash/
 
+# docs
+docs/_build/
+
 # OS X
 .Python
