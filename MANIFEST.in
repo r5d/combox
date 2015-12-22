@@ -1,4 +1,6 @@
 include AUTHORS ChangeLog COPYING README.rst TODO.org
 recursive-include tests *
 recursive-include graphics *
+recursive-include docs *
+prune docs/_build
 recursive-exclude tests *.pyc
