@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 #    Copyright (C) 2015 Combox author(s). See AUTHORS.
 #
 #    This file is part of Combox.
@@ -16,8 +18,8 @@
 #   along with Combox (see COPYING).  If not, see
 #   <http://www.gnu.org/licenses/>.
 
-__version__ = "0.1"
-__release__ = "3"
+__version__ = u"0.1"
+__release__ = u"3"
 
 
 def get_version():
