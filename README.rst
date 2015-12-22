@@ -30,8 +30,8 @@ canonical repo
 runs on
 -------
 
- - GNU/Linux
- - OS X
+- GNU/Linux
+- OS X
 
 
 using combox
