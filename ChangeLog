@@ -1,5 +1,9 @@
 2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* MANIFEST.in: Added it.
+
+2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* setup.py: overhauled it.
 
 2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>

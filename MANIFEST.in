@@ -1,0 +1,4 @@
+include AUTHORS ChangeLog COPYING README.rst TODO.org
+recursive-include tests *
+recursive-include graphics *
+recursive-exclude tests *.pyc
