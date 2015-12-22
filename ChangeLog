@@ -1,3 +1,13 @@
+2015-12-21 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	commit 8c86e7c28738c66c0e04ae7886b44dbcdfc6369e
+
+	* combox/events.py (ComboxDirMonitor.on_modified)
+	(NodeDirMonitor.on_modified): 'file modified' event that is
+	triggered by watchdog after file creation only happens in
+	GNU/Linux; modified the functions so that they handle it only on
+	GNU/Linux.
+
 2015-12-13 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* combox/cbox.py (main): When it has to configure combox, it uses
