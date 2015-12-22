@@ -1,5 +1,9 @@
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* README.rst: fixed lint errors.
+
+2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* combox/_version.py: bumped to version 0.2.0.rc1
 
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>

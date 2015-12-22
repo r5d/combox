@@ -2,8 +2,6 @@
 combox
 ======
 
-.. highlight:: bash
-
 Encrypts files and scatters them across storage provided by Google
 Drive and Dropbox.
 

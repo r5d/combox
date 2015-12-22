@@ -1,3 +1,5 @@
+.. highlight:: bash
+
 .. include:: ../README.rst
 
 .. toctree::
