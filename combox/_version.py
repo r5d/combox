@@ -18,8 +18,8 @@
 #   along with Combox (see COPYING).  If not, see
 #   <http://www.gnu.org/licenses/>.
 
-__version__ = u"0.1"
-__release__ = u"3"
+__version__ = u"0.2"
+__release__ = u"0.rc1"
 
 
 def get_version():
