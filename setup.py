@@ -32,7 +32,7 @@ config = {
     'license': 'GNU General Public License version 3 or later',
     'url': 'https://ricketyspace.net/combox/',
     'download_url': 'git://ricketyspace.net/combox.git',
-    'author': 'Siddharth Ravikumar',
+    'author': 'combox contributors',
     'author_email': 'sravik@bgsu.edu',
     'install_requires': ['watchdog', 'PyYAML', 'pycrypto',
                          'simplejson', 'pickledb'],
