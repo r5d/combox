@@ -53,9 +53,3 @@ The ``combox`` logo is under `Public Domain`__.
 
 .. _pd: https://creativecommons.org/publicdomain/zero/1.0/
 .. __: pd_
-
-
-contact
--------
-
-siddharth ravikumar <sravik@bgsu.edu> (gpg id: ``0x00B252AF``)

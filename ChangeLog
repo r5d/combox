@@ -1,5 +1,9 @@
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* README.rst: removed `contact` section.
+
+2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* setup.py: author changed to `combox contributors`.
 
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
