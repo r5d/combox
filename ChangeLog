@@ -1,5 +1,11 @@
 2015-12-23 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* docs/api/index.rst: Added.
+	* docs/api/combox.file.rst: Added.
+	* docs/index.rst: Added api/index to toc tree.
+
+2015-12-23 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* combox/file.py: updated docstring of all functions. The
 	docstrings are now palatable to sphinx to digest.
 

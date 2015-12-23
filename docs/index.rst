@@ -9,3 +9,4 @@
    osx
    windows
    setup-combox
+   api/index
