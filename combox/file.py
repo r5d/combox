@@ -28,19 +28,24 @@ from glob import glob
 from combox.config import get_nodedirs
 from combox.log import log_e
 
+
 def relative_path(p, config, comboxd=True):
-    """Returns the relative path to the `p' w. r. t combox or node directory.
+    """Returns the relative path to the `p` w. r. t combox or node directory.
 
-    If `comboxd' is True, the relative path is w. r. t combox
-    directory.
-
-    If `comboxd' is False, the relative path is w. r. t node
-    directory.
-
-    p: path to a directory or file.
-
-    config: a dictionary that contains configuration information about
-    combox.
+    :param str p:
+        Path to a directory or file.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param bool comboxd:
+        True if `p` is a path relative to combox directory.
+    :returns:
+        Path relative to combox directory if `comboxd` is `True`,
+        otherwise returns path relative to the node directory.
+    :rtype: str
+    :raises ValueError:
+        If path `p` is not under the combox directory or the node
+        directory.
 
     """
     directory = None
@@ -59,10 +64,19 @@ def relative_path(p, config, comboxd=True):
 
 
 def cb_path(node_path, config):
-    """
-    Returns abs. path of file (in combox dir.) given the node_path.
-    """
+    """Returns absolute path of file/directory under the combox directory.
 
+    :param str node_path:
+        Path to a file/directory under a node directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :returns:
+        Returns the corresponding path to the file/directory under the
+        combox directory.
+    :rtype: str
+
+    """
     if node_path[:-1].endswith('shard'):
         # partition function is used to remove the `.shard.N' from the
         # file name.
@@ -79,15 +93,24 @@ def cb_path(node_path, config):
 
 
 def node_path(cb_path, config, isfile):
-    """Returns abs. path of file (in node dir.) given the cb_path (combox dir. path).
+    """Returns abs. path of file/directory in node directory.
 
-    If cb_path is a file, it returns the path to its shard in the
-    first node directory.
+    :param str cb_path:
+        Path to a file/directory under the combox directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param bool isfile:
+        True if `cb_path` is not a directory.
+    :returns:
+        If `cb_path` is a file, it returns the path to its shard under
+        the first node directory.
 
-    isfile: True if cb_path is a file.
+        If `cb_path` is a directory, it returns the corresponding path
+        to this directory under the first node directory.
+    :rtype: str
 
     """
-
     if isfile:
         # partition function is used to remove the `.shard.N' from the
         # file name.
@@ -103,12 +126,23 @@ def node_path(cb_path, config, isfile):
 
 
 def node_paths(cb_path, config, isfile):
-    """Returns list of abs. path of file (in node dir.) the cb_path.
+    """Returns a list of abs. paths of a file/directory in node directories.
 
-    If cb_path is a file, it returns a list of abs. path names of
-    shards of the file in the node directories.
+    :param str cb_path:
+        Path to a file/directory under the combox directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param bool isfile:
+        True if `cb_path` is not a directory.
+    :returns:
+        If `cb_path` is a file, it returns a list of paths to its
+        shards under the node directories.
 
-    isfile: True if cb_path is a file
+        If `cb_path` is a directory, it returns a list its
+        corresponding paths under the node directories.
+    :rtype: list
+
     """
 
     n_paths = []
@@ -131,12 +165,15 @@ def node_paths(cb_path, config, isfile):
 
 
 def mk_nodedir(directory, config):
-    """
-    Creates directory `directory' inside the nodes.
+    """Creates directory `directory` under all the node directories.
 
-    config: a dictionary containing configuration info about combox.
-    """
+    :param str directory:
+        Path to a directory under the combox directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
 
+    """
     nodes = get_nodedirs(config)
 
     rel_path = relative_path(directory, config)
@@ -147,7 +184,12 @@ def mk_nodedir(directory, config):
 
 
 def mk_dir(directory):
-    """Creates directory"""
+    """Creates a directory.
+
+    :param str directory:
+        Path to a directory to create.
+
+    """
     try:
         os.mkdir(directory)
     except OSError, e:
@@ -155,12 +197,15 @@ def mk_dir(directory):
 
 
 def rm_nodedir(directory, config):
-    """
-    Removes directory `directory' inside the nodes.
+    """Removes directory `directory` under all the node directories.
 
-    config: a dictionary containing configuration info about combox.
-    """
+    :param str directory:
+        Path to a directory under the combox directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
 
+    """
     nodes = get_nodedirs(config)
 
     rel_path = relative_path(directory, config)
@@ -171,9 +216,10 @@ def rm_nodedir(directory, config):
 
 
 def rm_path(fpath):
-    """Removes fpath.
+    """Removes path `fpath`.
 
-    fpath can be a file or a empty directory.
+    :param str fpath:
+        It can be a file or an empty directory.
     """
     try:
         if path.isfile(fpath):
@@ -185,14 +231,17 @@ def rm_path(fpath):
 
 
 def move_nodedir(src, dest, config):
-    """
-    Moves directory `directory' inside the nodes from old to new location.
+    """Moves directory `src` to `dest`.
 
-    src: old path to the directory
-    dest: new path to the directory
-    config: a dictionary containing configuration info about combox.
-    """
+    :param str src:
+         Old path to the directory.
+    :param str dest:
+         New path to the directory
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
 
+    """
     nodes = get_nodedirs(config)
 
     src_rel_path = relative_path(src, config)
@@ -208,14 +257,15 @@ def move_nodedir(src, dest, config):
 
 
 def rm_shards(fpath, config):
+    """Removes the file shards of `fpath` under the node directories.
+
+    :param str fpath:
+         Path to file under the combox directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+
     """
-    Removes the file shards of `fpath' in the node directories.
-
-    fpath: is the path to a file in the combox directory.
-
-    config: a dictionary containing configuration info about combox.
-    """
-
     nodes = get_nodedirs(config)
 
     rel_path = relative_path(fpath, config)
@@ -241,14 +291,18 @@ def move_shards(src, dest, config):
     """Move the shards in node directories.
 
     This function is used when a file is moved to different location
-    inside the combox directory. It moves the shards to the
-    corresponding location in the node directories.
+    inside the combox directory. It moves the shards of the respective
+    file to the new location under the node directories.
 
-    src: old path to the file that was moved.
-    dest: new path to the file that was moved.
-    config: a dictionary containing configuration info about combox.
+    :param str src:
+        Old path to the file that was moved under the combox directory.
+    :param str dest:
+        New path to the file that was moved under the combox directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+
     """
-
     nodes = get_nodedirs(config)
 
     src_rel_path = relative_path(src, config)
@@ -276,9 +330,12 @@ def move_shards(src, dest, config):
 
 def purge_dir(p):
     """
-    Purge everything under the given directory `p'.
+    Purge everything under the given directory `p`.
 
-    Directory `p' itself is not deleted.
+    Directory `p` itself is not deleted.
+
+    :param str p:
+        Path to directory that needs to be purged.
     """
 
     p = path.abspath(p)
@@ -297,12 +354,17 @@ def purge_dir(p):
 
 
 def split_data(data, n):
-    """Split data into `n' parts and return them as an array.
+    """Split `data` into `n` parts and return them as a list.
 
-    data: Stream of bytes or string
-    n: Number of parts the file has to be split.
+    :param str data:
+        Stream of bytes or string.
+    :param int n:
+        Number of parts the `data` has to be split.
+    :returns:
+        List of strings -- the `data` divided into `n` parts.
+    :rtype: list
+
     """
-
     d_parts = []
     # File size in bytes.
     data_size = len(data)
@@ -327,12 +389,16 @@ def split_data(data, n):
 
 
 def glue_data(d_parts):
-    """Glue different parts of the data to one.
+    """Glue different parts of the `data` into a single whole.
 
-    d_parts: Array containing different parts of the data. Each part
-    is a sequence of bytes.
+    :param list d_parts:
+        List containing different parts of the `data`. Each part is a
+        sequence of bytes.
+    :returns:
+        The `data` glued into a single whole.
+    :rtype: str
+
     """
-
     data = ''
     for part in d_parts:
         data += part
@@ -341,9 +407,14 @@ def glue_data(d_parts):
 
 
 def read_file(filename):
-    """Read file and return it as a string.
+    """Read file `filename` and return it as a string.
 
-    filename: Absolute pathname of the file.
+    :param str filename:
+        Absolute pathname of the file.
+    :returns:
+        Content of file `filename` as a string.
+    :rtype: str
+
     """
     file_ = None
     content = ''
@@ -360,8 +431,17 @@ def hash_file(filename, file_content=None):
 
     Returns the hexdigest of the file content's hash.
 
-    filename: Absolute pathname of the file.
-    file_content: If not None, hash of file_content is returned.
+    :param str filename:
+        Absolute pathname of the file.
+    :param str file_content:
+        If not ``None``, SHA512 hash of `file_content` is returned.
+    :returns:
+        If `file_content` is ``None``, returns the SHA512 hash of
+        contents of file `filename`.
+
+        If `file_content` is not ``None``, returns the SHA512 hash of
+        `file_content`.
+    :rtype: str
     """
 
     if not file_content:
@@ -371,10 +451,13 @@ def hash_file(filename, file_content=None):
 
 
 def write_file(filename, filecontent):
-    """Write `filecontent' to `filename'.
+    """Write `filecontent` to `filename`.
 
-    filename: Absolute pathname of the file.
-    filecontent: String/bytstream to write to filename.
+    :param str filename:
+        Absolute pathname of the file.
+    :param str filecontent:
+        Data to write to `filename`.
+
     """
     file_ = None
     try:
@@ -385,15 +468,18 @@ def write_file(filename, filecontent):
         log_e("Error creating and writing content to %s" % filename)
         exit(1)
 
+
 def write_shards(shards, directories, shard_basename):
-    """Write shards to respective files respective files.
+    """Write shards to node directories.
 
-    shard: list of strings (ciphers or data).
+    :param list shards:
+        List of strings (data).
+    :param list directories:
+        List of paths of node directories.
+    :param str shard_basename:
+        Base name for the shards.
 
-    directories: absolute path of directories to which it shards must be written to.
-    shard_basename: base name of the shard.
     """
-
     shard_no = 0
     for directory in directories:
         # partial filename of the shard
@@ -402,13 +488,20 @@ def write_shards(shards, directories, shard_basename):
         write_file(shard_name, shards[shard_no])
         shard_no += 1
 
+
 def read_shards(directories, shard_basename):
-    """Read the shards from directory and return it as a list.
+    """Read the shards of a file from node directories and return it as a list.
 
-    directories: absolute path of directories from which to read the shards.
-    shard_basename: base name of the shard.
+    :param list directories:
+        List of paths of node directories from which to read the
+        shards.
+    :param str shard_basename:
+        Base name for the shards; the canonical file name.
+    :returns:
+        List of contents of the shards of the file with basename
+        `shard_basename`.
+
     """
-
     # get the names of the file shards
     file_shards = []
     for directory in directories:
@@ -425,11 +518,18 @@ def read_shards(directories, shard_basename):
 
 
 def no_of_shards(cb_path, config):
-    """Returns the no. of shards that exists for `cb_path' in node directories.
+    """Returns the no. of shards that exists for `cb_path` under the node directories.
 
-    cb_path: path to file in combox directory.
+    :param str cb_path:
+        Path to a file under the combox directory.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :returns:
+        The number of shards that exists for the file `cb_path`.
+    :rtype: int
+
     """
-
     no_shards_there = 0
     shard_paths = node_paths(cb_path, config, isfile=True)
 

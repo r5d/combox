@@ -1,3 +1,8 @@
+2015-12-23 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/file.py: updated docstring of all functions. The
+	docstrings are now palatable to sphinx to digest.
+
 2015-12-22 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* README.rst: removed `contact` section.
