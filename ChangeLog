@@ -2,7 +2,8 @@
 
 	* setup.py: updated `description`.
 	* docs/api/combox.crypto.rst: Added
-	* docs/api/index.rst: Added api/combox.crypto to toctree.
+	* docs/releases.rst: Added
+	* docs/api/index.rst: Added api/combox.crypto, docs/releases to toctree.
 	* combox/crypto.py: Rewrote all docstrings; they're sphinx
 	friendly now.
 	* README.rst: Added fancy buttons from shields.io that show stats

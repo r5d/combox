@@ -9,4 +9,5 @@
    osx
    windows
    setup-combox
+   releases
    api/index
