@@ -9,21 +9,21 @@ The ideas for this program is based on combobox_.
 
 .. _combobox: https://bitbucket.org/bgsucodeloverslab/combobox
 
-.. image:: https://img.shields.io/pypi/pyversions/combox.svg
+.. image:: https://img.shields.io/pypi/pyversions/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
    :alt: [ Python versions - 2.7 ]
-.. image::  https://img.shields.io/pypi/status/combox.svg
+.. image::  https://img.shields.io/pypi/status/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
    :alt: [ Development status - Alpha ]
-.. image:: https://img.shields.io/pypi/v/combox.svg
+.. image:: https://img.shields.io/pypi/v/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
-   :alt: [ Latest Version ]
-.. image:: https://img.shields.io/pypi/wheel/combox.svg
+   :alt:
+.. image:: https://img.shields.io/pypi/wheel/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
-   :alt: [ Wheel Status ]
-.. image:: https://img.shields.io/pypi/dm/combox.svg
+   :alt:
+.. image:: https://img.shields.io/pypi/dm/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
-   :alt: [ Downloads per month ]
+   :alt:
 
 
 etymology
