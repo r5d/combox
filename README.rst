@@ -9,6 +9,22 @@ The ideas for this program is based on combobox_
 
 .. _combobox: https://bitbucket.org/bgsucodeloverslab/combobox
 
+.. image:: https://img.shields.io/pypi/pyversions/combox.svg
+   :target: https://pypi.python.org/pypi/combox/
+   :alt: [ Python versions - 2.7 ]
+.. image::  https://img.shields.io/pypi/status/combox.svg
+   :target: https://pypi.python.org/pypi/combox/
+   :alt: [ Development status - Alpha ]
+.. image:: https://img.shields.io/pypi/v/combox.svg
+   :target: https://pypi.python.org/pypi/combox/
+   :alt: [ Latest Version ]
+.. image:: https://img.shields.io/pypi/wheel/combox.svg
+   :target: https://pypi.python.org/pypi/combox/
+   :alt: [ Wheel Status ]
+.. image:: https://img.shields.io/pypi/dm/combox.svg
+   :target: https://pypi.python.org/pypi/combox/
+   :alt: [ Downloads per month ]
+
 
 etymology
 ---------
