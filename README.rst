@@ -5,7 +5,7 @@ combox
 Encrypts files and scatters them across storage provided by Google
 Drive and Dropbox.
 
-The ideas for this program is based on combobox_
+The ideas for this program is based on combobox_.
 
 .. _combobox: https://bitbucket.org/bgsucodeloverslab/combobox
 
