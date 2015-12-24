@@ -2,13 +2,6 @@
 combox
 ======
 
-Encrypts files and scatters them across storage provided by Google
-Drive and Dropbox.
-
-The ideas for this program is based on combobox_.
-
-.. _combobox: https://bitbucket.org/bgsucodeloverslab/combobox
-
 .. image:: https://img.shields.io/pypi/pyversions/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
    :alt: [ Python versions - 2.7 ]
@@ -24,6 +17,15 @@ The ideas for this program is based on combobox_.
 .. image:: https://img.shields.io/pypi/dm/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
    :alt:
+
+----
+
+Encrypts files and scatters them across storage provided by Google
+Drive and Dropbox.
+
+The ideas for this program is based on combobox_.
+
+.. _combobox: https://bitbucket.org/bgsucodeloverslab/combobox
 
 
 etymology
