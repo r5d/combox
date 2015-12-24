@@ -1,3 +1,13 @@
+2015-12-24 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* setup.py: updated `description`.
+	* docs/api/combox.crypto.rst: Added
+	* docs/api/index.rst: Added api/combox.crypto to toctree.
+	* combox/crypto.py: Rewrote all docstrings; they're sphinx
+	friendly now.
+	* README.rst: Added fancy buttons from shields.io that show stats
+	about combox slurped from pypi.
+
 2015-12-23 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* docs/api/index.rst: Added.
