@@ -25,7 +25,7 @@ from combox._version import get_version
 
 config = {
     'name': 'combox',
-    'description': 'Splits encrypted files between online file storage providers',
+    'description': 'Encrypts files and scatters them across storage provided by Google Drive and Dropbox.',
     'long_description': read_file('README.rst'),
     'version': get_version(),
     'platforms': ['GNU/Linux', 'OS X'],
