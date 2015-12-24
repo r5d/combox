@@ -35,13 +35,26 @@ from datetime import datetime
 from os import path
 
 BLOCK_SIZE = 32
-PAD_CHAR = '#'
+"""Specifies the block size of the data that is given to crypto functions.
 
+"""
+
+PAD_CHAR = '#'
+"""Character for padding data to make it a multiple of :data:`BLOCK_SIZE`.
+
+"""
 
 def pad(data):
-    """Pad data such that its length is a multiple of BLOCK_SIZE.
-    """
+    """Pad `data` such that its length is a multiple of :data:`BLOCK_SIZE`.
 
+    :param str data:
+        A string that needs to be padded so that its total length is a
+        multiple of :data:`BLOCK_SIZE`.
+    :returns:
+        Padded data whose length is a multiple of :data:`BLOCK_SIZE`.
+    :rtype: str
+
+    """
     padding = (BLOCK_SIZE - (len(data) % BLOCK_SIZE)) * PAD_CHAR
     data += padding
 
@@ -49,29 +62,53 @@ def pad(data):
 
 
 def encrypt(data, secret):
-    """Encrypt byestream and return cipher.
+    """Encrypt `data` and return cipher.
+
+    :param str data:
+        Data to encrypt.
+    :param str secret:
+        The key to encrypt the `data` with.
+    :returns:
+       Encrypted `data` as :mod:`base64` encoded string.
+    :rtype: str
+
     """
     aes = AES.new(pad(secret))
     cipher = base64.b64encode(aes.encrypt(pad(data)))
-    
+
     return cipher
 
 
 def decrypt(cipher, secret):
-    """Decrypt cipher and return data.
+    """Decrypt `cipher` and return data.
+
+    :param str cipher:
+        Encrypted data to decrypt.
+    :param str secret:
+        The key to decrypt the `cipher` with.
+    :returns:
+        Decrypted data.
+    :rtype: str
+
     """
     aes = AES.new(pad(secret))
     data = aes.decrypt(base64.b64decode(cipher)).rstrip(PAD_CHAR)
 
     return data
 
+
 def encrypt_shards(shards, secret):
-    """Encrypt the shards of data and return a list of ciphers.
+    """Encrypt the `shards` of data and return a list of ciphers.
 
-    shards: list of shards (string, bytes).
-    secret: top secret passphrase
+    :param list shards:
+        List of shards (strings).
+    :param str secret:
+        The key to encrypt each shard.
+    :returns:
+        List containing the encrypted shards.
+    :rtype: list
+
     """
-
     ciphers = []
     for shard in shards:
         cipher = encrypt(shard, secret)
@@ -83,10 +120,15 @@ def encrypt_shards(shards, secret):
 def decrypt_shards(ciphers, secret):
     """Decrypt the ciphered shards and return a list of shards.
 
-    shards: list of ciphered shards.
-    secret: top secret passphrase
-    """
+    :param list ciphers:
+        List of encrypted shards (strings).
+    :param str secret:
+        The key to decrypt each shard.
+    :returns:
+        List containing the decrypted shards.
+    :rtype: list
 
+    """
     shards = []
     for cipher in ciphers:
         shard = decrypt(cipher, secret)
@@ -96,17 +138,41 @@ def decrypt_shards(ciphers, secret):
 
 
 def split_and_encrypt(fpath, config, fcontent=None):
-    """Splits the file, encrypts the shards and writes them to the nodes.
+    """Splits file `fpath` into shards, encrypts the shards and spreads the shards across the node directories.
 
-    fpath: The path to file that has to be split.
-    config: The dictonary containing the combox configuration information.
-    fcontent: Contents of the file at `fpath' (optional).
+    Information about the node directories must be contained with the
+    `config` dictionary; structure of the `config` dict::
 
-    If `fcontent' is None, then this function reads the contents of
-    the file; otherwise it just assumes `fcontent' is the content of
-    the file.
+             {
+              'combox_dir': '/home/rsd/combox/',
+              'nodes_info': {
+                  'node-1': {
+                     'available': '1024',
+                     'path': '/home/rsd/combox-nodes/Dropbox',
+                     'size': '1024'
+                  },
+                  'node-0': {
+                     'available': '1024',
+                     'path': '/home/rsd/combox-nodes/Googl-Drive/',
+                     'size': '1024'
+                  }
+              },
+              'silo_dir': '/home/rsd/bgc/combox/tests/test-config',
+              'topsecret': 'topsecret',
+              'combox_name': 'testbox'
+             }
+
+    :param str fpath:
+        Path to an existent file.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param str fcontent:
+        Contents of the file at `fpath` (optional). When `None`, the
+        content of the file is read from disk; otherwise it just
+        assumes `fcontent` is the content of the file.
+
     """
-
     start = datetime.now()
 
     rel_path = relative_path(fpath, config)
@@ -137,17 +203,22 @@ def split_and_encrypt(fpath, config, fcontent=None):
     log_i('Took %f ms  to split and encrypt %s' % (duration, fpath))
 
 
-
 def decrypt_and_glue(fpath, config, write=True):
+    """Reads encrypted shards from the node directories, decrypts and reconstructs `fpath`.
+
+    :param str fpath:
+        The path to a file under the combox directory that has to be
+        decrypted and glued from the node directories.
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param bool write:
+        If `True`, writes the reconstructed content to disk.
+    :returns:
+        The glued content.
+    :rtype: str
 
     """
-    Reads encrypted shards, decrypts and glues them.
-
-    fpath: The path to file that has to be decrypted & glued from the nodes.
-    config: The dictionary containing the combox configuration information.
-    write: If set, writes the reconstructed file's content to disk.
-    """
-
     rel_path = relative_path(fpath, config)
 
     f = path.abspath(fpath)
