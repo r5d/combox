@@ -1,11 +1,16 @@
 releases
 --------
 
+  - `combox-v0.2.0.tar.gz`_ [sig__]
 
-  - `combox-0.2.0.tar.gz`_ [sig__]
+    .. _combox-v0.2.0.tar.gz: https://ricketyspace.net/combox/archive/combox-v0.2.0.tar.gz
+    .. __: https://ricketyspace.net/combox/archive/combox-v0.2.0.tar.gz.sig
 
-    .. _combox-0.2.0.tar.gz: https://ricketyspace.net/combox/archive/combox-0.2.0.tar.gz
-    .. __: https://ricketyspace.net/combox/archive/combox-0.2.0.tar.gz.asc
+
+  - `combox-v0.2.0.zip`_ [sig__]
+
+    .. _combox-v0.2.0.zip: https://ricketyspace.net/combox/archive/combox-v0.2.0.zip
+    .. __: https://ricketyspace.net/combox/archive/combox-v0.2.0.zip.sig
 
 
   - `combox-v0.1.3.tar.gz`_ [sig__]
