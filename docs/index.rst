@@ -5,9 +5,6 @@
 .. toctree::
    :hidden:
 
-   gnu
-   osx
-   windows
-   setup-combox
+   setup/index
    releases
    api/index

@@ -1,8 +1,14 @@
 2015-12-24 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* setup.py: updated `description`.
-	* docs/api/combox.crypto.rst: Added
-	* docs/releases.rst: Added
+	* docs/index.rst: Removed gnu, osx, windows, setup-combox from
+	toctree; Added releases to toctree.
+	* docs/gnu.rst: Removed.
+	* docs/osx.rst: Removed.
+	* docs/setup-combox.rst: Removed.
+	* docs/windows.rst: Removed.
+	* docs/releases.rst: Added.
+	* docs/api/combox.crypto.rst: Added.
 	* docs/api/index.rst: Added api/combox.crypto, docs/releases to toctree.
 	* combox/crypto.py: Rewrote all docstrings; they're sphinx
 	friendly now.
