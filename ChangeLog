@@ -15,6 +15,8 @@
 	friendly now.
 	* README.rst: Added fancy buttons from shields.io that show stats
 	about combox slurped from pypi.
+	* docs/conf.py: added `extra_nav_links` to `html_theme_options`
+	dict; it contains a link to combox's web-browsable git repository.
 
 2015-12-23 Siddharth Ravikumar <sravik@bgsu.edu>
 

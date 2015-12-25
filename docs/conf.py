@@ -124,7 +124,10 @@ html_theme = 'alabaster'
 # documentation.
 html_theme_options = {
     'logo': 'img/combox-logo.png',
-    'github_button': False
+    'github_button': False,
+    'extra_nav_links': {
+        'browse source': 'https://git.ricketyspace.net/combox',
+        }
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
