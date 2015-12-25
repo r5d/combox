@@ -2,6 +2,8 @@
 combox
 ======
 
+----
+
 .. image:: https://img.shields.io/pypi/pyversions/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
    :alt: [ Python versions - 2.7 ]
