@@ -56,6 +56,8 @@ releases
     .. __: https://ricketyspace.net/combox/archive/combox-v0.1.0.zip.sig
 
 
+.. highlight:: bash
+
 ::
 
    $ gpg --keyserver hkps.pool.sks-keyservers.net --recv-key "C1741162CEED5FE89954A4B99DF9783800B252AF"
