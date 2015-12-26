@@ -25,15 +25,21 @@ from threading import Lock
 
 from combox.file import hash_file
 
-class ComboxSilo(object):
-    """The Combox silo.
 
-    Helps keep track of files in combox directory.
+class ComboxSilo(object):
+    """Helps keep track of files in combox directory.
+
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param threading.Lock lock:
+        Lock used by :class:`.ComboxDirMonitor` and
+        :class:`.NodeDirMonitor` to access this object.
+
     """
 
-
     def __init__(self, config, lock):
-        """config: a dictinary which contains combox configuration.
+        """Initialize ComboxSilo.
 
         """
         self.config = config
@@ -41,9 +47,20 @@ class ComboxSilo(object):
         self.silo_path = path.join(config['silo_dir'], 'silo.db')
         self.db = pickledb.load(self.silo_path, True)
 
-        ## things we need for housekeep the node directory.
+        ## things we need for housekeep the node directories
         self.node_dicts = ['file_created', 'file_modified', 'file_moved',
                            'file_deleted', 'file_moved_info']
+        """List of names of dictionaries stored in DB to housekeep the node
+           directories.
+
+        Initialized to::
+
+            ['file_created', 'file_modified', 'file_moved',
+             'file_deleted', 'file_moved_info']
+
+        when :class:`ComboxSilo` object is created.
+
+        """
 
         # created the dicts if not already created.
         for ndict in self.node_dicts:
@@ -54,17 +71,23 @@ class ComboxSilo(object):
 
 
     def reload(self):
-        """Re-loads the DB from disk."""
+        """Re-loads the DB from disk.
+
+        """
         with self.lock:
             self.db = pickledb.load(self.silo_path, True)
 
 
     def update(self, filep):
-        """Update filep's info in db
+        """Update filep's info in DB.
 
-        filep and the hash of its content is written to the db.
+        Path of `filep` and the hash of its content is written to the
+        DB.
 
-        filep: path to the file in combox directory.
+        :param str filep:
+            Path to the file under the combox directory.
+        :returns: `True`
+        :rtype: bool
 
         """
         self.reload()
@@ -74,7 +97,14 @@ class ComboxSilo(object):
 
 
     def keys(self):
-        """Returns a list of all keys in db."""
+        """Returns list of file' paths tracked by combox.
+
+        :returns:
+            List of file paths of files tracked by combox.
+        :rtype:
+            `True`
+
+        """
         # this is why Redis or some other key-value DB should be used
         # instead of PickleDB
         self.reload()
@@ -83,9 +113,15 @@ class ComboxSilo(object):
 
 
     def remove(self, filep):
-        """Removes filep from db.
+        """Removes `filep` from DB.
 
-        filep: path to the file in combox directory.
+        :param str filep:
+            Path to a file under combox directory whose information
+            has to be removed from the DB.
+        :returns:
+            Returns `False` if `filep` is not present in the DB; `True`
+            otherwise.
+        :rtype: bool
 
         """
         try:
@@ -98,11 +134,13 @@ class ComboxSilo(object):
 
 
     def exists(self, filep):
-        """Checks if filep's info is stored in db.
+        """Checks if filep's info is stored in DB.
 
-        Returns True if filep's info is in db; False otherwise.
-
-        filep: path to the file in combox directory.
+        :param str filep:
+            Path to a file under the  combox directory.
+        :returns:
+            Returns `True` if filep's info is in DB; `False` otherwise.
+        :rtype: bool
 
         """
         self.reload()
@@ -114,15 +152,19 @@ class ComboxSilo(object):
 
 
     def stale(self, filep, fhash=None):
-        """Returns True if filep's hash is different from the hash stored in db.
+        """Checks if filep's info in the DB is outdated.
 
-        Returns None, if filep's info is not yet stored in db.
-        Returns False, if filep's hash has not changed it.
+        :param str filep:
+            Path to a file under the combox directory.
+        :param bool fhash:
+            If not `None`, it is assumed to be filep's hash.
+        :returns:
+            Returns `True`, if filep's hash is outdated; `False` if
+            filep's hash is correct; `None` if filep's info is not yet
+            stored in DB.
+        :rtype: bool
 
-        filep: path to the file in combox directory.
-        fhash: If not None, it is assumed to be filep's hash.
         """
-
         if not fhash:
             fhash = hash_file(filep)
 
@@ -139,19 +181,24 @@ class ComboxSilo(object):
 
 
     def nodedicts(self):
-        """
-        Returns a list containing the dicts related the the node directories.
+        """Returns :attr:`node_dicts`
+
         """
         return self.node_dicts
 
 
     def node_set(self, type_, file_, num=-1):
-        """
-        Update information about the shard of `file_'.
+        """Update information about the shard of `file_` in dictionary `type_` in the DB.
 
-        type_: 'file_created', 'file_modified', 'file_moved', 'file_deleted'
-        file_: path of the file_ in combox directory.
-        num: (optional) integer associated with the `file_'.
+        :param str type_:
+            The name of the dictinary in DB. It must be one of the
+            following values: `file_created`, `file_modified`,
+            `file_moved`, `file_deleted`.
+        :param str file_:
+            Path of the file under the combox directory.
+        :param int num:
+            Integer associated with the `file_`.
+
         """
 
         self.reload()
@@ -173,11 +220,13 @@ class ComboxSilo(object):
 
     def node_store_moved_info(self, src_path, dest_path):
         """
-        Update/create about file move.
+        Make note of a file/directory moved from `src_path` to `dest_path`.
 
-        type_: expected type is 'file_moved_info'.
-        src_path: usually the source path of the file being moved.
-        dest_path: usually the destination path of the file being moved.
+        :param str src_path:
+            The source path of the file being moved.
+        :param str dest_path:
+            The destination path of the file being moved.
+
         """
         self.reload()
         with self.lock:
@@ -185,11 +234,19 @@ class ComboxSilo(object):
 
 
     def node_get(self, type_, file_):
-        """
-        Returns a number denoting the number of node directories in which the file_'s shard was created/modified/moved/deleted.
+        """Returns a number denoting the number of node directories in which the `file_`'s shards was created/modified/moved/deleted.
 
-        type_: 'file_created', 'file_modified', 'file_moved', 'file_deleted'
-        file_: path of the file_ in combox directory.
+        :param str type_:
+            The name of the dictinary in DB. It must be one of the
+            following values: `file_created`, `file_modified`,
+            `file_moved`, `file_deleted`.
+        :param str file_:
+            Path of the file under the combox directory.
+        :returns:
+            Number denoting the number of node directories in which
+            the `file_`' shards were created/modified/moved/deleted.
+        :rtype: int
+
         """
         self.reload()
         with self.lock:
@@ -201,13 +258,16 @@ class ComboxSilo(object):
 
 
     def node_rem(self, type_, file_):
-        """
-        Removes information about the shard of `file_'.
+        """Removes information about the shards of `file_` in the `type_` dictionary in DB.
 
-        type_: 'file_created', 'file_modified', 'file_moved', 'file_deleted'
-        file_: path of the file_ in combox directory.
-        """
+        :param str type_:
+            The name of the dictinary in DB. It must be one of the
+            following values: `file_created`, `file_modified`,
+            `file_moved`, `file_deleted`.
+        :param str file_:
+            Path of the file under the combox directory.
 
+        """
         self.reload()
         with self.lock:
             try:
