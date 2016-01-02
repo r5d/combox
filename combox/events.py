@@ -40,15 +40,38 @@ from combox.silo import ComboxSilo
 
 
 class ComboxDirMonitor(LoggingEventHandler):
-    """Monitors Combox directory for changes and does its crypto thing.
+    """Monitors combox directory for changes and makes corresponding changes in node directories.
+
+     - When a file is created in the combox directory, the
+       :class:`.ComboxDirMonitor` creates encrypted shards of the file
+       and spreads them across the node directories.
+
+     - When a file is modified in the combox directory, the
+       :class:`.ComboxDirMonitor` updates the encrypted shards of the
+       file in the node directories.
+
+     - When a file is moved/renamed in the combox directory, the
+       :class:`.ComboxDirMonitor` moves/renames the encrypted shards
+       of the file in the node directories.
+
+     - When a file is deleted in the combox directory, the
+       :class:`.ComboxDirMonitor` delets the encrypted shards of the
+       file in the node directories.
+
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param threading.Lock dblock:
+        Lock to access the :class:`.ComboxSilo`. object.
+    :param threading.Lock monitor_lock:
+        Lock shared by :class:`.ComboxDirMonitor` and all the
+        :class:`.NodeDirMonitor` objects.
 
     """
 
     def __init__(self, config, dblock, monitor_lock):
-        """
-        config: a dictinary which contains combox configuration.
-        dblock: Lock for ComboxSilo.
-        monitor_lock: Lock for directory monitors.
+        """Initialize :class:`.ComboxDirMonitor`.
+
         """
         super(ComboxDirMonitor, self).__init__()
 
@@ -67,8 +90,15 @@ class ComboxDirMonitor(LoggingEventHandler):
 
 
     def tmp_file(self, file_path):
-        """Returns True if `file_path` is a tmp file."""
+        """Returns `True` if `file_path` is a temporary file.
 
+        :param str file_path:
+            Path of a file.
+        :returns:
+            `True` if `file_path` is a temporary file.
+        :rtype: bool
+
+        """
         if file_path.endswith("~"):
             return True
         elif path.basename(file_path).startswith(".#"):
@@ -81,18 +111,23 @@ class ComboxDirMonitor(LoggingEventHandler):
 
 
     def housekeep(self):
-        """Recursively traverses combox directory, discovers changes and updates silo and node directories.
+        """Recursively traverses combox directory, discovers changes and updates silo and node directories. This method must **never** be called directly.
 
-        Information about files that have been removed from combox
-        directory is purged from the silo. Also the corresponding
-        shards are removed from the node directories.
+        This method is called before :class:`.ComboxDirMonitor` starts
+        monitoring the combox directory.
 
-        The untracked files are encrypted and split between the node
-        directories and information about these files are stashed in
-        the silo.
+        - First, if it finds tracked files in the combox directory
+          have been deleted, it clears their information from the DB
+          and it purges the encrypted shards of the respective files
+          from the node directories.
 
-        Information about modified files in the combox directory are
-        updated and the file's shards are updated.
+        - Second, if it finds files that were modified in the combox
+          directory, it updates their respective encrypted shards in
+          the node directories.
+
+        - Third, if it finds files that are not yet tracked by combox,
+          it creates their respective encrypted shards and spreads
+          them across the node directories.
 
         """
         log_i("combox monitor is housekeeping")
@@ -136,6 +171,20 @@ class ComboxDirMonitor(LoggingEventHandler):
 
 
     def on_moved(self, event):
+        """Called when a file/directory is moved/renamed in the combox directory.
+
+        If a directory is renamed/moved, it renames/moves the
+        corresponding directory in all the node directories.
+
+        If a file is renamed/moved, it renames/moves the shards of the
+        file in all the node directories and updates the DB.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+
+        """
         super(ComboxDirMonitor, self).on_moved(event)
 
         if event.is_directory:
@@ -152,6 +201,25 @@ class ComboxDirMonitor(LoggingEventHandler):
 
 
     def on_created(self, event):
+        """Called when a file/directory is created in the combox directory.
+
+        If a directory is created, it creates the corresponding
+        directory in all the node directories.
+
+        If a file is created, it:
+
+            - Splits the file into shards.
+            - Encrypts all the shards.
+            - Spreads the encrypted shards across the node
+              directories.
+            - Store hash of the file in DB.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+
+        """
         super(ComboxDirMonitor, self).on_created(event)
 
         if self.tmp_file(event.src_path):
@@ -181,6 +249,21 @@ class ComboxDirMonitor(LoggingEventHandler):
 
 
     def on_deleted(self, event):
+        """Called when a file/directory is deleted in the combox directory.
+
+        If a directory is deleted, it deletes the corresponding
+        directory in all the node directories.
+
+        If a file is deleted, it deletes all of the file's shards in
+        the node directories and removes information about the file in
+        the DB.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+
+        """
         super(ComboxDirMonitor, self).on_deleted(event)
 
         file_node_path = node_path(event.src_path, self.config,
@@ -200,6 +283,24 @@ class ComboxDirMonitor(LoggingEventHandler):
 
 
     def on_modified(self, event):
+        """Called when a file/directory is modified in the combox directory.
+
+        If a directory is modified, nothing is done.
+
+        If a file is modified, it:
+
+            - Splits the file into shards.
+            - Encrypts all the shards.
+            - Spreads the encrypted shards across the node
+              directories, replacing the ol' shards.
+            - Update the hash of the file stored in the DB.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+
+        """
         super(ComboxDirMonitor, self).on_modified(event)
 
         if self.tmp_file(event.src_path):
@@ -249,15 +350,52 @@ class ComboxDirMonitor(LoggingEventHandler):
 
 
 class NodeDirMonitor(LoggingEventHandler):
-    """Monitors Node directory for changes and does its crypto thing.
+    """Monitors a node directory for changes and makes corresponding changes in the combox directory.
+
+    An instance of :class:`.NodeDirMonitor` is created for each node
+    directory; so, if there are two node directories, two instances of
+    this class must be created.
+
+    - When a shard is created in the node directory by virtue of a
+      file created in the combox directory located in *another*
+      computer, the :class:`.NodeDirMonitor` glues the decrypted
+      version of all the shards (of a file) in the node directories
+      and puts the glued file in the combox directory of *this*
+      computer.
+
+    - When a shard is modified in the node directory by virtue of a
+      file modified in the combox directory located in *another*
+      computer, the :class:`.NodeDirMonitor`, glues the decrypted
+      version of all the shards (of a file) in the node directories
+      and puts the updated glued file in the combox directory of
+      *this* computer.
+
+    - When a shard is moved/renamed in the node directory by virtue of
+      the corresponding file moved/renamed in the combox directory
+      located in *another* computer, the :class:`.NodeDirMonitor`
+      moves/renames all the shards (of a file) in the node
+      directories.
+
+    - When a shard is deleted in the node directory by virtue of the
+      corresponding file deleted in the combox directory located in
+      *another* computer, the :class:`.NodeDirMonitor` deletes all the
+      shards (of a file) in the node directories.
+
+
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :param threading.Lock dblock:
+        Lock to access the :class:`.ComboxSilo`. object.
+    :param threading.Lock monitor_lock:
+        Lock shared by :class:`.ComboxDirMonitor` and all the
+        :class:`.NodeDirMonitor` objects.
 
     """
 
     def __init__(self, config, dblock, monitor_lock):
-        """
-        config: a dictinary which contains combox configuration.
-        dblock: Lock for the ComboxSilo.
-        monitor_lock: Lock for directory monitors.
+        """Initialize :class:`.NodeDirMonitor`.
+
         """
         super(NodeDirMonitor, self).__init__()
 
@@ -274,10 +412,16 @@ class NodeDirMonitor(LoggingEventHandler):
         # track file shards that are just created during this run.
         self.just_created = {}
 
-    def shardp(self, path):
-        """Returns True if `path' is a shard
 
-        Shards end with `.shardN' where `N' is a natural number.
+    def shardp(self, path):
+        """Checks if `path` is a shard.
+
+        Shards end with `.shardN` where `N` is a natural number.
+
+        :returns:
+            Returns `True` if `path` is a shard; `False` otherwise.
+        :rtype: bool
+
         """
         if path[:-1].endswith('.shard'):
             return True
@@ -286,9 +430,9 @@ class NodeDirMonitor(LoggingEventHandler):
 
 
     def delete_later(self, file_cb_path):
-        """`file_cb_path' deleted if it is still under 'file_deleted'.
+        """Delete `file_cb_path` if its  still under 'file_deleted' dictionary in DB.
 
-        This is used by the on_deleted method.
+        This is used by the :meth:`~.NodeDirMonitor.on_deleted` method.
 
         This is a workaround to make combox predict official Google
         Drive client's behavior.
@@ -307,21 +451,24 @@ class NodeDirMonitor(LoggingEventHandler):
 
 
     def housekeep(self):
-        """Recursively traverses node directory, discovers changes and updates silo and combox directory.
+        """Recursively traverses node directory, discovers changes and updates silo and combox directory. This method must **never** be called directly.
 
-        If it detects that a shard was deleted, it purges the
-        corresponding file from the combox directory and also removes
-        information about the file from the silo.
+        This method is called before :class:`.NodeDirMonitor` starts
+        monitoring the node directory.
 
-        If it detects new shards, it reconstructs the file and places
-        it at the corresponding location in the combox directory.
+        - First, if it finds a shard of a tracked file deleted in the
+          node directory, it deletes the respective file in the combox
+          directory and removes the file's information from the DB,
+          iff the shards of this file has been removed in all other
+          node directories too.
 
-        If it detects shards have been modified, it reconstructs the
-        file and places the modified file at the corresponding
-        location in the combox directory.
+        - Second, if it finds a shard of a file that is not tracked in
+          the node directory, it resurrects the file from the shards,
+          writes it to the combox directory, and stores the file's
+          information in the DB, iff all of the shards of this file
+          are found in the node directories.
 
         """
-
         log_i("combox node monitor is housekeeping")
         log_i("Please don't make any changes to combox directory now")
 
@@ -355,7 +502,7 @@ class NodeDirMonitor(LoggingEventHandler):
 
         # Re-construct files created on another computer when combox
         # was switched off. Only files who's all the shards have made
-        # it to the combox directory are re-constructed.
+        # it to the node directories are re-constructed.
 
         # Dict that keeps track of the files that were created.
         files_created = {}
@@ -394,6 +541,13 @@ class NodeDirMonitor(LoggingEventHandler):
 
 
     def on_moved(self, event):
+        """Called when a shard/directory is moved/renamed in the node directory.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+        """
         super(NodeDirMonitor, self).on_moved(event)
 
         src_cb_path = cb_path(event.src_path, self.config)
@@ -519,6 +673,13 @@ class NodeDirMonitor(LoggingEventHandler):
 
 
     def on_created(self, event):
+        """Called when a shard/directory is created in the node directory.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+        """
         super(NodeDirMonitor, self).on_created(event)
 
         if not self.shardp(event.src_path) and not event.is_directory:
@@ -590,6 +751,13 @@ class NodeDirMonitor(LoggingEventHandler):
 
 
     def on_deleted(self, event):
+        """Called when a shard/directory is deleted in the node directory.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+        """
         super(NodeDirMonitor, self).on_deleted(event)
 
         if not self.shardp(event.src_path) and not event.is_directory:
@@ -642,6 +810,13 @@ class NodeDirMonitor(LoggingEventHandler):
 
 
     def on_modified(self, event):
+        """Called when a shard/directory is modified in the node directory.
+
+        :param event:
+            The event object representing the file system event.
+        :type event:
+            :class:`~watchdog.events.FileSystemEvent`
+        """
         super(NodeDirMonitor, self).on_modified(event)
 
         if not self.shardp(event.src_path) and not event.is_directory:
