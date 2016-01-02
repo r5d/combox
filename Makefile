@@ -35,7 +35,7 @@ upload-pypi:
 	@twine upload -r bgpypi -s -i sravik@bgsu.edu  dist/*.whl
 
 upload-docs:
-	@rsync -avz docs/_build/html/  $(COMBOX_DOCS_HOST)
+	@rsync -avz --delete --exclude-from=docs/rsync-exclude.filter docs/_build/html/  $(COMBOX_DOCS_HOST)
 
 clean-docs:
 	@$(MAKE) -C docs clean
