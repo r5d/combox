@@ -40,8 +40,20 @@ from combox.log import log_i, log_e
 ## http://pythonhosted.org/watchdog/quickstart.html#quickstart
 
 def run_cb(config):
-    """
-    Runs combox.
+    """Runs combox.
+
+    - Creates an instance of :class:`.ComboxDirMonitor` to monitor the
+      combox directory.
+
+    - Creates an instance of :class:`.NodeDirMonitor` for each node
+      directory.
+
+    Exits on Ctrt-C.
+
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+
     """
     db_lock = Lock()
     monitor_lock = Lock()
@@ -87,9 +99,10 @@ def run_cb(config):
 
     log_i("combox exiting. Bye!")
 
+
 def main():
-    """
-    Main functions, parses args and calls run_cb()
+    """Parses args; starts combox configuration if necessary; starts combox.
+
     """
     parser = ArgumentParser()
     parser.add_argument("-t", "--test",
