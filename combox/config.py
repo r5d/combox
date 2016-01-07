@@ -52,13 +52,35 @@ import stat
 from os import path
 from os.path import expanduser
 
+
 def get_secret():
-    "Gets the pass phrase from std. input."
+    """Reads passphrase from standard input.
+
+    Uses :func:`getpass.getpass`.
+
+    :returns:
+        The passphrase read from standard input.
+    :rtype: str
+
+    :raises EOFError:
+        If the standard input is closed.
+    :raises GetPassWarning:
+        When  unable to turn echo off on the input.
+
+    """
     return getpass.getpass('passphrase: ')
 
 
 def get_stdin(prompt):
-    "Gets a string from std. input."
+    """Read string from standard input.
+
+    :param str prompt:
+        Prompt string.
+    :returns:
+        The string read from standard input.
+    :rtype: str
+
+    """
 
     prompt = "%s: "  % (prompt)
 
@@ -69,8 +91,24 @@ def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
               pass_func = get_secret,
               input_func = get_stdin,
               write=True):
-    """
-    Configure combox.
+    """config_cb(config_dir = path.join(expanduser("~"), '.combox'), pass_func=get_secret, input_func=get_stdin, write=True)
+
+    Configure combox (CLI).
+
+    :param str config_dir:
+        Location of the combox config directory. Defaults to $HOME/.combox.
+    :param function  pass_func:
+        Function to read the passphrase. Defaults to
+        :func:`get_secret`.
+    :param function input_func:
+        Function to read a string from standard input. Defaults to
+        :func:`get_stdin`.
+    :param bool write:
+        `True` if combox configuration must be written to disk under the
+        combox config directory; `False` otherwise. Defaults to `True`.
+    :returns: combox configuration information as dictionary.
+    :rtype: dict
+
     """
 
     if not path.exists(config_dir):
@@ -116,10 +154,14 @@ def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
 
 
 def get_nodedirs(config):
-    """
-    Returns the node path to directories as a list.
+    """Returns paths of node directories as a list.
 
-    config: a dictionary which has the combox configuration
+    :param dict config:
+        A dictionary that contains configuration information about
+        combox.
+    :returns:
+        Paths of node directories as a list.
+    :rtype: list
     """
     nodes = []
 
