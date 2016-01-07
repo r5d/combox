@@ -6,6 +6,7 @@ api reference
    :maxdepth: 2
 
    combox.cbox
+   combox.config
    combox.crypto
    combox.events
    combox.file
