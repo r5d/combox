@@ -162,6 +162,7 @@ def get_nodedirs(config):
     :returns:
         Paths of node directories as a list.
     :rtype: list
+
     """
     nodes = []
 
