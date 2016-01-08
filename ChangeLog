@@ -1,3 +1,32 @@
+2016-01-07 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/config.py: Rewrote all docstrings; they're sphinx
+	friendly now.
+	* docs/api/combox.config.rst: Added.
+	* docs/api/index.rst: Added api/combox.config to toctree.
+
+2016-01-05 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/cbox.py: Rewrote all docstrings; they're sphinx friendly
+	now.
+	* docs/api/combox.cbox.rst: Added.
+	* docs/api/index.rst: Add api/combox.cbox to toctree.
+
+2016-01-02 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/events.py: Rewrote all docstrings; they're sphinx
+	friendly now.
+	* docs/api/combox.events.rst: Added.
+	* docs/api/combox.silo.rst: Added.
+	* docs/api/index.rst: Added api/combox.events, api/combox.silo to
+	toctree.
+	* docs/conf.py: Added link to watchdog API docs in the
+	`intersphinx_mapping` dictionary.
+	* docs/rsync-exclude.filter: Added.
+	* Makefile: Updated rsync command under the `upload-docs` target;
+	added --exclude-from option pointing to
+	`docs/rsync-exclude.filter`.
+
 2015-12-25 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* combox/silo.py: Rewrote all docstrings; they're sphinx friendly
