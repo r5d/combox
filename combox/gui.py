@@ -34,7 +34,11 @@ from combox.config import config_cb
 # http://effbot.org/tkinterbook/tkinter-dialog-windows.htm
 
 class ComboxConfigDialog(object):
-    """combox configuration dialog for folks that prefer GUI.
+    """ComboxConfigDialog(title=None, config_dir=path.join(expanduser("~"), '.combox')
+
+    Graphical interface combox configuration.
+
+    Uses :mod:`Tkinter`.
 
     """
 
@@ -82,8 +86,8 @@ class ComboxConfigDialog(object):
     # Adapted from:
     # https://bbs.archlinux.org/viewtopic.php?id=149559
     def center_it(self):
-        """
-        Center combox config dialog.
+        """Center combox configuration dialog with respect to the screen.
+
         """
         self.root.withdraw()
         self.root.update_idletasks()
@@ -96,8 +100,11 @@ class ComboxConfigDialog(object):
 
 
     def body(self, master):
-        """
-        Populates the main body of the dialog.
+        """Populate the fields for the configuration diaglog.
+
+        :param Tkinter.Frame master:
+            It is :attr:`self.body_frame`.
+
         """
         Label(master, text="name of this combox").grid(row=0, sticky=W)
         Label(master, text="path to combox directory").grid(row=1, sticky=W)
@@ -137,8 +144,8 @@ class ComboxConfigDialog(object):
     # adapted from:
     #   http://effbot.org/tkinterbook/tkinter-application-windows.htm
     def statusbar(self):
-        """
-        Init status bar.
+        """Initialize the status bar.
+
         """
         # status bar
         box = Frame(self.root)
@@ -149,16 +156,23 @@ class ComboxConfigDialog(object):
 
 
     def status_bar_set(self, format, *args):
+        """Set status bar text.
+
+        :param str format:
+            `Formatted string`_.
+        :param tuple args:
+            Values for the formatted string.
+
+        .. _Formatted string: https://docs.python.org/2/library/stdtypes.html#string-formatting
         """
-        Set status bar text.
-        """
+        print type(args), args
         self.status_bar.config(text=format % args)
         self.status_bar.update_idletasks()
 
 
     def status_bar_clear(self):
-        """
-        Clear status bar text.
+        """Clear status bar text.
+
         """
         self.status_bar.config(text="")
         self.status_bar.update_idletasks()
@@ -168,6 +182,9 @@ class ComboxConfigDialog(object):
 
 
     def buttonbox(self):
+        """Initialize button box with "OK" and "Cancel" buttons.
+
+        """
         # add standard button box. override if you don't want the
         # standard buttons
 
@@ -188,7 +205,9 @@ class ComboxConfigDialog(object):
     # standard button semantics
 
     def ok(self, event=None):
+        """Called when "OK" button or "<Return>" is hit.
 
+        """
         if not self.validate():
             return
 
@@ -201,14 +220,20 @@ class ComboxConfigDialog(object):
 
 
     def cancel(self, event=None):
+        """Called when "Cancel" button or "<Escape>" is hit.
+
+        It destroys the combox configuration dialog.
+        """
         #self.parent.focus_set()
         self.root.destroy()
 
 
     # command hooks
     def validate_passphrase(self):
-        """
-        Checks if the passphrase entered in "passphrase" and "re-enter passphrase" are same.
+        """Check if the entered passphrase in "passphrase" and "re-enter passphrase" are the same.
+
+        :returns: `True` if the both passphrases match; `False` otherwise.
+        :rtype: bool
         """
         if not (self.cb_pp_entry.get() == self.cb_rpp_entry.get()):
             self.status_bar_set("%s", "passphrase don't match")
@@ -220,10 +245,13 @@ class ComboxConfigDialog(object):
 
 
     def validate(self):
-        """
-        Validates the inputs.
-        """
+        """Validate all inputs.
 
+        :returns: `True` iff all inputs are sane and valid; `False`
+                  otherwise.
+        :rtype: bool
+
+        """
         if not self.cb_name_entry.get():
             self.status_bar_set("%s", "give this combox a name")
             self.cb_name_entry.focus_set()
@@ -282,6 +310,11 @@ class ComboxConfigDialog(object):
 
 
     def apply(self):
+        """Write combox configuration to disk.
+
+        Uses :func:`~combox.config.config_cb`.
+
+        """
         combox_name = self.cb_name_entry.get()
         combox_dir = self.cb_dir_entry.get()
         no_nodes = self.cb_no_nodes_entry.get()
@@ -304,8 +337,13 @@ class ComboxConfigDialog(object):
 
 
     def create_askdirectory_button(self, entry, row):
-        """
-        Creates a button that opens askdirectory dialog at row `row'.
+        """Create a button, at `row`, that calls :func:`tkFileDialog.askdirectory`.
+
+        :param Tkinter.Entry entry:
+            The entry to which the directory path must be copied to.
+        :param int row:
+            The row number of the entry.
+
         """
         self.ask_dir_btn = Button(self.body_frame, text="select directory",
                    command=lambda: self.askdirectory(entry))
@@ -313,15 +351,17 @@ class ComboxConfigDialog(object):
 
 
     def destroy_askdirectory_button(self):
-        """
-        Destroys the button that opens askdirectory dialog.
+        """Destroy the button that calls :func:`tkFileDialog.askdirectory`.
+
         """
         self.ask_dir_btn.destroy()
 
 
     def askdirectory(self, entry):
-        """
-        Spawns a file dialog to read a directory for an Entry.
+        """Spawn a file dialog to read a directory for `entry`.
+
+        :param Tkinter.Entry entry:
+            The entry to which the directory path must be copied to.
         """
         # first clear the entry
         entry.delete(0, 'end')
@@ -332,8 +372,8 @@ class ComboxConfigDialog(object):
 
 
     def clear_node_info_fields(self):
-        """
-        Clears all fields related to "node information".
+        """Clear all fields related to "node information".
+
         """
 
         for i in xrange(len(self.node_path_labels)):
@@ -349,8 +389,8 @@ class ComboxConfigDialog(object):
 
 
     def populate_node_fields(self, event):
-        """
-        Populate node fields.
+        """Populate node fields.
+
         """
         no_nodes_str = self.cb_no_nodes_entry.get()
 

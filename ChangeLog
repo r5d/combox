@@ -1,3 +1,8 @@
+2016-01-10 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/gui.py: Rewrote/Added docstrings; they're sphinx friendly
+	now.
+
 2016-01-07 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* combox/config.py: Rewrote all docstrings; they're sphinx
