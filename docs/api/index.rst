@@ -11,4 +11,5 @@ api reference
    combox.events
    combox.file
    combox.gui
+   combox.log
    combox.silo
