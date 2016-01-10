@@ -2,6 +2,7 @@
 
 	* combox/gui.py: Rewrote/Added docstrings; they're sphinx friendly
 	now.
+	* combox/log.py: Rewrote doctrings; they're sphinx friendly now.
 	* docs/api/combox.gui.rst: Added.
 	* docs/api/index.rst: Added api/combox.gui to toctree.
 

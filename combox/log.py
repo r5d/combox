@@ -21,9 +21,24 @@
 import logging
 
 def log_config(level, format_):
-    """Configures the logging module.
+    """Configures combox logging module.
 
     Called by all types of log functions in this module.
+
+    :param int level:
+        Logging level. Must be any one of the following constants:
+
+            - :const:`logging.CRITICAL`
+            - :const:`logging.DEBUG`
+            - :const:`logging.ERROR`
+            - :const:`logging.FATAL`
+            - :const:`logging.INFO`
+            - :const:`logging.WARN`
+            - :const:`logging.WARNING`
+    :param str format_:
+          Format string to pass to :func:`logging.basicConfig`
+          function.
+
     """
     logging.basicConfig(level=level,
                         format=format_,
@@ -32,14 +47,25 @@ def log_config(level, format_):
 
 def log_i(msg, format_='%(asctime)s - %(message)s'):
     """Function for logging information.
+
+    :param str msg:
+        Log message.
+    :param str format_:
+          Format string to pass to :func:`log_config` function.
+
     """
     log_config(logging.INFO, format_=format_)
     logging.info(msg)
 
 
 def log_e(msg, format_='%(asctime)s - %(message)s'):
-    """
-    Function for logging errors.
+    """Function for logging errors.
+
+    :param str msg:
+        Log message.
+    :param str format_:
+          Format string to pass to :func:`log_config` function.
+
     """
     log_config(logging.ERROR, format_=format_)
     logging.error(msg)
