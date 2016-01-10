@@ -10,4 +10,5 @@ api reference
    combox.crypto
    combox.events
    combox.file
+   combox.gui
    combox.silo
