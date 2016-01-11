@@ -1,3 +1,9 @@
+2016-01-11 Siddharth Ravikumar <sravik@bgsu.edu>
+
+	* combox/cbox.py: Now, combox starts configuration when the
+	configuration directory does not exist or when the configuration
+	file does not exist.
+
 2016-01-10 Siddharth Ravikumar <sravik@bgsu.edu>
 
 	* combox/gui.py: Rewrote/Added docstrings; they're sphinx friendly

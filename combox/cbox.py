@@ -121,7 +121,8 @@ def main():
 
     log_i(CONFIG_DIR)
 
-    if not path.exists(CONFIG_DIR):
+    if (not path.exists(CONFIG_DIR) or
+        not path.exists(config_file)):
         # combox not configured.
         if not args.cli:
             ComboxConfigDialog("combox configuration", CONFIG_DIR)
