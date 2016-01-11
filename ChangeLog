@@ -3,6 +3,10 @@
 	* combox/cbox.py: Now, combox starts configuration when the
 	configuration directory does not exist or when the configuration
 	file does not exist.
+	* combox/config.py (config_cb): The combox configuration directory
+	creation is now done after reading all the configuration values;
+	the function also creates the combox directory if it does not
+	already exist.
 
 2016-01-10 Siddharth Ravikumar <sravik@bgsu.edu>
 

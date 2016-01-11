@@ -110,10 +110,6 @@ def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
     :rtype: dict
 
     """
-
-    if not path.exists(config_dir):
-        # Create combox dir.
-        os.mkdir(config_dir, 0700)
     config_file_path = path.join(config_dir, 'config.yaml')
     config_info = {}
 
@@ -144,6 +140,15 @@ def config_cb(config_dir = path.join(expanduser("~"), '.combox'),
             os.makedirs(nodes[node_name]['path'])
 
     config_info['nodes_info'] = nodes
+
+    if not path.exists(config_dir):
+        # Create combox config directory.
+        os.mkdir(config_dir, 0700)
+
+    if not path.exists(config_info['combox_dir']):
+        # Create combox directory.
+        os.makedirs(config_info['combox_dir'])
+
     if write:
         config_file = open(config_file_path, 'w')
         yaml.dump(config_info, config_file, default_flow_style=False)
