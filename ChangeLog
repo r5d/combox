@@ -7,6 +7,8 @@
 	creation is now done after reading all the configuration values;
 	the function also creates the combox directory if it does not
 	already exist.
+	* setup.py: added function for reading a file; we don't use the
+	read_file function from combox.file module anymore.
 
 2016-01-10 Siddharth Ravikumar <sravik@bgsu.edu>
 

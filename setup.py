@@ -20,13 +20,18 @@
 
 from setuptools import setup, find_packages
 
-from combox.file import read_file
 from combox._version import get_version
+
+
+def readf(filename):
+    with open(filename, 'r') as f:
+        return f.read()
+
 
 config = {
     'name': 'combox',
     'description': 'Encrypts files and scatters them across storage provided by Google Drive and Dropbox.',
-    'long_description': read_file('README.rst'),
+    'long_description': readf('README.rst'),
     'version': get_version(),
     'platforms': ['GNU/Linux', 'OS X'],
     'license': 'GNU General Public License version 3 or later',
