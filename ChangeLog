@@ -14,6 +14,7 @@
 	* combox/file.py (rm_path): rm_path function, if it is given a
 	directory, purges it first before deleting it.
 	* combox/_version.py: bumped to 0.2.1
+	* docs/releases.rst: Added links to v0.2.1 archives.
 
 2016-01-10 Siddharth Ravikumar <sravik@bgsu.edu>
 

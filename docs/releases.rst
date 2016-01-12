@@ -2,6 +2,18 @@
 releases
 ========
 
+  - `combox-v0.2.1.tar.gz`_ [sig__]
+
+    .. _combox-v0.2.1.tar.gz: https://ricketyspace.net/combox/archive/combox-v0.2.1.tar.gz
+    .. __: https://ricketyspace.net/combox/archive/combox-v0.2.1.tar.gz.sig
+
+
+  - `combox-v0.2.1.zip`_ [sig__]
+
+    .. _combox-v0.2.1.zip: https://ricketyspace.net/combox/archive/combox-v0.2.1.zip
+    .. __: https://ricketyspace.net/combox/archive/combox-v0.2.1.zip.sig
+
+
   - `combox-v0.2.0.tar.gz`_ [sig__]
 
     .. _combox-v0.2.0.tar.gz: https://ricketyspace.net/combox/archive/combox-v0.2.0.tar.gz
@@ -61,7 +73,7 @@ releases
 ::
 
    $ gpg --keyserver hkps.pool.sks-keyservers.net --recv-key "C1741162CEED5FE89954A4B99DF9783800B252AF"
-   $ gpg --verify combox-v0.2.0.tar.gz.sig
+   $ gpg --verify combox-v0.2.1.tar.gz.sig
 
 
 gpg key fingerprint::
