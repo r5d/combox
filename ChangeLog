@@ -9,6 +9,8 @@
 	already exist.
 	* setup.py: added function for reading a file; we don't use the
 	read_file function from combox.file module anymore.
+	* combox/file.py (rm_path): rm_path function, if it is given a
+	directory, purges it first before deleting it.
 
 2016-01-10 Siddharth Ravikumar <sravik@bgsu.edu>
 

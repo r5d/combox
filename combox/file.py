@@ -225,6 +225,7 @@ def rm_path(fpath):
         if path.isfile(fpath):
             os.remove(fpath)
         elif path.isdir(fpath):
+            purge_dir(fpath)
             os.rmdir(fpath)
     except OSError, e:
         log_e("Error when trying to remove path %s" % fpath)
