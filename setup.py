@@ -36,7 +36,7 @@ config = {
     'platforms': ['GNU/Linux', 'OS X'],
     'license': 'GNU General Public License version 3 or later',
     'url': 'https://ricketyspace.net/combox/',
-    'download_url': 'git://ricketyspace.net/combox.git',
+    'download_url': 'https://git.ricketyspace.net/combox',
     'author': 'combox contributors',
     'author_email': 'sravik@bgsu.edu',
     'install_requires': ['watchdog', 'PyYAML', 'pycrypto',
