@@ -85,7 +85,7 @@ releases
 ::
 
    $ gpg --keyserver hkps.pool.sks-keyservers.net --recv-key "C1741162CEED5FE89954A4B99DF9783800B252AF"
-   $ gpg --verify combox-v0.2.1.tar.gz.sig
+   $ gpg --verify combox-v0.2.2.tar.gz.sig
 
 
 gpg key fingerprint::
