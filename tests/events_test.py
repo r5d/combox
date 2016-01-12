@@ -380,7 +380,7 @@ class TestEvents(object):
 
 
     def test_NDM_ondeleted(self):
-        """Testing on_modified method in NodeDirMonitor"""
+        """Testing on_delete method in NodeDirMonitor"""
         nodes =  get_nodedirs(self.config)
         num_nodes =  len(get_nodedirs(self.config))
 
@@ -711,7 +711,7 @@ class TestEvents(object):
 
 
     def test_NDM_housekeep_create(self):
-        """Testing NodeDirMonitor's housekeep method's delete functionality."""
+        """Testing NodeDirMonitor's housekeep method's create functionality."""
 
         # test shard creation
         hmutant = "%s.mutant" % self.TEST_FILE
