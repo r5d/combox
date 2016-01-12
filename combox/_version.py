@@ -19,7 +19,7 @@
 #   <http://www.gnu.org/licenses/>.
 
 __version__ = u"0.2"
-__release__ = u"1"
+__release__ = u"2"
 
 
 def get_version():

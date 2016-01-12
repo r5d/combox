@@ -1,5 +1,9 @@
 2016-01-11 Siddharth Ravikumar <sravik@bgsu.edu>
 
+	* combox/_version.py: bumped to v0.2.2
+
+2016-01-11 Siddharth Ravikumar <sravik@bgsu.edu>
+
 	* combox/cbox.py: Now, combox starts configuration when the
 	configuration directory does not exist or when the configuration
 	file does not exist.
