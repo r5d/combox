@@ -14,9 +14,6 @@ combox
 .. image:: https://img.shields.io/pypi/wheel/combox.svg?style=flat-square
    :target: https://pypi.python.org/pypi/combox/
    :alt:
-.. image:: https://img.shields.io/pypi/dm/combox.svg?style=flat-square
-   :target: https://pypi.python.org/pypi/combox/
-   :alt:
 
 ----
 
