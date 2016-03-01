@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'combox'
-copyright = u'2015, combox contributors'
+copyright = u'2016, Dr. Robert C. Green II'
 author = u'combox contributors'
 
 # The version info for the project you're documenting, acts as replacement for
