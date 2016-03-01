@@ -2,7 +2,7 @@
 #
 #!/usr/bin/env python
 #
-#    Copyright (C) 2015 Combox contributor(s). See CONTRIBUTORS.rst.
+#    Copyright (C) 2016 Dr. Robert C. Green II.
 #
 #    This file is part of Combox.
 #
