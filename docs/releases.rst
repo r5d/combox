@@ -2,6 +2,19 @@
 releases
 ========
 
+  - `combox-v0.2.3.tar.gz`_ [sig__]
+
+    .. _combox-v0.2.3.tar.gz: https://ricketyspace.net/combox/archive/combox-v0.2.3.tar.gz
+    .. __: https://ricketyspace.net/combox/archive/combox-v0.2.3.tar.gz.sig
+
+
+  - `combox-v0.2.3.zip`_ [sig__]
+
+    .. _combox-v0.2.3.zip: https://ricketyspace.net/combox/archive/combox-v0.2.3.zip
+    .. __: https://ricketyspace.net/combox/archive/combox-v0.2.3.zip.sig
+
+
+
   - `combox-v0.2.2.tar.gz`_ [sig__]
 
     .. _combox-v0.2.2.tar.gz: https://ricketyspace.net/combox/archive/combox-v0.2.2.tar.gz
