@@ -39,7 +39,7 @@ config = {
     'download_url': 'https://git.ricketyspace.net/combox',
     'author': 'combox contributors',
     'author_email': 'sravik@bgsu.edu',
-    'install_requires': ['watchdog', 'PyYAML', 'pycrypto',
+    'install_requires': ['watchdog', 'PyYAML==5.4.1.1', 'pycrypto',
                          'simplejson', 'pickledb'],
     'tests_require': ['nose', 'mock'],
     'test_suite': 'nose.collector',
